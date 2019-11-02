@@ -1,0 +1,151 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8658269682862055276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97d88f7d353534a4fbdeb11196057db7, type: 3}
+  m_Name: UploadItch
+  m_EditorClassIdentifier: 
+  actionType: 1
+  actionName: UploadItch
+  note: 
+  actionEnabled: 1
+  filter:
+    condition: 0
+    clauses: []
+  pathToButlerExe: C:\Unity\Tools\butler.exe
+  nameOfItchUser: Sosuko
+  nameOfItchGame: block-brawl-prototype
+  useGeneratedBuildVersion: 1
+  showUploadProgress: 1
+  itchChannelOverride: 
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d5886119a5c7b34d8872ab527ca3e1b, type: 3}
+  m_Name: UnityBuildSettings
+  m_EditorClassIdentifier: 
+  _basicSettings:
+    baseBuildFolder: bin
+    buildPath: $YEAR-$MONTH-$DAY/$BUILD/$RELEASE_TYPE/$PLATFORM/$ARCHITECTURE/$DISTRIBUTION
+    openFolderPostBuild: 1
+  _productParameters:
+    buildCounter: 1
+    lastGeneratedVersion: 1.0.1766.3536
+    version: 1.0.$DAYSSINCE("January 1, 2015").$SECONDS
+    autoGenerate: 1
+  _releaseTypeList:
+    releaseTypes:
+    - typeName: Release
+      bundleIndentifier: 
+      companyName: Triflect
+      productName: BlockBrawl
+      developmentBuild: 0
+      allowDebugging: 0
+      enableHeadlessMode: 0
+      customDefines: 
+      sceneList:
+        enabledScenes:
+        - fileGUID: 2cda990e2423bbf4892e6590ba056729
+  _platformList:
+    platforms:
+    - enabled: 1
+      distributionList:
+        distributions: []
+      architectures:
+      - target: 5
+        name: Windows x86
+        enabled: 1
+      - target: 19
+        name: Windows x64
+        enabled: 0
+      variants: []
+      platformName: PC
+      binaryNameFormat: '{0}.exe'
+      dataDirNameFormat: '{0}_Data'
+      targetGroup: 1
+    - enabled: 1
+      distributionList:
+        distributions: []
+      architectures:
+      - target: 20
+        name: WebGL
+        enabled: 1
+      variants: []
+      platformName: WebGL
+      binaryNameFormat: '{0}'
+      dataDirNameFormat: '{0}_Data'
+      targetGroup: 13
+    - enabled: 1
+      distributionList:
+        distributions: []
+      architectures:
+      - target: 2
+        name: OSX
+        enabled: 1
+      variants: []
+      platformName: OSX
+      binaryNameFormat: '{0}.app'
+      dataDirNameFormat: '{0}.app/Contents'
+      targetGroup: 1
+  _projectConfigurations:
+    configSet:
+      _Buckets: 03000000ffffffff0600000005000000000000000100000004000000
+      _HashCodes: 77a7aa19510e9f596d38f6476da5e235ed43d334ba55b93b2d6dfd48
+      _Next: ffffffffffffffffffffffff02000000ffffffffffffffffffffffff
+      _Count: 7
+      _Version: 7
+      _FreeList: -1
+      _FreeCount: 0
+      _Keys:
+      - Release/PC/Windows x86
+      - Release/PC
+      - Release/WebGL/WebGL
+      - Release/WebGL
+      - Release/OSX/OSX
+      - Release/OSX
+      - Release
+      _Values:
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys:
+        - Release/PC/Windows x86
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys:
+        - Release/WebGL/WebGL
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys:
+        - Release/OSX/OSX
+      - enabled: 1
+        childKeys:
+        - Release/PC
+        - Release/WebGL
+        - Release/OSX
+    showViewOptions: 0
+    showConfigs: 0
+    showBuildInfo: 0
+    hideDisabled: 0
+    treeView: 0
+    selectedKeyChain: 
+  _preBuildActions:
+    buildActions: []
+  _postBuildActions:
+    buildActions:
+    - {fileID: -8658269682862055276}
