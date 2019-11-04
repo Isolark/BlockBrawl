@@ -1,0 +1,20 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:afe95fac71d8f8fb5c944de3dd78d0aa:62314154d8066311e8ed4498415c665a:a8a3b5e3e4c5f9eb05cc0e18850c6a8c$
+#
+:format=40300
+:texture=BoardPieces.png
+:size=256x512
+:pivotpoints=enabled
+:borders=disabled
+
+block-balloon;1;407;114;104; 0.5;0; 0;0;0;0; 4;114;0;0;0;0;104;114;104; 2;1;2;3;0;1;3
+block-cloud;117;407;114;104; 0.5;0; 0;0;0;0; 4;114;0;0;0;0;104;114;104; 2;1;2;3;0;1;3
+block-hex;1;301;114;104; 0.5;0; 0;0;0;0; 4;114;0;0;0;0;104;114;104; 2;1;2;3;0;1;3
+block-moon;117;301;114;104; 0.5;0; 0;0;0;0; 4;114;0;0;0;0;104;114;104; 2;1;2;3;0;1;3
+block-star;1;195;114;104; 0.5;0; 0;0;0;0; 4;114;0;0;0;0;104;114;104; 2;1;2;3;0;1;3
+block-sun;117;195;114;104; 0.5;0; 0;0;0;0; 4;114;0;0;0;0;104;114;104; 2;1;2;3;0;1;3
