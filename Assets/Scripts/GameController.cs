@@ -3,9 +3,14 @@
 //Parent controller for gameplay (need others for different gameplay modes)
 public class GameController : MonoBehaviour
 {
-    public GameBoard _GameBoard;
+    public GameBoard PlayerGameBoard;
+    public GameCursor PlayerCursor;
 
     void Awake() {
+        var gameBoardSize = PlayerGameBoard.GetComponent<SpriteRenderer>().bounds.size;
+        var gameCursorSize = PlayerCursor.GetComponent<SpriteRenderer>().bounds.size;
+
+        PlayerCursor.transform.localPosition = new Vector2(gameCursorSize.x / 2 - gameBoardSize.x / 2, 0f);
     }
 
     // Start is called before the first frame update
