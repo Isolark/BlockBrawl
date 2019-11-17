@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameCursor : MonoBehaviour
 {
+    public float padding;
+
     // Start is called before the first frame update
     void Start()
     {
