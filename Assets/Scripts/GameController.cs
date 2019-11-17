@@ -10,7 +10,7 @@ public class GameController : MonoBehaviour
         var gameBoardSize = PlayerGameBoard.GetComponent<SpriteRenderer>().bounds.size;
         var gameCursorSize = PlayerCursor.GetComponent<SpriteRenderer>().bounds.size;
 
-        PlayerCursor.transform.localPosition = new Vector2(gameCursorSize.x / 2 - gameBoardSize.x / 2, 0f);
+        PlayerCursor.transform.localPosition = new Vector2(gameCursorSize.x / 2 - gameBoardSize.x / 2 - PlayerCursor.padding, PlayerCursor.padding);
     }
 
     // Start is called before the first frame update
