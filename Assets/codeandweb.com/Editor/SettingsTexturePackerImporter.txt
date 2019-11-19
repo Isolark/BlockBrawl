@@ -1,0 +1,9 @@
+version: 2
+importPivots: 1
+tpsheetFileNames:
+- Assets/Sprites/GameBoard.tpsheet
+textureFileNames:
+- Assets/Sprites/GameBoard.png
+normalmapFileNames:
+- 
+enableDebugOutput: 0
