@@ -35,6 +35,21 @@ TextureImporter:
   - first:
       213: -8894989074114120652
     second: Cursor_2
+  - first:
+      213: -9043852977731014262
+    second: Block-blue
+  - first:
+      213: 4451664899516613350
+    second: Block-green
+  - first:
+      213: -2672636387286012855
+    second: Block-purp
+  - first:
+      213: 3298610880419723538
+    second: Block-red
+  - first:
+      213: -7428269439264014336
+    second: Block-yellow
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -64,7 +79,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
+    filterMode: 0
     aniso: -1
     mipBias: -100
     wrapU: 1
@@ -78,7 +93,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 200
+  spritePixelsToUnits: 130
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -131,64 +146,169 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
+      name: Block-blue
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 381
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: -9043852977731014262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block-green
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 249
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: 4451664899516613350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block-purp
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 117
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: -2672636387286012855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block-red
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 381
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: 3298610880419723538
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block-yellow
+      rect:
+        serializedVersion: 2
+        x: 315
+        y: 381
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: -7428269439264014336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
       name: Block
       rect:
         serializedVersion: 2
-        x: 1
-        y: 379
-        width: 204
-        height: 204
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 133
+        y: 249
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 0
+      internalID: -732908275678425507
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cursor_1
+      name: Cursor-1
       rect:
         serializedVersion: 2
-        x: 1
-        y: 791
-        width: 231
-        height: 232
-      alignment: 9
-      pivot: {x: 0.5021645, y: 0}
+        x: 133
+        y: 117
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 0
+      internalID: -3101890739022099139
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cursor_2
+      name: Cursor-2
       rect:
         serializedVersion: 2
-        x: 1
-        y: 585
-        width: 210
-        height: 204
+        x: 332
+        y: 256
+        width: 123
+        height: 123
       alignment: 9
-      pivot: {x: 0.51428574, y: -0.063725494}
+      pivot: {x: 0.49593496, y: 0.50406504}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 0
+      internalID: -8936888169854516774
       vertices: []
       indices: 
       edges: []
@@ -197,19 +317,19 @@ TextureImporter:
       name: Middle-blue
       rect:
         serializedVersion: 2
-        x: 133
-        y: 139
-        width: 122
-        height: 112
+        x: 265
+        y: 173
+        width: 95
+        height: 81
       alignment: 9
-      pivot: {x: 0.5163934, y: -0.13392857}
+      pivot: {x: 0.50526315, y: 0.50617284}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 0
+      internalID: 24857771833803693
       vertices: []
       indices: 
       edges: []
@@ -218,19 +338,19 @@ TextureImporter:
       name: Middle-green
       rect:
         serializedVersion: 2
-        x: 1
-        y: 22
-        width: 98
-        height: 115
+        x: 97
+        y: 31
+        width: 84
+        height: 84
       alignment: 9
-      pivot: {x: 0.45918366, y: -0.13043478}
+      pivot: {x: 0.53571427, y: 0.5119048}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 0
+      internalID: -5040113150081647737
       vertices: []
       indices: 
       edges: []
@@ -239,19 +359,19 @@ TextureImporter:
       name: Middle-pink
       rect:
         serializedVersion: 2
-        x: 158
-        y: 253
-        width: 93
-        height: 124
+        x: 264
+        y: 33
+        width: 66
+        height: 82
       alignment: 9
-      pivot: {x: 0.53763443, y: -0.05645161}
+      pivot: {x: 0.46969697, y: 0.47560975}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 0
+      internalID: -6508337405560825493
       vertices: []
       indices: 
       edges: []
@@ -260,19 +380,19 @@ TextureImporter:
       name: Middle-purp
       rect:
         serializedVersion: 2
-        x: 101
-        y: 30
-        width: 101
-        height: 107
+        x: 183
+        y: 31
+        width: 79
+        height: 84
       alignment: 9
-      pivot: {x: 0.5445545, y: -0.17757009}
+      pivot: {x: 0.51898736, y: 0.5119048}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 0
+      internalID: 8852463621371353967
       vertices: []
       indices: 
       edges: []
@@ -281,19 +401,19 @@ TextureImporter:
       name: Middle-red
       rect:
         serializedVersion: 2
-        x: 1
-        y: 316
-        width: 155
-        height: 61
+        x: 362
+        y: 199
+        width: 91
+        height: 55
       alignment: 9
-      pivot: {x: 0.5096774, y: -0.4918033}
+      pivot: {x: 0.46153846, y: 0.5272727}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 0
+      internalID: -3645458305144295275
       vertices: []
       indices: 
       edges: []
@@ -303,18 +423,18 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1
-        y: 194
-        width: 130
-        height: 120
+        y: 29
+        width: 94
+        height: 86
       alignment: 9
-      pivot: {x: 0.4846154, y: -0.06666667}
+      pivot: {x: 0.5106383, y: 0.4883721}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 0
+      internalID: 8338942016579244173
       vertices: []
       indices: 
       edges: []

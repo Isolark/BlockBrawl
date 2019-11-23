@@ -7,10 +7,13 @@ public class GameController : MonoBehaviour
     public GameCursor PlayerCursor;
 
     void Awake() {
-        var gameBoardSize = PlayerGameBoard.GetComponent<SpriteRenderer>().bounds.size;
-        var gameCursorSize = PlayerCursor.GetComponent<SpriteRenderer>().bounds.size;
+        foreach(var block in FindObjectsOfType<GameBlock>())
+        {
+            block.gameObject.TransBySpriteDimensions(new Vector3(-0.5f, 0.5f, 0));
+        }
 
-        PlayerCursor.transform.localPosition = new Vector2(gameCursorSize.x / 2 - gameBoardSize.x / 2, 0f);
+        PlayerCursor.gameObject.TransBySpriteDimensions(PlayerGameBoard.gameObject, new Vector3((float)-1/3, (float)0.5/12, 0));
+        PlayerCursor.LockToBoard(PlayerGameBoard.BoardSize);
     }
 
     // Start is called before the first frame update

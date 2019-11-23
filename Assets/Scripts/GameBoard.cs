@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameBoard : MonoBehaviour
 {
+    public Vector2 BoardSize;
+
     // Start is called before the first frame update
     void Start()
     {

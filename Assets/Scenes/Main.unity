@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 135582547}
   - component: {fileID: 135582546}
   - component: {fileID: 135582549}
+  - component: {fileID: 135582550}
   m_Layer: 0
   m_Name: GameCursor
   m_TagString: Untagged
@@ -149,7 +150,7 @@ Animator:
   m_GameObject: {fileID: 135582545}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 602dc436e4af10245915bd6564436184, type: 2}
+  m_Controller: {fileID: 9100000, guid: 30d1d016026e1d94da776205067cfe9f, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -196,15 +197,15 @@ SpriteRenderer:
   m_SortingLayerID: -451531735
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: -3340349168363038409, guid: 2df89ca00e0e4d6488e09974ea55932a,
+  m_Sprite: {fileID: -3101890739022099139, guid: 2df89ca00e0e4d6488e09974ea55932a,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 2.1, y: 2.04}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
+  m_DrawMode: 2
+  m_Size: {x: 2, y: 1}
+  m_AdaptiveModeThreshold: 1
+  m_SpriteTileMode: 1
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
@@ -234,6 +235,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a0b064a695670b4da78b31b6e8db6d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ZeroLocation: {x: 0, y: 0}
+  Bounds: {x: 0, y: 0}
+  CurrentPosition: {x: 0, y: 0}
+  Padding: 0.08
+  MoveDist: 1
+--- !u!114 &135582550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 135582545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: ecd773ca45a37ce4b8e4685fc9fbf043,
+    type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: 5f5bced5-17ed-4404-999b-f24bff9ef5b2
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &181995531
 GameObject:
   m_ObjectHideFlags: 0
@@ -258,7 +292,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 181995531}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -4.2, z: 0}
+  m_LocalPosition: {x: 0, y: -6.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2140840348}
@@ -320,7 +354,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 7.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -362,7 +396,7 @@ GameObject:
   - component: {fileID: 682472252}
   - component: {fileID: 682472251}
   m_Layer: 0
-  m_Name: Controllers
+  m_Name: ControllerHub
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -464,8 +498,9 @@ SpriteRenderer:
   m_SortingLayerID: -42775455
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2d9cba74fea74244cbfb4ecbc0522c22, type: 3}
-  m_Color: {r: 0, g: 0.754717, b: 0.18075979, a: 1}
+  m_Sprite: {fileID: -732908275678425507, guid: 2df89ca00e0e4d6488e09974ea55932a,
+    type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -577,7 +612,7 @@ Transform:
   m_GameObject: {fileID: 2140840346}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6, y: 8.25, z: 1}
+  m_LocalScale: {x: 6, y: 12, z: 1}
   m_Children: []
   m_Father: {fileID: 181995532}
   m_RootOrder: 0
@@ -594,3 +629,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36a3b26b647cd1545acae525efba6c34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BoardSize: {x: 6, y: 12}
