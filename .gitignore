@@ -11,6 +11,9 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
+# Examples & Samples
+[Aa]ssets/TextMesh Pro/Examples & Extras/
+
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
 

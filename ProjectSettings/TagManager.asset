@@ -53,6 +53,6 @@ TagManager:
   - name: Foreground
     uniqueID: 3120760173
     locked: 0
-  - name: New Layer
+  - name: UI
     uniqueID: 2111864051
     locked: 0
