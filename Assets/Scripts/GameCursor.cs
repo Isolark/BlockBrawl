@@ -14,7 +14,6 @@ public class GameCursor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CurrentPosition = new Vector2();
     }
 
     // Update is called once per frame
@@ -23,12 +22,16 @@ public class GameCursor : MonoBehaviour
     }
 
     // Set zero position (assumed set by gameCtrl) & bounds
-    public void LockToBoard(Vector2 boardSize)
+    public void LockToBoard(Vector2 boardSize, Vector2 startingPosition)
     {
         ZeroLocation = gameObject.transform.localPosition;
         Bounds = boardSize - new Vector2(1, 0);
+        CurrentPosition = Vector2.zero;
 
-        CurrentPosition.Set(0, 0);
+        OnMove(startingPosition);
+
+        Debug.Log(this.GetComponent<SpriteRenderer>().sprite.name);
+        this.GetComponent<SpriteRenderer>().sprite.name = "Block-Blue";
     }
 
     public void OnConfirm(InputValue value)
@@ -42,15 +45,29 @@ public class GameCursor : MonoBehaviour
     public void OnMove(InputValue value)
     {
         var v = value.Get<Vector2>();
-        Debug.Log(new Vector2(v.x, v.y));
+        OnMove(v);
+    }
 
-        var nextPosition = CurrentPosition + v;
+    public void OnMove(Vector2 value)
+    {
+        var nextPosition = CurrentPosition + value;
+
+            Debug.Log(nextPosition);
+            Debug.Log(CurrentPosition);
 
         if(nextPosition.x >= 0 && nextPosition.x < Bounds.x 
         && nextPosition.y >= 0 && nextPosition.y < Bounds.y)
         {
             CurrentPosition = nextPosition;
-            this.gameObject.transform.localPosition += Vector3.Scale(new Vector3(MoveDist, MoveDist, 0), v);
+            this.gameObject.transform.localPosition += Vector3.Scale(new Vector3(MoveDist, MoveDist, 0), value);
         }
+    }
+
+    public void SetPosition(Vector2 position)
+    {
+        this.gameObject.transform.localPosition = ZeroLocation;
+        CurrentPosition = Vector2.zero;
+
+        OnMove(position);
     }
 }
