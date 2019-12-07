@@ -50,6 +50,42 @@ TextureImporter:
   - first:
       213: -7428269439264014336
     second: Block-yellow
+  - first:
+      213: -937155056441861744
+    second: Block-Blue
+  - first:
+      213: 6939696522393502852
+    second: Block-Green
+  - first:
+      213: 2379927736168736538
+    second: Block-Purple
+  - first:
+      213: -6236305541884994473
+    second: Block-Red
+  - first:
+      213: -8019783024995654601
+    second: Block-Yellow
+  - first:
+      213: 4150348428267436015
+    second: Middle-Blue
+  - first:
+      213: 1161616585616214455
+    second: Middle-Green
+  - first:
+      213: 7355458636312314610
+    second: Middle-Pink
+  - first:
+      213: 4122280302945417666
+    second: Middle-Purple
+  - first:
+      213: -8742802933178227432
+    second: Middle-Red
+  - first:
+      213: 2957954368179480967
+    second: Middle-Yellow
+  - first:
+      213: -4033606292994622618
+    second: PlayArea-Base
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -146,11 +182,11 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Block-blue
+      name: Block-Blue
       rect:
         serializedVersion: 2
         x: 1
-        y: 381
+        y: 210
         width: 130
         height: 130
       alignment: 0
@@ -161,17 +197,17 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: -9043852977731014262
+      internalID: -937155056441861744
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Block-green
+      name: Block-Green
       rect:
         serializedVersion: 2
         x: 1
-        y: 249
+        y: 78
         width: 130
         height: 130
       alignment: 0
@@ -182,17 +218,17 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 4451664899516613350
+      internalID: 6939696522393502852
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Block-purp
+      name: Block-Purple
       rect:
         serializedVersion: 2
-        x: 1
-        y: 117
+        x: 133
+        y: 210
         width: 130
         height: 130
       alignment: 0
@@ -203,17 +239,17 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: -2672636387286012855
+      internalID: 2379927736168736538
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Block-red
+      name: Block-Red
       rect:
         serializedVersion: 2
-        x: 183
-        y: 381
+        x: 133
+        y: 78
         width: 130
         height: 130
       alignment: 0
@@ -224,17 +260,17 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 3298610880419723538
+      internalID: -6236305541884994473
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Block-yellow
+      name: Block-Yellow
       rect:
         serializedVersion: 2
-        x: 315
-        y: 381
+        x: 265
+        y: 210
         width: 130
         height: 130
       alignment: 0
@@ -245,7 +281,7 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: -7428269439264014336
+      internalID: -8019783024995654601
       vertices: []
       indices: 
       edges: []
@@ -254,8 +290,8 @@ TextureImporter:
       name: Block
       rect:
         serializedVersion: 2
-        x: 133
-        y: 249
+        x: 265
+        y: 78
         width: 130
         height: 130
       alignment: 0
@@ -275,8 +311,8 @@ TextureImporter:
       name: Cursor-1
       rect:
         serializedVersion: 2
-        x: 133
-        y: 117
+        x: 397
+        y: 210
         width: 130
         height: 130
       alignment: 0
@@ -296,8 +332,8 @@ TextureImporter:
       name: Cursor-2
       rect:
         serializedVersion: 2
-        x: 332
-        y: 256
+        x: 397
+        y: 85
         width: 123
         height: 123
       alignment: 9
@@ -314,11 +350,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Middle-blue
+      name: Middle-Blue
       rect:
         serializedVersion: 2
-        x: 265
-        y: 173
+        x: 911
+        y: 430
         width: 95
         height: 81
       alignment: 9
@@ -329,17 +365,17 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 24857771833803693
+      internalID: 4150348428267436015
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Middle-green
+      name: Middle-Green
       rect:
         serializedVersion: 2
-        x: 97
-        y: 31
+        x: 522
+        y: 124
         width: 84
         height: 84
       alignment: 9
@@ -350,17 +386,17 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: -5040113150081647737
+      internalID: 1161616585616214455
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Middle-pink
+      name: Middle-Pink
       rect:
         serializedVersion: 2
-        x: 264
-        y: 33
+        x: 397
+        y: 1
         width: 66
         height: 82
       alignment: 9
@@ -371,17 +407,17 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: -6508337405560825493
+      internalID: 7355458636312314610
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Middle-purp
+      name: Middle-Purple
       rect:
         serializedVersion: 2
-        x: 183
-        y: 31
+        x: 522
+        y: 38
         width: 79
         height: 84
       alignment: 9
@@ -392,17 +428,17 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 8852463621371353967
+      internalID: 4122280302945417666
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Middle-red
+      name: Middle-Red
       rect:
         serializedVersion: 2
-        x: 362
-        y: 199
+        x: 1
+        y: 21
         width: 91
         height: 55
       alignment: 9
@@ -413,17 +449,17 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: -3645458305144295275
+      internalID: -8742802933178227432
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Middle-yellow
+      name: Middle-Yellow
       rect:
         serializedVersion: 2
-        x: 1
-        y: 29
+        x: 911
+        y: 342
         width: 94
         height: 86
       alignment: 9
@@ -434,7 +470,28 @@ TextureImporter:
       tessellationDetail: -1
       bones: []
       spriteID: 
-      internalID: 8338942016579244173
+      internalID: 2957954368179480967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayArea-Base
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 358
+        width: 908
+        height: 153
+      alignment: 9
+      pivot: {x: 0.49889868, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: -4033606292994622618
       vertices: []
       indices: 
       edges: []

@@ -1,15 +1,16 @@
 public class GlobalScaler
 {
-    private GameState CurrentGameState;
+    //private GameState CurrentGameState;
 
-    void Awake() {
-        CurrentGameState = GameState.Loading;
+    void Awake() 
+    {
+        //CurrentGameState = GameState.Loading;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        CurrentGameState = GameState.Active;
+        //CurrentGameState = GameState.Active;
     }
 
     // Update is called once per frame

@@ -2,9 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameBlock : MonoBehaviour
+public class Block : MonoBehaviour
 {
-    private int BlockType;
+    private BlockType Type;
+    private SpriteRenderer BlockSprite;
+
+    public Block(BlockType type)
+    {
+        Type = type;
+
+        BlockSprite = this.gameObject.GetComponent<SpriteRenderer>();
+    }
 
     // Start is called before the first frame update
     void Start()

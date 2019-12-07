@@ -4,25 +4,25 @@ public enum GameState
 {
     Loading = 0, //[Root State] Loading: Incapable of action until loading completes
     Active = 1, //[Root State] Active: Capable of taking new action
-	InGame_Active = 1,
-	InGame_Paused = 2
+	MenuOpen = 2 //Menu Open: "Freeze" GameElements & Do not pass inputs
 }
 
 //Responsible for Saving/Loading & Handling Major Game Events
 public class MainController : MonoBehaviour
 {
-    private GameState CurrentGameState;
+    //private GameState CurrentGameState;
     public static Vector2 UnitResolution;
     public static int PPU = 100;
 
-    void Awake() {
-        CurrentGameState = GameState.Loading;
+    void Awake() 
+    {
+        //CurrentGameState = GameState.Loading;
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        CurrentGameState = GameState.Active;
+        //CurrentGameState = GameState.Active;
     }
 
     // Update is called once per frame
