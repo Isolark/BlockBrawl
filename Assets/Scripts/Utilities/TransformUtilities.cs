@@ -4,7 +4,7 @@ public static class TransformUtilities
 {
     public static void TransBySpriteDimensions(this GameObject target, Vector3 transPercents)
     {
-        TransBySpriteDimensions(target, target, transPercents);
+        target.TransBySpriteDimensions(target, transPercents);
     }
     public static void TransBySpriteDimensions(this GameObject target, GameObject reference, Vector3 transPercents)
     {

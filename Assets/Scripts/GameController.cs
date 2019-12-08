@@ -10,20 +10,17 @@ public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
 
     private InputActionHub InputHub;
 
-    void Awake() {
-        foreach(var block in FindObjectsOfType<Block>())
-        {
-            block.gameObject.TransBySpriteDimensions(new Vector3(-0.5f, 0.5f, 0));
-        }
-
-        PlayerCursor.gameObject.TransBySpriteDimensions(PlayerGameBoard.gameObject, new Vector3((float)-1/3, (float)0.5/12, 0));
+    // Start is called before the first frame update
+    void Start()
+    {
         PlayerCursor.LockToBoard(PlayerGameBoard.BoardSize, PlayerGameBoard.CursorStartPosition);
 
         GS_Current = GameState.Active;
+
+        InitializeBinding();
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void InitializeBinding()
     {
         InputHub = new InputActionHub();
         InputHub.Player.SetCallbacks(this);
@@ -63,6 +60,10 @@ public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
     // Update is called once per frame
     void Update()
     {
+        if(GS_Current == GameState.Active)
+        {
+            PlayerGameBoard.ManUpdate();
+        }
     }
 
     public void OnMove(InputAction.CallbackContext context)

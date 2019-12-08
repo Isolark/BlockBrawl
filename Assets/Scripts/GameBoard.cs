@@ -12,12 +12,10 @@ public class GameBoard : MonoBehaviour
     {
         //BlockContainer = new BlockContainer(5, 0.05f);
         CursorStartPosition = new Vector2(2, 2);
+        BlockContainer.Initialize(BoardSize);
     }
-
-    // Update is called once per frame
-    void Update()
+    public void ManUpdate()
     {
-        // If GameState is Active, move the BlocksUp
         BlockContainer.Move();
     }
 }

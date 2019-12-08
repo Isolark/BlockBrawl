@@ -24,14 +24,12 @@ public class GameCursor : MonoBehaviour
     // Set zero position (assumed set by gameCtrl) & bounds
     public void LockToBoard(Vector2 boardSize, Vector2 startingPosition)
     {
-        ZeroLocation = gameObject.transform.localPosition;
+        transform.localPosition = ZeroLocation = Vector2.zero;
+        transform.localPosition += new Vector3(-MoveDist * 2, 0.5f);
         Bounds = boardSize - new Vector2(1, 0);
         CurrentPosition = Vector2.zero;
 
         OnMove(startingPosition);
-
-        Debug.Log(this.GetComponent<SpriteRenderer>().sprite.name);
-        this.GetComponent<SpriteRenderer>().sprite.name = "Block-Blue";
     }
 
     public void OnConfirm(InputValue value)
@@ -51,9 +49,6 @@ public class GameCursor : MonoBehaviour
     public void OnMove(Vector2 value)
     {
         var nextPosition = CurrentPosition + value;
-
-            Debug.Log(nextPosition);
-            Debug.Log(CurrentPosition);
 
         if(nextPosition.x >= 0 && nextPosition.x < Bounds.x 
         && nextPosition.y >= 0 && nextPosition.y < Bounds.y)
