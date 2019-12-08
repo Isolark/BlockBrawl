@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    private BlockType Type;
+    public BlockType Type;
     private SpriteRenderer BlockSprite;
-
-    public Block(BlockType type)
-    {
-        Type = type;
-
-        BlockSprite = this.gameObject.GetComponent<SpriteRenderer>();
-    }
+    public static SpriteManager BlockSM;
+    public Vector3 BoardLoc;
 
     // Start is called before the first frame update
     void Start()
@@ -24,5 +19,21 @@ public class Block : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void Initialize(BlockType type, Vector2 location)
+    {
+        Type = type;
+        BoardLoc = location;
+
+        GetComponent<SpriteRenderer>().sprite = BlockSM.SpriteList.Find(x => x.name == "Block-" + type.ToString());;
+    }
+
+    public void Move(Vector3 moveVector)
+    {
+        BoardLoc += moveVector;
+
+        moveVector.Scale(new Vector3(GameController.GC.BlockDist, GameController.GC.BlockDist, 0));
+        transform.localPosition += moveVector;
     }
 }

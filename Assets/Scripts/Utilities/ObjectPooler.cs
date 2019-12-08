@@ -18,7 +18,12 @@ public class ObjectPooler : MonoBehaviour
     {
         //Singleton pattern
         if (OP == null) {
-            DontDestroyOnLoad(gameObject);
+            if(transform.parent.gameObject) {
+                DontDestroyOnLoad(transform.parent.gameObject);
+            } else {
+                DontDestroyOnLoad(gameObject);
+            }
+
             OP = this;
         }
         else if (OP != this) {
@@ -29,29 +34,38 @@ public class ObjectPooler : MonoBehaviour
         for(var x = 0; x < poolMaxSize; x++)
         {
             var obj = Instantiate(pooledObj);
-            obj.transform.SetParent(this.transform);
             obj.SetActive(false);
             pool.Add(obj);
         }
     }
 
-    public GameObject GetPooledObject()
+    public GameObject GetPooledObject(Transform parent = null)
     {
-        foreach(var obj in pool)
+        GameObject obj = null;
+
+        foreach(var tempObj in pool)
         {
-            if(!obj.activeSelf) { 
-                obj.SetActive(true);
-                return obj; 
+            if(!tempObj.activeSelf) { 
+                obj = tempObj;
+                break;
             }
         }
 
-        if(expandable) {
-            var obj = Instantiate(pooledObj);
-            obj.transform.SetParent(this.transform);
+        if(obj == null && expandable) 
+        {
+            obj = Instantiate(pooledObj);
             pool.Add(obj);
-            return obj;
         }
 
-        return null;
+        if(obj != null) {
+            obj.SetActive(true);
+
+            if(parent != null) { 
+                obj.transform.SetParent(parent);
+                obj.transform.localPosition = Vector2.zero;
+            }
+        }
+
+        return obj;
     }
 }
