@@ -7,8 +7,21 @@ public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
     public GameBoard PlayerGameBoard;
     public GameCursor PlayerCursor;
     public GameState GS_Current;
-
+    public float BlockDist;
     private InputActionHub InputHub;
+
+    public static GameController GC;
+
+    void Awake()
+    {
+        //Singleton pattern
+        if (GC == null) {
+            GC = this;
+        }
+        else if (GC != this) {
+            Destroy(gameObject);
+        }     
+    }
 
     // Start is called before the first frame update
     void Start()

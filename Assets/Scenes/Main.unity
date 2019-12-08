@@ -219,8 +219,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 181995532}
-  m_RootOrder: 1
+  m_Father: {fileID: 840835312}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &135582549
 MonoBehaviour:
@@ -234,11 +234,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a0b064a695670b4da78b31b6e8db6d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ZeroLocation: {x: 0, y: 0}
+  ZeroPosition: {x: 0, y: 0}
   Bounds: {x: 0, y: 0}
-  CurrentPosition: {x: 0, y: 0}
+  BoardLoc: {x: 0, y: 0}
   Padding: 0.08
-  MoveDist: 1
+  BlockDist: 0
+  AtTop: 0
 --- !u!1 &181995531
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,7 +268,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2140840348}
-  - {fileID: 135582548}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -718,6 +718,7 @@ MonoBehaviour:
   PlayerGameBoard: {fileID: 2140840349}
   PlayerCursor: {fileID: 135582549}
   GS_Current: 0
+  BlockDist: 1
 --- !u!4 &682472253
 Transform:
   m_ObjectHideFlags: 0
@@ -759,7 +760,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 135582548}
   m_Father: {fileID: 2140840348}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -775,14 +777,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a04d9a0811a11f45bb3fc15cc5023b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BlockPooler: {fileID: 0}
+  BlockPooler: {fileID: 2035138341}
+  Cursor: {fileID: 135582549}
   Bounds: {x: 0, y: 0}
   Types: 5
   StartingHeight: 5
-  BaseSpeed: 0.05
-  Speed: 0.05
+  BaseSpeed: 0.002
+  Speed: 0.002
   AtTop: 0
   InitialBlock_Y: 0
+  Target_Y: 0
 --- !u!1 &991943925
 GameObject:
   m_ObjectHideFlags: 0
@@ -1577,7 +1581,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1836191268}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 6, y: 12, z: 1}
   m_Children: []

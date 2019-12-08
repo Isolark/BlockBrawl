@@ -5,16 +5,19 @@ using UnityEngine;
 public class BlockContainer : MonoBehaviour
 {
     public ObjectPooler BlockPooler;
+    public GameCursor Cursor;
     public Vector2 Bounds;
     public int Types;
     public int StartingHeight;
     public float BaseSpeed;
     public float Speed;
+    private float BlockDist;
 
     public bool AtTop;
     public float InitialBlock_Y;
-    private float MinBlockY => BlockList.Select(x => x.transform.position.y).Min();
-    public IList<Block> BlockList;
+    public float Target_Y; //After reaching this Y, have moved up a full "level"
+    public IDictionary<Vector2, Block> BlockList;
+    private IDictionary<Vector2, Block> TmpBlockList = new Dictionary<Vector2, Block>(); //For transferring after moving up a "level"
 
     public BlockContainer(int types, int startingHeight, float startingSpeed)
     {
@@ -26,14 +29,24 @@ public class BlockContainer : MonoBehaviour
     void Awake()
     {
         AtTop = false;
-        InitialBlock_Y = -0.5f;
-        BlockPooler = GameObject.Find("BlockPooler").GetComponent<ObjectPooler>();
+        BlockList = new Dictionary<Vector2, Block>();
+
+        //BlockPooler = GameObject.Find("BlockPooler").GetComponent<ObjectPooler>();
+        //Cursor = GameObject.Find("GameCursor").GetComponent<GameCursor>();
         Block.BlockSM = GameObject.Find("BlockSM").GetComponent<SpriteManager>();
+    }
+
+    void Start()
+    {
+        BlockDist = GameController.GC.BlockDist;
+        InitialBlock_Y = -0.5f * BlockDist;
     }
 
     public void Initialize(Vector2 bounds)
     {
         Bounds = bounds;
+        Target_Y = transform.localPosition.y + GameController.GC.BlockDist;
+
         SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-1, 0, 0, 1});
     }
 
@@ -52,9 +65,10 @@ public class BlockContainer : MonoBehaviour
             {
                 var block = BlockPooler.GetPooledObject(transform).GetComponent<Block>();
                 var type = (BlockType)Random.Range(1, Types + 1);
+                var loc = new Vector2(col, row);
 
-                block.Initialize(type);
-                Debug.Log(InitialBlock_Y);
+                BlockList.Add(loc, block);
+                block.Initialize(type, loc);
                 block.gameObject.TransBySpriteDimensions(new Vector3(col - 2.5f, InitialBlock_Y + row, 0));
             }
         }
@@ -62,6 +76,44 @@ public class BlockContainer : MonoBehaviour
 
     public void Move()
     {
+        if(!AtTop)
+        {
+            var yPos = transform.localPosition.y;
 
+            if(yPos < Target_Y) 
+            {
+                //Reached next "level". Shift down & move all blocks up
+                if(yPos + Speed > Target_Y)
+                {
+                    //Shift container down
+                    transform.localPosition = new Vector3(0, Target_Y - BlockDist, 0);
+
+                    //Shift blocks up
+                    TmpBlockList = new Dictionary<Vector2, Block>();
+                    foreach(var block in BlockList)
+                    {
+                        var nextKey = block.Key + Vector2.up;
+                        
+                        if(nextKey.y >= Bounds.y)
+                        {
+                            AtTop = Cursor.AtTop = true;
+                        }
+
+                        TmpBlockList.Add(nextKey, block.Value);
+                        block.Value.Move(Vector2.up);
+                    }
+                    BlockList = TmpBlockList;
+
+                    SpawnRows();
+
+                    //Shift cursor up
+                    Cursor.OnMove(Vector2.up);
+                }
+                else
+                {
+                    transform.localPosition += new Vector3(0, Speed, 0);
+                }
+            }
+        }
     }
 }

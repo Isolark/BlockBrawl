@@ -7,6 +7,7 @@ public class Block : MonoBehaviour
     public BlockType Type;
     private SpriteRenderer BlockSprite;
     public static SpriteManager BlockSM;
+    public Vector3 BoardLoc;
 
     // Start is called before the first frame update
     void Start()
@@ -20,10 +21,19 @@ public class Block : MonoBehaviour
         
     }
 
-    public void Initialize(BlockType type)
+    public void Initialize(BlockType type, Vector2 location)
     {
         Type = type;
-        var sprite = BlockSM.SpriteList.Find(x => x.name == "Block-" + type.ToString());
-        GetComponent<SpriteRenderer>().sprite = sprite;
+        BoardLoc = location;
+
+        GetComponent<SpriteRenderer>().sprite = BlockSM.SpriteList.Find(x => x.name == "Block-" + type.ToString());;
+    }
+
+    public void Move(Vector3 moveVector)
+    {
+        BoardLoc += moveVector;
+
+        moveVector.Scale(new Vector3(GameController.GC.BlockDist, GameController.GC.BlockDist, 0));
+        transform.localPosition += moveVector;
     }
 }
