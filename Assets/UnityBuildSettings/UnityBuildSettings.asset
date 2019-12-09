@@ -48,8 +48,8 @@ MonoBehaviour:
     buildPath: $YEAR-$MONTH-$DAY/$BUILD/$RELEASE_TYPE/$PLATFORM/$ARCHITECTURE/$DISTRIBUTION
     openFolderPostBuild: 1
   _productParameters:
-    buildCounter: 4
-    lastGeneratedVersion: 1.0.1781.4135
+    buildCounter: 5
+    lastGeneratedVersion: 1.0.1802.4102
     version: 1.0.$DAYSSINCE("January 1, 2015").$SECONDS
     autoGenerate: 1
   _releaseTypeList:
@@ -96,7 +96,9 @@ MonoBehaviour:
       targetGroup: 13
     - enabled: 1
       distributionList:
-        distributions: []
+        distributions:
+        - distributionName: Universal
+          enabled: 1
       architectures:
       - target: 2
         name: OSX
@@ -108,11 +110,11 @@ MonoBehaviour:
       targetGroup: 1
   _projectConfigurations:
     configSet:
-      _Buckets: 03000000ffffffff0600000005000000000000000100000004000000
-      _HashCodes: 77a7aa19510e9f596d38f6476da5e235ed43d334ba55b93b2d6dfd48
-      _Next: ffffffffffffffffffffffff02000000ffffffffffffffffffffffff
-      _Count: 7
-      _Version: 7
+      _Buckets: ffffffffffffffffffffffff07000000ffffffff0600000005000000ffffffffffffffff03000000ffffffffffffffff04000000ffffffffffffffffffffffffffffffff
+      _HashCodes: 77a7aa19510e9f596d38f6476da5e235139b0965ed43d334ba55b93b2d6dfd48000000000000000000000000000000000000000000000000000000000000000000000000
+      _Next: ffffffffffffffffffffffffffffffffffffffff020000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000
+      _Count: 8
+      _Version: 8
       _FreeList: -1
       _FreeCount: 0
       _Keys:
@@ -120,11 +122,21 @@ MonoBehaviour:
       - Release/PC
       - Release/WebGL/WebGL
       - Release/WebGL
+      - Release/OSX/OSX/Universal
       - Release/OSX/OSX
       - Release/OSX
       - Release
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
+      - 
       _Values:
-      - enabled: 0
+      - enabled: 1
         childKeys: []
       - enabled: 1
         childKeys:
@@ -134,8 +146,11 @@ MonoBehaviour:
       - enabled: 1
         childKeys:
         - Release/WebGL/WebGL
-      - enabled: 0
+      - enabled: 1
         childKeys: []
+      - enabled: 1
+        childKeys:
+        - Release/OSX/OSX/Universal
       - enabled: 1
         childKeys:
         - Release/OSX/OSX
@@ -144,6 +159,24 @@ MonoBehaviour:
         - Release/PC
         - Release/WebGL
         - Release/OSX
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys: []
+      - enabled: 1
+        childKeys: []
     showViewOptions: 0
     showConfigs: 0
     showBuildInfo: 0
