@@ -5,7 +5,6 @@ using UnityEngine.InputSystem;
 public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
 {
     public GameBoard PlayerGameBoard;
-    public GameCursor PlayerCursor;
     public GameState GS_Current;
     public float BlockDist;
     private InputActionHub InputHub;
@@ -26,10 +25,7 @@ public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
     // Start is called before the first frame update
     void Start()
     {
-        PlayerCursor.LockToBoard(PlayerGameBoard.BoardSize, PlayerGameBoard.CursorStartPosition);
-
         GS_Current = GameState.Active;
-
         InitializeBinding();
     }
 
@@ -39,16 +35,16 @@ public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
         InputHub.Player.SetCallbacks(this);
         InputHub.Player.Enable();
 
-        var x = new InputBinding();
-        x.GenerateId();
-        x.path = "<Keyboard>/m";
+        // var x = new InputBinding();
+        // x.GenerateId();
+        // x.path = "<Keyboard>/m";
 
-        var a = new InputAction("confirm");
-        a.AddBinding(x);
+        // var a = new InputAction("confirm");
+        // a.AddBinding(x);
 
-        InputHub.Player.Confirm.ChangeBindingWithId("f7bd21ef-4a6c-4172-8269-c6e6012596c3").To(x);
+        // InputHub.Player.Confirm.ChangeBindingWithId("f7bd21ef-4a6c-4172-8269-c6e6012596c3").To(x);
 
-        InputHub.Player.SetCallbacks(this);
+        // InputHub.Player.SetCallbacks(this);
         // InputHub.Player.Confirm.Disable();
         // InputHub.Player.Confirm.PerformInteractiveRebinding()
         //     .WithControlsExcluding("Mouse")
@@ -81,17 +77,21 @@ public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
 
     public void OnMove(InputAction.CallbackContext context)
     {
+        //Isolate in game layer, not directly to cursor
         if(!context.performed) return;
         if(GS_Current == GameState.Active)
         {
-            PlayerCursor.SendMessage("OnMove", context.ReadValue<Vector2>());
+            PlayerGameBoard.SendMessage("OnMove", context.ReadValue<Vector2>());
         }
     }
 
     public void OnConfirm(InputAction.CallbackContext context)
     {
         if(!context.performed) return;
-        Debug.Log(context.control.path);
+        if(GS_Current == GameState.Active)
+        {
+            PlayerGameBoard.SendMessage("OnConfirm");
+        }
     }
 
     public void OnCancel(InputAction.CallbackContext context)
@@ -99,19 +99,19 @@ public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
         if(!context.performed) return;
     }
 
-    public void OnConfirm(InputValue value)
-    {
-        if(GS_Current == GameState.Active)
-        {
-            PlayerCursor.SendMessage("OnConfirm", value);
-        }
-    }
+    // public void OnConfirm(InputValue value)
+    // {
+    //     if(GS_Current == GameState.Active)
+    //     {
+    //         PlayerCursor.SendMessage("OnConfirm", value);
+    //     }
+    // }
 
-    public void OnCancel(InputValue value)
-    {
-        if(GS_Current == GameState.Active)
-        {
-            PlayerCursor.SendMessage("OnCancel", value);
-        }
-    }
+    // public void OnCancel(InputValue value)
+    // {
+    //     if(GS_Current == GameState.Active)
+    //     {
+    //         PlayerCursor.SendMessage("OnCancel", value);
+    //     }
+    // }
 }
