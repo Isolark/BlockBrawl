@@ -33,7 +33,7 @@ public class BlockContainer : MonoBehaviour
 
         //BlockPooler = GameObject.Find("BlockPooler").GetComponent<ObjectPooler>();
         //Cursor = GameObject.Find("GameCursor").GetComponent<GameCursor>();
-        Block.BlockSM = GameObject.Find("BlockSM").GetComponent<SpriteManager>();
+        BlockExtensions.BlockSL = GameObject.Find("BlockSL").GetComponent<SpriteLibrary>();
     }
 
     void Start()
@@ -50,9 +50,8 @@ public class BlockContainer : MonoBehaviour
         SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-1, 0, 0, 1});
     }
 
-    public void SpawnRows(int numOfRows = 1, int numOfCols = 6, IList<int> rowModVals = null)
+    public void SpawnRows(int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null)
     {
-        //var 
         for(var col = 0; col < numOfCols; col++)
         {
             var modRows = numOfRows;
@@ -61,14 +60,14 @@ public class BlockContainer : MonoBehaviour
                 modRows += rowModVals[Random.Range(0, rowModVals.Count-1)];
             }
 
-            for(var row = 0; row < modRows; row++)
+            for(var row = startingRow; row < modRows; row++)
             {
                 var block = BlockPooler.GetPooledObject(transform).GetComponent<Block>();
                 var type = (BlockType)Random.Range(1, Types + 1);
                 var loc = new Vector2(col, row);
 
                 BlockList.Add(loc, block);
-                block.Initialize(type, loc);
+                block.Initialize(type, loc, (row > 0 && row <= 12));
                 block.gameObject.TransBySpriteDimensions(new Vector3(col - 2.5f, InitialBlock_Y + row, 0));
             }
         }
@@ -101,6 +100,7 @@ public class BlockContainer : MonoBehaviour
 
                         TmpBlockList.Add(nextKey, block.Value);
                         block.Value.Move(Vector2.up);
+                        block.Value.OnEnterBoard();
                     }
                     BlockList = TmpBlockList;
 
@@ -115,5 +115,23 @@ public class BlockContainer : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void OnCursorConfirm(Vector2 cursorLoc)
+    {
+        Block leftBlock, rightBlock;
+        BlockList.TryGetValue(cursorLoc, out leftBlock);
+        BlockList.TryGetValue(cursorLoc + Vector2.right, out rightBlock);
+        
+        if(leftBlock != null) {
+            leftBlock.Move(Vector2.right);
+        }
+        if(rightBlock != null) {
+            rightBlock.Move(Vector2.left);
+        }
+
+        //OnComplete(block, block)
+        BlockList[rightBlock.BoardLoc] = rightBlock;
+        BlockList[leftBlock.BoardLoc] = leftBlock;
     }
 }
