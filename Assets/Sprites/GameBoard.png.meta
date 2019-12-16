@@ -47,6 +47,12 @@ TextureImporter:
   - first:
       213: 21300028
     second: PlayArea-Base
+  - first:
+      213: -8900117008291763483
+    second: Cursor-Corner
+  - first:
+      213: 5139304775521806484
+    second: Cursor-Top
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -146,8 +152,8 @@ TextureImporter:
       name: Block-Blue
       rect:
         serializedVersion: 2
-        x: 1
-        y: 210
+        x: 258
+        y: 54
         width: 130
         height: 130
       alignment: 0
@@ -157,7 +163,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ec832f112ac565542878983ab5534b9a
+      spriteID: 
       internalID: 21300000
       vertices: []
       indices: 
@@ -167,8 +173,8 @@ TextureImporter:
       name: Block-Green
       rect:
         serializedVersion: 2
-        x: 1
-        y: 78
+        x: 288
+        y: 210
         width: 130
         height: 130
       alignment: 0
@@ -178,7 +184,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8ec41326c5dd0604f863d96912a62cd6
+      spriteID: 
       internalID: 21300002
       vertices: []
       indices: 
@@ -188,8 +194,8 @@ TextureImporter:
       name: Block-Purple
       rect:
         serializedVersion: 2
-        x: 133
-        y: 210
+        x: 390
+        y: 78
         width: 130
         height: 130
       alignment: 0
@@ -199,7 +205,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 11f41c52584dc5e4996fd1aeb4c55c3e
+      spriteID: 
       internalID: 21300004
       vertices: []
       indices: 
@@ -209,8 +215,8 @@ TextureImporter:
       name: Block-Red
       rect:
         serializedVersion: 2
-        x: 133
-        y: 78
+        x: 420
+        y: 210
         width: 130
         height: 130
       alignment: 0
@@ -220,7 +226,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 769e58e0869156b43873264c952fc362
+      spriteID: 
       internalID: 21300006
       vertices: []
       indices: 
@@ -230,28 +236,7 @@ TextureImporter:
       name: Block-Yellow
       rect:
         serializedVersion: 2
-        x: 265
-        y: 210
-        width: 130
-        height: 130
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 15d9739980e87f64bba96e6b32df2f15
-      internalID: 21300008
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Block
-      rect:
-        serializedVersion: 2
-        x: 265
+        x: 522
         y: 78
         width: 130
         height: 130
@@ -262,17 +247,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6e9ab64582483314aa024f73187462cc
-      internalID: 21300010
+      spriteID: 
+      internalID: 21300008
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cursor-1
+      name: Block
       rect:
         serializedVersion: 2
-        x: 397
+        x: 552
         y: 210
         width: 130
         height: 130
@@ -283,7 +268,28 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9db866d55803f8c4dae0b28801261687
+      spriteID: 
+      internalID: 21300010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cursor-1
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 186
+        width: 285
+        height: 154
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
       internalID: 21300012
       vertices: []
       indices: 
@@ -293,19 +299,61 @@ TextureImporter:
       name: Cursor-2
       rect:
         serializedVersion: 2
-        x: 397
-        y: 85
-        width: 123
-        height: 123
+        x: 1
+        y: 45
+        width: 255
+        height: 139
       alignment: 9
-      pivot: {x: 0.49593496, y: 0.50406504}
+      pivot: {x: 0.5, y: 0.4964029}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b58d9f94d0282f84eacfbfe45db8a393
+      spriteID: 
       internalID: 21300014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cursor-Corner
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 21
+        width: 55
+        height: 55
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: -8900117008291763483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cursor-Top
+      rect:
+        serializedVersion: 2
+        x: 483
+        y: 21
+        width: 82
+        height: 55
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: 5139304775521806484
       vertices: []
       indices: 
       edges: []
@@ -325,7 +373,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d5f21e36055f0684baa6bf8dc1555a89
+      spriteID: 
       internalID: 21300016
       vertices: []
       indices: 
@@ -335,7 +383,7 @@ TextureImporter:
       name: Middle-Green
       rect:
         serializedVersion: 2
-        x: 522
+        x: 654
         y: 124
         width: 84
         height: 84
@@ -346,7 +394,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 39e3a06b4264a2845a76a87bb22ac283
+      spriteID: 
       internalID: 21300018
       vertices: []
       indices: 
@@ -356,8 +404,8 @@ TextureImporter:
       name: Middle-Pink
       rect:
         serializedVersion: 2
-        x: 397
-        y: 1
+        x: 735
+        y: 40
         width: 66
         height: 82
       alignment: 9
@@ -367,7 +415,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7e2dae9fab173eb408b2ac14e94b8467
+      spriteID: 
       internalID: 21300020
       vertices: []
       indices: 
@@ -377,7 +425,7 @@ TextureImporter:
       name: Middle-Purple
       rect:
         serializedVersion: 2
-        x: 522
+        x: 654
         y: 38
         width: 79
         height: 84
@@ -388,7 +436,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c35d89f88883c494b9a3812f36e9bcde
+      spriteID: 
       internalID: 21300022
       vertices: []
       indices: 
@@ -398,7 +446,7 @@ TextureImporter:
       name: Middle-Red
       rect:
         serializedVersion: 2
-        x: 1
+        x: 390
         y: 21
         width: 91
         height: 55
@@ -409,7 +457,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 55e0376093410f44faa5b0e1335bc380
+      spriteID: 
       internalID: 21300024
       vertices: []
       indices: 
@@ -430,7 +478,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 69ffbe1785317e44ab9144fbdc930db0
+      spriteID: 
       internalID: 21300026
       vertices: []
       indices: 
@@ -451,7 +499,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8f2503b623fdc9a4a8ee247b46701810
+      spriteID: 
       internalID: 21300028
       vertices: []
       indices: 
