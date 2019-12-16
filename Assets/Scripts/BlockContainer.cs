@@ -9,8 +9,12 @@ public class BlockContainer : MonoBehaviour
     public Vector2 Bounds;
     public int Types;
     public int StartingHeight;
-    public float BaseSpeed;
     public float Speed;
+    public float BaseSpeed;
+    public float ManualRaiseSpeed;
+
+    private bool IsHoldingTrigger;
+    private bool IsManuallyRaising;
     private float BlockDist;
 
     public bool AtTop;
@@ -84,8 +88,11 @@ public class BlockContainer : MonoBehaviour
                 //Reached next "level". Shift down & move all blocks up
                 if(yPos + Speed > Target_Y)
                 {
+                    transform.localPosition.Set(transform.localPosition.x, Target_Y, 1);
+                    Target_Y++;
+
                     //Shift container down
-                    transform.localPosition = new Vector3(0, Target_Y - BlockDist, 0);
+                    //transform.localPosition = new Vector3(0, Target_Y - BlockDist, 0);
 
                     //Shift blocks up
                     TmpBlockList = new Dictionary<Vector2, Block>();
@@ -99,15 +106,25 @@ public class BlockContainer : MonoBehaviour
                         }
 
                         TmpBlockList.Add(nextKey, block.Value);
-                        block.Value.Move(Vector2.up);
+                        //block.Value.InstantMove(Vector2.up);
+                        block.Value.MoveBoardLoc(Vector2.up);
                         block.Value.OnEnterBoard();
                     }
                     BlockList = TmpBlockList;
 
+                    InitialBlock_Y--;
+
                     SpawnRows();
 
                     //Shift cursor up
-                    Cursor.OnMove(Vector2.up);
+                    //Cursor.OnMove(Vector2.up);
+                    Cursor.MoveBoardLoc(Vector2.up);
+
+                    //If was manually moving faster, stop & wait half a second before next check
+                    if(IsManuallyRaising) {
+                        Speed = BaseSpeed;
+                        GameController.GC.AddTimedAction(UnlockTrigger, 0.05f);
+                    }
                 }
                 else
                 {
@@ -117,21 +134,61 @@ public class BlockContainer : MonoBehaviour
         }
     }
 
+    private void UnlockTrigger()
+    {
+        if(IsHoldingTrigger) {
+            Speed = ManualRaiseSpeed;
+        } else {
+            IsManuallyRaising = false;
+        }
+    }
+
     public void OnCursorConfirm(Vector2 cursorLoc)
     {
         Block leftBlock, rightBlock;
-        BlockList.TryGetValue(cursorLoc, out leftBlock);
-        BlockList.TryGetValue(cursorLoc + Vector2.right, out rightBlock);
+
+        var leftBlockExists = BlockList.TryGetValue(cursorLoc, out leftBlock);
+        if(leftBlockExists && !leftBlock.IsMoveable) return;
+
+        var rightBlockExists = BlockList.TryGetValue(cursorLoc + Vector2.right, out rightBlock);
+        if(rightBlockExists && !rightBlock.IsMoveable) return;
         
-        if(leftBlock != null) {
+        Vector2 leftInitialLoc = new Vector2();
+        Vector2 rightInitialLoc = new Vector2();
+
+        if(leftBlockExists) {
+            leftInitialLoc = leftBlock.BoardLoc;
             leftBlock.Move(Vector2.right);
         }
-        if(rightBlock != null) {
+        if(rightBlockExists) {
+            rightInitialLoc = rightBlock.BoardLoc;
+            rightBlock.transform.localPosition.Set(rightBlock.transform.localPosition.x, rightBlock.transform.localPosition.y, 0);
             rightBlock.Move(Vector2.left);
+            
         }
 
-        //OnComplete(block, block)
-        BlockList[rightBlock.BoardLoc] = rightBlock;
-        BlockList[leftBlock.BoardLoc] = leftBlock;
+        if(rightBlockExists) {
+            if(!leftBlockExists) BlockList.Remove(rightInitialLoc);
+            BlockList[rightBlock.BoardLoc] = rightBlock; //TODO: Make this OnComplete for matching
+        }
+        if(leftBlockExists) {
+            if(!rightBlockExists) BlockList.Remove(leftInitialLoc);
+            BlockList[leftBlock.BoardLoc] = leftBlock; //TODO: Make this OnComplete for matching
+        }
+    }
+
+    //Start or Stop manual speed increase
+    public void OnTrigger(bool performed)
+    {
+        if(performed && !IsHoldingTrigger) {
+            IsHoldingTrigger = true;
+
+            if(!IsManuallyRaising) {  
+                IsManuallyRaising = true;
+                Speed = ManualRaiseSpeed;
+            } 
+        } else if(!performed && IsHoldingTrigger) {
+            IsHoldingTrigger = false;
+        }
     }
 }

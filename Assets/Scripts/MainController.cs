@@ -8,7 +8,7 @@ public enum GameState
 }
 
 //Responsible for Saving/Loading & Handling Major Game Events
-public class MainController : MonoBehaviour
+public class MainController : BaseController
 {
     //private GameState CurrentGameState;
     public static Vector2 UnitResolution;

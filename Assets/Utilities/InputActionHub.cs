@@ -41,6 +41,14 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Trigger"",
+                    ""type"": ""Button"",
+                    ""id"": ""8285ebfa-7f19-481e-8c99-d7e2f48ef998"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -186,6 +194,28 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2a9edc77-4002-44e2-b905-9f61aab3d6d9"",
+                    ""path"": ""<Keyboard>/u"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Trigger"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c376fcee-6cc4-440a-b3e4-255d20925496"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Trigger"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -197,6 +227,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Confirm = m_Player.FindAction("Confirm", throwIfNotFound: true);
         m_Player_Cancel = m_Player.FindAction("Cancel", throwIfNotFound: true);
+        m_Player_Trigger = m_Player.FindAction("Trigger", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -249,6 +280,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Confirm;
     private readonly InputAction m_Player_Cancel;
+    private readonly InputAction m_Player_Trigger;
     public struct PlayerActions
     {
         private InputActionHub m_Wrapper;
@@ -256,6 +288,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Confirm => m_Wrapper.m_Player_Confirm;
         public InputAction @Cancel => m_Wrapper.m_Player_Cancel;
+        public InputAction @Trigger => m_Wrapper.m_Player_Trigger;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -274,6 +307,9 @@ public class InputActionHub : IInputActionCollection, IDisposable
                 Cancel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
                 Cancel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
                 Cancel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
+                Trigger.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTrigger;
+                Trigger.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTrigger;
+                Trigger.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTrigger;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -287,6 +323,9 @@ public class InputActionHub : IInputActionCollection, IDisposable
                 Cancel.started += instance.OnCancel;
                 Cancel.performed += instance.OnCancel;
                 Cancel.canceled += instance.OnCancel;
+                Trigger.started += instance.OnTrigger;
+                Trigger.performed += instance.OnTrigger;
+                Trigger.canceled += instance.OnTrigger;
             }
         }
     }
@@ -296,5 +335,6 @@ public class InputActionHub : IInputActionCollection, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnConfirm(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+        void OnTrigger(InputAction.CallbackContext context);
     }
 }
