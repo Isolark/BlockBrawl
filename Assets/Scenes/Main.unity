@@ -704,6 +704,11 @@ MonoBehaviour:
   - {fileID: 21300004, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
   - {fileID: 21300006, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
   - {fileID: 21300008, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
+  - {fileID: 21300016, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
+  - {fileID: 21300018, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
+  - {fileID: 21300022, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
+  - {fileID: 21300024, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
+  - {fileID: 21300026, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
 --- !u!4 &530665945
 Transform:
   m_ObjectHideFlags: 0
@@ -814,7 +819,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BlockPooler: {fileID: 2035138341}
   Cursor: {fileID: 135582549}
-  Bounds: {x: 0, y: 0}
+  BoardSize: {x: 0, y: 0}
   Types: 5
   StartingHeight: 2
   Speed: 0.002
@@ -1798,7 +1803,7 @@ SpriteMask:
   m_BackSortingLayer: 1
   m_FrontSortingOrder: 1
   m_BackSortingOrder: -1
-  m_IsCustomRangeActive: 1
+  m_IsCustomRangeActive: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2035138339
 GameObject:

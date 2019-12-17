@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class BlockContainer : MonoBehaviour
 {
     public ObjectPooler BlockPooler;
     public GameCursor Cursor;
-    public Vector2 Bounds;
+    public Vector2 BoardSize;
     public int Types;
     public int StartingHeight;
     public float Speed;
@@ -46,9 +45,9 @@ public class BlockContainer : MonoBehaviour
         InitialBlock_Y = -0.5f * BlockDist;
     }
 
-    public void Initialize(Vector2 bounds)
+    public void Initialize(Vector2 boardSize)
     {
-        Bounds = bounds;
+        BoardSize = boardSize;
         Target_Y = transform.localPosition.y + GameController.GC.BlockDist;
 
         SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-1, 0, 0, 1});
@@ -98,28 +97,40 @@ public class BlockContainer : MonoBehaviour
                     TmpBlockList = new Dictionary<Vector2, Block>();
                     foreach(var block in BlockList)
                     {
+                        if(block.Value.HasIterated) continue;
+
+                        block.Value.HasIterated = true;
+
                         var nextKey = block.Key + Vector2.up;
                         
-                        if(nextKey.y >= Bounds.y)
+                        if(nextKey.y >= BoardSize.y)
                         {
                             AtTop = Cursor.AtTop = true;
                         }
 
                         TmpBlockList.Add(nextKey, block.Value);
                         //block.Value.InstantMove(Vector2.up);
-                        block.Value.MoveBoardLoc(Vector2.up);
+                        block.Value.MoveBoardLoc(Vector2.up, true);
                         block.Value.OnEnterBoard();
                     }
+
                     BlockList = TmpBlockList;
+
+                    foreach(var block in BlockList) {
+                        block.Value.HasIterated = false;
+                    }
 
                     InitialBlock_Y--;
 
                     SpawnRows();
 
                     //Shift cursor up
-                    //Cursor.OnMove(Vector2.up);
                     Cursor.MoveBoardLoc(Vector2.up);
-
+                    if(!AtTop && Cursor.BoardLoc.y >= BoardSize.y) {
+                        Cursor.OnMove(Vector2.down);
+                    }
+                    //Cursor.OnMove(Vector2.up);
+                    
                     //If was manually moving faster, stop & wait half a second before next check
                     if(IsManuallyRaising) {
                         Speed = BaseSpeed;
@@ -147,33 +158,31 @@ public class BlockContainer : MonoBehaviour
     {
         Block leftBlock, rightBlock;
 
+        //Find Blocks. If either immobile, return
         var leftBlockExists = BlockList.TryGetValue(cursorLoc, out leftBlock);
         if(leftBlockExists && !leftBlock.IsMoveable) return;
 
         var rightBlockExists = BlockList.TryGetValue(cursorLoc + Vector2.right, out rightBlock);
         if(rightBlockExists && !rightBlock.IsMoveable) return;
         
-        Vector2 leftInitialLoc = new Vector2();
-        Vector2 rightInitialLoc = new Vector2();
-
+        //Move Blocks if they exist
         if(leftBlockExists) {
-            leftInitialLoc = leftBlock.BoardLoc;
-            leftBlock.Move(Vector2.right);
+            if(!rightBlockExists) {
+                leftBlock.Move(Vector2.right, callback: () => { BlockList.Remove(leftBlock.PrevBoardLoc); });
+            } else {
+                leftBlock.Move(Vector2.right);
+            }
+
+            BlockList[leftBlock.BoardLoc] = leftBlock;
         }
         if(rightBlockExists) {
-            rightInitialLoc = rightBlock.BoardLoc;
-            rightBlock.transform.localPosition.Set(rightBlock.transform.localPosition.x, rightBlock.transform.localPosition.y, 0);
-            rightBlock.Move(Vector2.left);
-            
-        }
+            if(!leftBlockExists) {
+                rightBlock.Move(Vector2.left, callback: () => { BlockList.Remove(rightBlock.PrevBoardLoc); });
+            } else {
+                rightBlock.Move(Vector2.left, bumpOrder: true);
+            }
 
-        if(rightBlockExists) {
-            if(!leftBlockExists) BlockList.Remove(rightInitialLoc);
-            BlockList[rightBlock.BoardLoc] = rightBlock; //TODO: Make this OnComplete for matching
-        }
-        if(leftBlockExists) {
-            if(!rightBlockExists) BlockList.Remove(leftInitialLoc);
-            BlockList[leftBlock.BoardLoc] = leftBlock; //TODO: Make this OnComplete for matching
+            BlockList[rightBlock.BoardLoc] = rightBlock;
         }
     }
 
