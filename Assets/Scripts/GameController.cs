@@ -2,10 +2,9 @@
 using UnityEngine.InputSystem;
 
 //Parent controller for gameplay. Passes on inputs to relevant game objects
-public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
+public class GameController : BaseController, InputActionHub.IPlayerActions
 {
     public GameBoard PlayerGameBoard;
-    public GameState GS_Current;
     public float BlockDist;
     private InputActionHub InputHub;
 
@@ -98,6 +97,16 @@ public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
     {
         if(!context.performed) return;
     }
+
+    public void OnTrigger(InputAction.CallbackContext context)
+    {
+        if(!context.performed && !context.canceled) return;
+        if(GS_Current == GameState.Active)
+        {
+            PlayerGameBoard.SendMessage("OnTrigger", context.performed);
+        }
+    }
+
 
     // public void OnConfirm(InputValue value)
     // {

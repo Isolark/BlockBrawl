@@ -47,6 +47,12 @@ TextureImporter:
   - first:
       213: 21300028
     second: PlayArea-Base
+  - first:
+      213: -8900117008291763483
+    second: Cursor-Corner
+  - first:
+      213: 5139304775521806484
+    second: Cursor-Top
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -146,8 +152,8 @@ TextureImporter:
       name: Block-Blue
       rect:
         serializedVersion: 2
-        x: 1
-        y: 210
+        x: 258
+        y: 54
         width: 130
         height: 130
       alignment: 0
@@ -167,8 +173,8 @@ TextureImporter:
       name: Block-Green
       rect:
         serializedVersion: 2
-        x: 1
-        y: 78
+        x: 288
+        y: 210
         width: 130
         height: 130
       alignment: 0
@@ -188,8 +194,8 @@ TextureImporter:
       name: Block-Purple
       rect:
         serializedVersion: 2
-        x: 133
-        y: 210
+        x: 390
+        y: 78
         width: 130
         height: 130
       alignment: 0
@@ -209,8 +215,8 @@ TextureImporter:
       name: Block-Red
       rect:
         serializedVersion: 2
-        x: 133
-        y: 78
+        x: 420
+        y: 210
         width: 130
         height: 130
       alignment: 0
@@ -230,8 +236,8 @@ TextureImporter:
       name: Block-Yellow
       rect:
         serializedVersion: 2
-        x: 265
-        y: 210
+        x: 522
+        y: 78
         width: 130
         height: 130
       alignment: 0
@@ -251,8 +257,8 @@ TextureImporter:
       name: Block
       rect:
         serializedVersion: 2
-        x: 265
-        y: 78
+        x: 552
+        y: 210
         width: 130
         height: 130
       alignment: 0
@@ -272,10 +278,10 @@ TextureImporter:
       name: Cursor-1
       rect:
         serializedVersion: 2
-        x: 397
-        y: 210
-        width: 130
-        height: 130
+        x: 1
+        y: 186
+        width: 285
+        height: 154
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -293,12 +299,12 @@ TextureImporter:
       name: Cursor-2
       rect:
         serializedVersion: 2
-        x: 397
-        y: 85
-        width: 123
-        height: 123
+        x: 1
+        y: 45
+        width: 255
+        height: 139
       alignment: 9
-      pivot: {x: 0.49593496, y: 0.50406504}
+      pivot: {x: 0.5, y: 0.4964029}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -306,6 +312,48 @@ TextureImporter:
       bones: []
       spriteID: 
       internalID: 21300014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cursor-Corner
+      rect:
+        serializedVersion: 2
+        x: 567
+        y: 21
+        width: 55
+        height: 55
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: -8900117008291763483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cursor-Top
+      rect:
+        serializedVersion: 2
+        x: 483
+        y: 21
+        width: 82
+        height: 55
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: 5139304775521806484
       vertices: []
       indices: 
       edges: []
@@ -335,7 +383,7 @@ TextureImporter:
       name: Middle-Green
       rect:
         serializedVersion: 2
-        x: 522
+        x: 654
         y: 124
         width: 84
         height: 84
@@ -356,8 +404,8 @@ TextureImporter:
       name: Middle-Pink
       rect:
         serializedVersion: 2
-        x: 397
-        y: 1
+        x: 735
+        y: 40
         width: 66
         height: 82
       alignment: 9
@@ -377,7 +425,7 @@ TextureImporter:
       name: Middle-Purple
       rect:
         serializedVersion: 2
-        x: 522
+        x: 654
         y: 38
         width: 79
         height: 84
@@ -398,7 +446,7 @@ TextureImporter:
       name: Middle-Red
       rect:
         serializedVersion: 2
-        x: 1
+        x: 390
         y: 21
         width: 91
         height: 55

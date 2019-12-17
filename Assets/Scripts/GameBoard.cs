@@ -24,6 +24,11 @@ public class GameBoard : MonoBehaviour
         BlockContainer.OnCursorConfirm(Cursor.BoardLoc);
     }
 
+    public void OnTrigger(bool performed)
+    {
+        BlockContainer.OnTrigger(performed);
+    }
+
     public void OnMove(Vector2 value)
     {
         Cursor.OnMove(value);

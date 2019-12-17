@@ -48,6 +48,11 @@ public class GameCursor : MonoBehaviour
         OnMove(v);
     }
 
+    public void MoveBoardLoc(Vector2 value)
+    {
+        BoardLoc = BoardLoc + value;
+    }
+
     public void OnMove(Vector2 value)
     {
         var nextPosition = BoardLoc + value;
