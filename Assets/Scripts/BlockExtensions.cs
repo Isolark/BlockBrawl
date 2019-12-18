@@ -58,9 +58,9 @@ public static class BlockExtensions
         var targetPosition = block.transform.localPosition + moveVector;
 
         if(callback != null) {
-            GameController.GC.TransformManager.AddTimedPositionTransform(block.gameObject, targetPosition, 0.1f, () => { block.OnFinishMove(); callback(); });
+            GameController.GC.TransformManager.Add_TimedLinearPos_Transform(block.gameObject, targetPosition, 0.1f, () => { block.OnFinishMove(); callback(); });
         } else {
-            GameController.GC.TransformManager.AddTimedPositionTransform(block.gameObject, targetPosition, 0.1f, block.OnFinishMove);
+            GameController.GC.TransformManager.Add_TimedLinearPos_Transform(block.gameObject, targetPosition, 0.1f, block.OnFinishMove);
         }
 
         block.SetStates(false);

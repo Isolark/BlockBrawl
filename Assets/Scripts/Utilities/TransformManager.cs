@@ -10,6 +10,7 @@ public class TransformManager : MonoBehaviour
     private IList<TransformItem> DeletionList;
 
     private bool Paused;
+    private float PrevTime;
 
     void Start()
     {
@@ -25,24 +26,27 @@ public class TransformManager : MonoBehaviour
 
     public void Pause()
     {
-        BaseController.FixedUpdateDelegate -= OnFixedUpdate;
+        BaseController.FixedUpdateDelegate -= OnUpdate;
         Paused = true;
     }
 
     public void Unpause()
     {
-        BaseController.FixedUpdateDelegate += OnFixedUpdate;
+        BaseController.FixedUpdateDelegate += OnUpdate;
         Paused = false;
     }
 
-    public void AddTimedPositionTransform(GameObject target, Vector2 pFinal, float timeDelta, Action callback = null)
+    public void Add_TimedLinearPos_Transform(GameObject target, Vector2 pFinal, float timeDelta, Action callback = null)
     {
-        TransformItemList.Add(new TransformItem(target, pFinal, timeDelta, callback));
+        TransformItemList.Add(new LinearTransformItem(target, pFinal, timeDelta, callback:callback));
     }
 
-    
+    public void Add_ManualPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, float timeDelta, Action callback = null)
+    {
+        TransformItemList.Add(new ManualTransformItem(target, pFinal, pVelocity, pAcceleration, callback:callback));
+    }
 
-    private void OnFixedUpdate()
+    private void OnUpdate()
     {
         if(Paused) return;
 
@@ -62,40 +66,21 @@ public class TransformManager : MonoBehaviour
     }
 }
 
-public class TransformItem
+public class ManualTransformItem : TransformItem
 {
-    private GameObject Target;
-    private Vector2 P_Final;
     private Vector2 P_Velocity;
     private Vector2 P_Acceleration;
-    private Action Callback;
 
-    public TransformItem(GameObject target, Vector2 pFinal, Vector2 pVeloc, Vector2 pAccel)
+    public ManualTransformItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Action callback = null) : base(target, pFinal, callback)
     {
-        Target = target;
-        P_Final = pFinal;
-        P_Velocity = pVeloc;
-        P_Acceleration = pAccel;
+        P_Velocity = pVelocity;
+        P_Acceleration = pAcceleration;
     }
 
-    public TransformItem(GameObject target, Vector2 pFinal, float timeDelta, Action callback = null)
+    override public bool OnMove()
     {
-        Target = target;
-        P_Final = pFinal;
-
-        //Calculate (Linear) Velocity
-        var pCurrent = new Vector2(target.transform.localPosition.x, target.transform.localPosition.y);
-        var xVelocity = (pFinal.x - pCurrent.x) / timeDelta;
-        var yVelocity = (pFinal.y - pCurrent.y) / timeDelta;
-
-        P_Velocity = new Vector2(xVelocity, yVelocity);
-
-        Callback = callback;
-    }
-
-    public bool OnMove()
-    {
-        var deltaVector = new Vector3(P_Velocity.x * Time.fixedDeltaTime, P_Velocity.y * Time.fixedDeltaTime, 0);
+        var t = Time.deltaTime;
+        var deltaVector = new Vector3(P_Velocity.x * t, P_Velocity.y * t, 0);
         var nextVector = Target.transform.localPosition + deltaVector;
 
         if(P_Velocity.x > 0 && nextVector.x >= P_Final.x || 
@@ -111,7 +96,58 @@ public class TransformItem
         }
 
         Target.transform.localPosition = nextVector;
+        P_Velocity += P_Acceleration * t;
 
         return false;
     }
+}
+public class LinearTransformItem : TransformItem
+{
+    // T_Current is added to by time.Delta until reaches T_Final
+    protected float T_Final;
+    protected float T_Current;
+
+    public LinearTransformItem(GameObject target, Vector2 pFinal, float tFinal, Action callback = null) : base(target, pFinal, callback)
+    {
+        T_Final = tFinal;
+        T_Current = 0;
+    }
+
+    override public bool OnMove()
+    {
+        T_Current += Time.deltaTime;
+
+        if(T_Current >= T_Final) {
+            Target.transform.localPosition = P_Final;
+            if(Callback != null) {
+                Callback();
+            }
+            return true;
+        }
+
+        var t = T_Current / T_Final;
+        
+        var pNext = Vector2.Lerp(Target.transform.localPosition, P_Final, t);
+        Target.transform.localPosition = pNext;
+
+        return false;
+    }
+}
+
+//Is only for "Timed" Transform (consider making another sibling class if need non-timed)
+public abstract class TransformItem
+{
+    protected GameObject Target;
+    protected Vector2 P_Final;
+    protected Action Callback;
+
+    public TransformItem(GameObject target, Vector2 pFinal, Action callback = null)
+    {
+        Target = target;
+        P_Final = pFinal;
+
+        Callback = callback;
+    }
+
+    abstract public bool OnMove();
 }
