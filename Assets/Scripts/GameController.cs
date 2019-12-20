@@ -66,8 +66,10 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     }
 
     // Update is called once per frame
-    void Update()
+    override protected void Update()
     {
+        base.Update();
+
         if(GS_Current == GameState.Active)
         {
             PlayerGameBoard.ManUpdate();

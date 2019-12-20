@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 //Parent controller for gameplay. Passes on inputs to relevant game objects
@@ -11,14 +10,21 @@ public class BaseController : MonoBehaviour
 
     public delegate void OnFixedUpdateDelegate();
     public event OnFixedUpdateDelegate FixedUpdateDelegate;
+    public delegate void OnUpdateDelegate();
+    public event OnUpdateDelegate UpdateDelegate = () => {};
 
     public virtual void AddTimedAction(Action action, float activationTime)
     {
         TimedEventManager.AddTimedAction(action, activationTime);
     }
 
-    protected void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
         FixedUpdateDelegate();
+    }
+
+    protected virtual void Update()
+    {
+        UpdateDelegate();
     }
 }
