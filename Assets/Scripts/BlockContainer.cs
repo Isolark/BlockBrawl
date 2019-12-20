@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BlockContainer : MonoBehaviour
@@ -115,13 +116,12 @@ public class BlockContainer : MonoBehaviour
                     TmpBlockList = new Dictionary<Vector2, Block>();
                     foreach(var block in BlockList)
                     {
-                        if(block.Value.HasIterated) continue;
-
+                        if(block.Value.HasIterated) { continue; }
                         block.Value.HasIterated = true;
 
                         var nextKey = block.Key + Vector2.up;
                         
-                        if(nextKey.y >= BoardSize.y)
+                        if(!AtTop && nextKey.y >= BoardSize.y)
                         {
                             AtTop = Cursor.AtTop = true;
                         }
@@ -132,15 +132,17 @@ public class BlockContainer : MonoBehaviour
                         if(block.Value.BoardLoc.y == 1) {
                             block.Value.OnEnterBoard();
                         }
-                        block.Value.OnEnterBoard();
                     }
 
                     BlockList = TmpBlockList;
-
+                    TmpBlockList.Clear();
 
                     foreach(var block in BlockList) {
                         block.Value.HasIterated = false;
+                        if(block.Value.BoardLoc.y == 1) { TmpBlockList.Add(block); }
                     }
+
+                    OnBlocksFinishMove(TmpBlockList.Select(x => x.Value).ToList());
 
                     InitialBlock_Y--;
 
@@ -151,16 +153,12 @@ public class BlockContainer : MonoBehaviour
                     if(!AtTop && Cursor.BoardLoc.y >= BoardSize.y) {
                         Cursor.OnMove(Vector2.down);
                     }
-                    //Cursor.OnMove(Vector2.up);
                     
                     //If was manually moving faster, stop & wait half a second before next check
                     if(IsManuallyRaising) {
                         Speed = BaseSpeed;
                         GameController.GC.AddTimedAction(UnlockTrigger, 0.05f);
                     }
-
-                    //Check for matches at bottom row
-
                 }
                 else
                 {
@@ -231,11 +229,33 @@ public class BlockContainer : MonoBehaviour
         }
         if(matchingList.Count >= 3) 
         {
-            foreach(var blockToDestroy in matchingList)
-            {
-                BlockList.Remove(blockToDestroy.BoardLoc);
-                blockToDestroy.gameObject.SetActive(false);
-            }
+            OnBlocksStartDestroy(matchingList);
+        }
+    }
+
+    private void OnBlocksStartDestroy(List<Block> destroyBlockList)
+    {
+        //Order Left to Right; Top to Bottom
+        destroyBlockList = destroyBlockList.OrderBy(a => a.BoardLoc.x).ThenBy(a => a.BoardLoc.y).ToList();
+
+        //Start animations and effects before actual destroy (located in block extensions largely)
+
+
+        //TODO: Tie this to the completion of the 1st (leader) block
+        OnBlocksFinishDestroy(destroyBlockList);
+    }
+
+    private void OnBlocksFinishDestroy()
+    {
+
+    }
+
+    private void OnBlocksFinishDestroy(List<Block> destroyBlockList)
+    {
+        foreach(var blockToDestroy in destroyBlockList)
+        {
+            BlockList.Remove(blockToDestroy.BoardLoc);
+            blockToDestroy.gameObject.SetActive(false);
         }
     }
 

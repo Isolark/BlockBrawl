@@ -31,17 +31,23 @@ public static class BlockExtensions
         block.IsChainable = block.IsComboable = block.IsMoveable = state;
     }
 
-    public static bool IsMatch(this Block block, BlockType blockType, bool ignoreComboable = false)
-    {
-        return block.Type == blockType && (block.IsComboable || ignoreComboable);
-    }
-
     public static void IncrementType(this Block block, int maxTypes = 5)
     {
         var typeInt = (int)block.Type;
 
         if(typeInt >= maxTypes) { block.Type = (BlockType)1; }
         else { block.Type = (BlockType)typeInt + 1; }
+    }
+
+    public static bool IsMatch(this Block block, BlockType blockType, bool ignoreComboable = false)
+    {
+        return block.Type == blockType && (block.IsComboable || ignoreComboable);
+    }
+
+    //Flashing, states set to false
+    public static void StartDestroy(this Block block)
+    {
+        block.BlockAnimCtrl.SetTrigger("StartDestroy");
     }
 
     public static void MoveBoardLoc(this Block block, Vector3 moveVector, bool movePrevBoardLoc = false)

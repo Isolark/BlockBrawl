@@ -175,7 +175,7 @@ Animator:
   m_GameObject: {fileID: 6472154454156000429}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ab17ba6996da5ae4f954f7d0ab8a47a1, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -199,6 +199,9 @@ MonoBehaviour:
   Icon: {fileID: 4685554534393052652}
   Type: 0
   BlockSprite: {fileID: 6472154454156000426}
+  BlockIconSprite: {fileID: 0}
+  BlockAnimCtrl: {fileID: 0}
+  BlockIconAnimCtrl: {fileID: 0}
   BoardLoc: {x: 0, y: 0, z: 0}
   PrevBoardLoc: {x: 0, y: 0, z: 0}
   IsComboable: 0
