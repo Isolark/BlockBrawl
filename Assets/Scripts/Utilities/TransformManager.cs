@@ -41,9 +41,14 @@ public class TransformManager : MonoBehaviour
         TransformItemList.Add(new LinearTransformItem(target, pFinal, timeDelta, callback:callback));
     }
 
-    public void Add_ManualPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, float timeDelta, Action callback = null)
+    public void Add_ManualPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Action callback = null)
     {
         TransformItemList.Add(new ManualTransformItem(target, pFinal, pVelocity, pAcceleration, callback:callback));
+    }
+
+    public void Add_InfManualPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Func<bool> checkCallback, Action callback = null)
+    {
+        TransformItemList.Add(new InfManualTransformItem(target, pFinal, pVelocity, pAcceleration, checkCallback, callback:callback));
     }
 
     private void OnUpdate()
@@ -66,12 +71,31 @@ public class TransformManager : MonoBehaviour
     }
 }
 
+
+
+public class InfManualTransformItem : ManualTransformItem
+{
+    private Func<bool> CheckCallback;
+
+    public InfManualTransformItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Func<bool> checkCallback = null, Action callback = null) 
+        : base(target, pFinal, pVelocity, pAcceleration, callback)
+    {
+        CheckCallback = checkCallback;
+    }
+
+    override protected bool OnCheck()
+    {
+        return CheckCallback();
+    }
+}
+
 public class ManualTransformItem : TransformItem
 {
-    private Vector2 P_Velocity;
-    private Vector2 P_Acceleration;
+    protected Vector2 P_Velocity;
+    protected Vector2 P_Acceleration;
 
-    public ManualTransformItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Action callback = null) : base(target, pFinal, callback)
+    public ManualTransformItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Action callback = null)
+        : base(target, pFinal, callback)
     {
         P_Velocity = pVelocity;
         P_Acceleration = pAcceleration;
@@ -88,11 +112,14 @@ public class ManualTransformItem : TransformItem
             P_Velocity.y > 0 && nextVector.y >= P_Final.y ||
             P_Velocity.y < 0 && nextVector.y <= P_Final.y) 
         {
-            Target.transform.localPosition = P_Final;
-            if(Callback != null) {
-                Callback();
+            if(OnCheck())
+            {
+                Target.transform.localPosition = P_Final;
+                if(Callback != null) {
+                    Callback();
+                }
+                return true;
             }
-            return true;
         }
 
         Target.transform.localPosition = nextVector;
@@ -100,7 +127,10 @@ public class ManualTransformItem : TransformItem
 
         return false;
     }
+
+    virtual protected bool OnCheck() { return true; }
 }
+
 public class LinearTransformItem : TransformItem
 {
     // T_Current is added to by time.Delta until reaches T_Final

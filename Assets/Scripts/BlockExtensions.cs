@@ -5,17 +5,15 @@ public static class BlockExtensions
 {
     public static SpriteLibrary BlockSL;
 
-    public static void Initialize(this Block block, BlockType type, Vector2 location, bool isOnBoard = false)
+    public static void Initialize(this Block block, bool isOnBoard = false)
     {
-        block.Type = type;
-        block.BoardLoc = location;
         block.SetStates(isOnBoard);
 
         var blockSpr = block.GetComponent<SpriteRenderer>();
         var blockIconSpr = block.Icon.GetComponent<SpriteRenderer>();
 
-        blockSpr.sprite = BlockSL.GetSpriteByName("Block-" + type.ToString());
-        blockIconSpr.sprite = BlockSL.GetSpriteByName("Middle-" + type.ToString());
+        blockSpr.sprite = BlockSL.GetSpriteByName("Block-" + block.Type.ToString());
+        blockIconSpr.sprite = BlockSL.GetSpriteByName("Middle-" + block.Type.ToString());
 
         if(!isOnBoard) {
             blockSpr.color = blockIconSpr.color = Color.Lerp(block.BlockSprite.color, Color.black, 0.45f);
@@ -26,6 +24,24 @@ public static class BlockExtensions
     {
         block.SetStates(true);
         block.GetComponent<SpriteRenderer>().color = block.Icon.GetComponent<SpriteRenderer>().color = Color.white;
+    }
+
+    public static void SetStates(this Block block, bool state)
+    {
+        block.IsChainable = block.IsComboable = block.IsMoveable = state;
+    }
+
+    public static bool IsMatch(this Block block, BlockType blockType, bool ignoreComboable = false)
+    {
+        return block.Type == blockType && (block.IsComboable || ignoreComboable);
+    }
+
+    public static void IncrementType(this Block block, int maxTypes = 5)
+    {
+        var typeInt = (int)block.Type;
+
+        if(typeInt >= maxTypes) { block.Type = (BlockType)1; }
+        else { block.Type = (BlockType)typeInt + 1; }
     }
 
     public static void MoveBoardLoc(this Block block, Vector3 moveVector, bool movePrevBoardLoc = false)
@@ -69,11 +85,6 @@ public static class BlockExtensions
             block.GetComponent<SpriteRenderer>().sortingOrder = 2;
             block.Icon.GetComponent<SpriteRenderer>().sortingOrder = 3;
         }
-    }
-
-    public static void SetStates(this Block block, bool state)
-    {
-        block.IsChainable = block.IsComboable = block.IsMoveable = state;
     }
 
     public static void OnFinishMove(this Block block)
