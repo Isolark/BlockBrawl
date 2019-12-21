@@ -114,6 +114,8 @@ public class BlockContainer : MonoBehaviour
 
                     //Shift blocks up
                     TmpBlockList = new Dictionary<Vector2, Block>();
+                    var comboableBlockList = new List<Block>();
+
                     foreach(var block in BlockList)
                     {
                         if(block.Value.HasIterated) { continue; }
@@ -131,18 +133,17 @@ public class BlockContainer : MonoBehaviour
 
                         if(block.Value.BoardLoc.y == 1) {
                             block.Value.OnEnterBoard();
+                            comboableBlockList.Add(block.Value);
                         }
                     }
 
                     BlockList = TmpBlockList;
-                    TmpBlockList.Clear();
 
                     foreach(var block in BlockList) {
                         block.Value.HasIterated = false;
-                        if(block.Value.BoardLoc.y == 1) { TmpBlockList.Add(block); }
                     }
 
-                    OnBlocksFinishMove(TmpBlockList.Select(x => x.Value).ToList());
+                    OnBlocksFinishMove(comboableBlockList);
 
                     InitialBlock_Y--;
 
