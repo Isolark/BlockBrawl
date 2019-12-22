@@ -8,7 +8,7 @@ public enum GameState
 }
 
 //Responsible for Saving/Loading & Handling Major Game Events
-public class MainController : MonoBehaviour
+public class MainController : BaseController
 {
     //private GameState CurrentGameState;
     public static Vector2 UnitResolution;
@@ -26,22 +26,15 @@ public class MainController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        //NOTE: Realistically, this should be caught somewhere and bubble up here
-		// if(InputHub.IH.Pause.IsDown()) {
-		// 	if(CurrentGameState == GameState.InGame_Active) {
-		// 		CurrentGameState = GameState.InGame_Paused;
-		// 	} else {
-		// 		CurrentGameState = GameState.InGame_Active;
-		// 	}
-		// }
+    // void Update()
+    // {
+    //     //NOTE: Realistically, this should be caught somewhere and bubble up here
 
-        if(UnitResolution.x != Screen.currentResolution.width * PPU || UnitResolution.y != Screen.currentResolution.height * PPU)
-        {
-            SetUnitResolution();
-        }
-    }
+    //     if(UnitResolution.x != Screen.currentResolution.width * PPU || UnitResolution.y != Screen.currentResolution.height * PPU)
+    //     {
+    //         SetUnitResolution();
+    //     }
+    // }
 
     // Set UnitResolution based on current screen size
     void SetUnitResolution()
