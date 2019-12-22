@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Block : MonoBehaviour
 {
@@ -17,4 +18,16 @@ public class Block : MonoBehaviour
     public bool IsChainable;
     public bool IsMoveable;
     public bool HasIterated;
+
+    //Action Ref
+    public Action StoredAction;
+    
+    public void OnFinishAnimation(string clipName)
+    {
+        if(clipName == "Block-FadeOutWhite") {
+            BlockSprite.sprite = null;
+        } else if (StoredAction != null) {
+            StoredAction();
+        }
+    }
 }

@@ -4,32 +4,15 @@ using UnityEngine;
 //Consider only growing after hitting Limit multiple times
 //Else, just create one that will eventually be completely destroyed
 //Prevents having too large of a list
-public class ObjectPooler : MonoBehaviour 
+public abstract class ObjectPooler : MonoBehaviour 
 {
-    public static ObjectPooler OP;
-
     public GameObject pooledObj;
     public int poolMaxSize = 20;
     public bool expandable = true;
-
     IList<GameObject> pool;
 
-    void Awake()
+    protected virtual void Awake()
     {
-        //Singleton pattern
-        if (OP == null) {
-            if(transform.parent.gameObject) {
-                DontDestroyOnLoad(transform.parent.gameObject);
-            } else {
-                DontDestroyOnLoad(gameObject);
-            }
-
-            OP = this;
-        }
-        else if (OP != this) {
-            Destroy(gameObject);
-        }
-
         pool = new List<GameObject>();
         for(var x = 0; x < poolMaxSize; x++)
         {
@@ -39,7 +22,7 @@ public class ObjectPooler : MonoBehaviour
         }
     }
 
-    public GameObject GetPooledObject(Transform parent = null)
+    public virtual GameObject GetPooledObject(Transform parent = null)
     {
         GameObject obj = null;
 
@@ -66,6 +49,11 @@ public class ObjectPooler : MonoBehaviour
             }
         }
 
+        CleanObj(ref obj);
         return obj;
+    }
+
+    protected virtual void CleanObj(ref GameObject obj)
+    {
     }
 }

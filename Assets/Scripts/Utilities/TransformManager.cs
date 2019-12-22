@@ -26,13 +26,13 @@ public class TransformManager : MonoBehaviour
 
     public void Pause()
     {
-        BaseController.FixedUpdateDelegate -= OnUpdate;
+        BaseController.UpdateDelegate -= OnUpdate;
         Paused = true;
     }
 
     public void Unpause()
     {
-        BaseController.FixedUpdateDelegate += OnUpdate;
+        BaseController.UpdateDelegate += OnUpdate;
         Paused = false;
     }
 

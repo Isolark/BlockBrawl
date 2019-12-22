@@ -3,8 +3,6 @@ using UnityEngine;
 
 public static class BlockExtensions
 {
-    public static SpriteLibrary BlockSL;
-
     public static void Initialize(this Block block, bool isOnBoard = false)
     {
         block.SetStates(isOnBoard);
@@ -12,8 +10,8 @@ public static class BlockExtensions
         var blockSpr = block.GetComponent<SpriteRenderer>();
         var blockIconSpr = block.Icon.GetComponent<SpriteRenderer>();
 
-        blockSpr.sprite = BlockSL.GetSpriteByName("Block-" + block.Type.ToString());
-        blockIconSpr.sprite = BlockSL.GetSpriteByName("Middle-" + block.Type.ToString());
+        blockSpr.sprite = SpriteLibrary.SL.GetSpriteByName("Block-" + block.Type.ToString());
+        blockIconSpr.sprite = SpriteLibrary.SL.GetSpriteByName("Middle-" + block.Type.ToString());
 
         if(!isOnBoard) {
             blockSpr.color = blockIconSpr.color = Color.Lerp(block.BlockSprite.color, Color.black, 0.45f);
@@ -47,7 +45,20 @@ public static class BlockExtensions
     //Flashing, states set to false
     public static void StartDestroy(this Block block)
     {
-        block.BlockAnimCtrl.SetTrigger("StartDestroy");
+        block.SetStates(false);
+
+        var whiteBlockFX = SpriteFXPooler.SP.GetPooledObject("BlockLayer", parent: block.transform).GetComponent<SpriteFX>();
+        whiteBlockFX.Initialize("Block-White", "BlockCtrl");
+        whiteBlockFX.FXAnimCtrl.SetTrigger("Play");
+    }
+
+    public static void IconDestroy(this Block block)
+    {
+        block.BlockIconSprite.sprite = null;
+
+        if(block.StoredAction != null) {
+            block.StoredAction();
+        }
     }
 
     public static void MoveBoardLoc(this Block block, Vector3 moveVector, bool movePrevBoardLoc = false)

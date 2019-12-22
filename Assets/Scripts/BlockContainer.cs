@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BlockContainer : MonoBehaviour
 {
-    public ObjectPooler BlockPooler;
+    //public ObjectPooler BlockPooler;
     public GameCursor Cursor;
     public Vector2 BoardSize;
     public int MaxTypes;
@@ -12,6 +12,7 @@ public class BlockContainer : MonoBehaviour
     public float Speed;
     public float BaseSpeed;
     public float ManualRaiseSpeed;
+    public float IconDestroyDelay = 0.35f;
 
     private bool IsHoldingTrigger;
     private bool IsManuallyRaising;
@@ -36,7 +37,7 @@ public class BlockContainer : MonoBehaviour
         BlockList = new Dictionary<Vector2, Block>();
 
         //Block Container is responsible for providing BlockExtensions what is necessary to operate
-        BlockExtensions.BlockSL = GameObject.Find("BlockSL").GetComponent<SpriteLibrary>();
+        //BlockExtensions.BlockSL = GameObject.Find("BlockSL").GetComponent<SpriteLibrary>();
     }
 
     void Start()
@@ -78,7 +79,7 @@ public class BlockContainer : MonoBehaviour
 
             for(var row = startingRow; row < modRows; row++)
             {
-                var block = BlockPooler.GetPooledObject(transform).GetComponent<Block>();
+                var block = BlockPooler.BP.GetPooledObject(transform).GetComponent<Block>();
 
                 block.BoardLoc = new Vector2(col, row);
                 block.Type = (BlockType)Random.Range(1, MaxTypes + 1);
@@ -234,21 +235,40 @@ public class BlockContainer : MonoBehaviour
         }
     }
 
+    //Start Flashing White Blocks
     private void OnBlocksStartDestroy(List<Block> destroyBlockList)
     {
-        //Order Left to Right; Top to Bottom
-        destroyBlockList = destroyBlockList.OrderBy(a => a.BoardLoc.x).ThenBy(a => a.BoardLoc.y).ToList();
+        //Order: Top to Bottom -> Left to Right
+        destroyBlockList = destroyBlockList.OrderByDescending(a => a.BoardLoc.y).ThenBy(a => a.BoardLoc.x).ToList();
 
         //Start animations and effects before actual destroy (located in block extensions largely)
-
+        destroyBlockList.First().StoredAction = () => { OnBlocksIconDestroy(destroyBlockList); };
+        foreach(var block in destroyBlockList)
+        {
+            block.StartDestroy();
+        }
 
         //TODO: Tie this to the completion of the 1st (leader) block
-        OnBlocksFinishDestroy(destroyBlockList);
+        //OnBlocksFinishDestroy(destroyBlockList);
     }
 
-    private void OnBlocksFinishDestroy()
+    private void OnBlocksIconDestroy(List<Block> destroyBlockList)
     {
+        for(var i = 0; i < destroyBlockList.Count; i++)
+        {
+            var block = destroyBlockList[i];
+            block.StoredAction = null;
 
+            if(i == 0) {
+                block.IconDestroy();
+            } else {
+                GameController.GC.AddTimedAction(block.IconDestroy, IconDestroyDelay * i);
+            }
+
+            if(i == destroyBlockList.Count - 1) {
+                block.StoredAction = () => { OnBlocksFinishDestroy(destroyBlockList); };
+            }
+        }
     }
 
     private void OnBlocksFinishDestroy(List<Block> destroyBlockList)
@@ -256,7 +276,6 @@ public class BlockContainer : MonoBehaviour
         foreach(var blockToDestroy in destroyBlockList)
         {
             BlockList.Remove(blockToDestroy.BoardLoc);
-            blockToDestroy.gameObject.SetActive(false);
         }
     }
 
