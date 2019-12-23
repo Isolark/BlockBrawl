@@ -91,9 +91,9 @@ public static class BlockExtensions
         }
 
         var fallDelta = new Vector2(0, -GameController.GC.BlockDist);
-        var fallAccel = new Vector2(0, -25f);
-        var fallVelocity = new Vector2(0, -25f);
-        var fallMaxVelocity = new Vector2(0, -280f);
+        var fallAccel = new Vector2(0, -GameController.GC.BlockFallAcceleration);
+        var fallVelocity = new Vector2(0, -GameController.GC.BlockFallVelocity);
+        var fallMaxVelocity = new Vector2(0, -GameController.GC.BlockFallMaxVelocity);
 
         var linkedObjs = linkedBlocks != null ? linkedBlocks.Select(x => x.gameObject).ToList() : null;
 

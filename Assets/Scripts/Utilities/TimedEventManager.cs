@@ -38,9 +38,12 @@ public class TimedEventManager : MonoBehaviour
         LastTime = Time.timeSinceLevelLoad;
     }
 
-    public void AddTimedAction(Action action, float activationTime)
+    public TimedAction AddTimedAction(Action action, float activationTime)
     {
-        StagingList.Add(new TimedAction(action, activationTime));
+        var timedAction = new TimedAction(action, activationTime);
+        StagingList.Add(timedAction);
+
+        return timedAction;
     }
 
     //Main Coroutine
@@ -75,7 +78,7 @@ public class TimedEventManager : MonoBehaviour
 
 public class TimedAction
 {
-    private float ActivationTime;
+    public float ActivationTime;
     private Action MyAction;
 
     public TimedAction(Action myAction, float activationTime)
