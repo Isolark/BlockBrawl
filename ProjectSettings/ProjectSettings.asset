@@ -118,7 +118,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.0.1817.1374
+  bundleVersion: 1.0.1817.3862
   preloadedAssets:
   - {fileID: 0}
   - {fileID: 0}
@@ -557,7 +557,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLWasmStreaming: 0
   scriptingDefineSymbols:
-    1: 
+    1: BUILD_TYPE_RELEASE;BUILD_PLATFORM_OSX;BUILD_ARCH_OSX;BUILD_DIST_UNIVERSAL
     13: BUILD_TYPE_RELEASE;BUILD_PLATFORM_WEBGL;BUILD_ARCH_WEBGL
   platformArchitecture: {}
   scriptingBackend: {}
