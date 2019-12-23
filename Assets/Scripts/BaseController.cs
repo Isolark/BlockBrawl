@@ -8,10 +8,10 @@ public class BaseController : MonoBehaviour
     public TimedEventManager TimedEventManager;
     public TransformManager TransformManager;
 
-    public delegate void OnFixedUpdateDelegate();
-    public event OnFixedUpdateDelegate FixedUpdateDelegate;
+    // public delegate void OnFixedUpdateDelegate();
+    // public event OnFixedUpdateDelegate FixedUpdateDelegate;
     public delegate void OnUpdateDelegate();
-    public event OnUpdateDelegate UpdateDelegate = () => {};
+    public event OnUpdateDelegate UpdateDelegate;
 
     public virtual void AddTimedAction(Action action, float activationTime)
     {
@@ -20,7 +20,7 @@ public class BaseController : MonoBehaviour
 
     protected virtual void FixedUpdate()
     {
-        FixedUpdateDelegate();
+        //FixedUpdateDelegate();
     }
 
     protected virtual void Update()

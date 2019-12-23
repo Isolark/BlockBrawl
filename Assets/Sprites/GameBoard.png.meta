@@ -53,6 +53,15 @@ TextureImporter:
   - first:
       213: 5139304775521806484
     second: Cursor-Top
+  - first:
+      213: 922120200342688714
+    second: Block-White
+  - first:
+      213: 4484215694143290767
+    second: PopBlue
+  - first:
+      213: 8069966181005358983
+    second: PopRed
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -233,11 +242,32 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Block-Yellow
+      name: Block-White
       rect:
         serializedVersion: 2
         x: 265
         y: 210
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: 922120200342688714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Block-Yellow
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 78
         width: 130
         height: 130
       alignment: 0
@@ -257,8 +287,8 @@ TextureImporter:
       name: Block
       rect:
         serializedVersion: 2
-        x: 265
-        y: 78
+        x: 397
+        y: 210
         width: 130
         height: 130
       alignment: 0
@@ -342,7 +372,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 397
-        y: 256
+        y: 124
         width: 84
         height: 84
       alignment: 9
@@ -362,8 +392,8 @@ TextureImporter:
       name: Middle-Pink
       rect:
         serializedVersion: 2
-        x: 397
-        y: 86
+        x: 478
+        y: 40
         width: 66
         height: 82
       alignment: 9
@@ -384,7 +414,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 397
-        y: 170
+        y: 38
         width: 79
         height: 84
       alignment: 9
@@ -459,6 +489,48 @@ TextureImporter:
       bones: []
       spriteID: 
       internalID: 21300028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PopBlue
+      rect:
+        serializedVersion: 2
+        x: 483
+        y: 128
+        width: 114
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: 4484215694143290767
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PopRed
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 46
+        width: 114
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 
+      internalID: 8069966181005358983
       vertices: []
       indices: 
       edges: []

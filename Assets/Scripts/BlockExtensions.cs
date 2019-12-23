@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class BlockExtensions
 {
-    public static SpriteLibrary BlockSL;
-
     public static void Initialize(this Block block, bool isOnBoard = false)
     {
         block.SetStates(isOnBoard);
@@ -12,8 +12,8 @@ public static class BlockExtensions
         var blockSpr = block.GetComponent<SpriteRenderer>();
         var blockIconSpr = block.Icon.GetComponent<SpriteRenderer>();
 
-        blockSpr.sprite = BlockSL.GetSpriteByName("Block-" + block.Type.ToString());
-        blockIconSpr.sprite = BlockSL.GetSpriteByName("Middle-" + block.Type.ToString());
+        blockSpr.sprite = SpriteLibrary.SL.GetSpriteByName("Block-" + block.Type.ToString());
+        blockIconSpr.sprite = SpriteLibrary.SL.GetSpriteByName("Middle-" + block.Type.ToString());
 
         if(!isOnBoard) {
             blockSpr.color = blockIconSpr.color = Color.Lerp(block.BlockSprite.color, Color.black, 0.45f);
@@ -26,9 +26,16 @@ public static class BlockExtensions
         block.GetComponent<SpriteRenderer>().color = block.Icon.GetComponent<SpriteRenderer>().color = Color.white;
     }
 
+    public static void InitStates(this Block block)
+    {
+        block.IsMoveable = block.IsComboable = true;
+        block.IsChainable = false;
+        block.IsFalling = false;
+    }
+
     public static void SetStates(this Block block, bool state)
     {
-        block.IsChainable = block.IsComboable = block.IsMoveable = state;
+        block.IsComboable = block.IsMoveable = state;
     }
 
     public static void IncrementType(this Block block, int maxTypes = 5)
@@ -47,7 +54,94 @@ public static class BlockExtensions
     //Flashing, states set to false
     public static void StartDestroy(this Block block)
     {
-        block.BlockAnimCtrl.SetTrigger("StartDestroy");
+        block.SetStates(false);
+
+        var whiteBlockFX = SpriteFXPooler.SP.GetPooledObject("BlockLayer", parent: block.transform).GetComponent<SpriteFX>();
+        whiteBlockFX.Initialize("Block-White", "BlockCtrl");
+        whiteBlockFX.FXAnimCtrl.SetTrigger("Play");
+    }
+
+    public static void IconDestroy(this Block block)
+    {
+        block.BlockIconSprite.sprite = null;
+
+        if(block.StoredAction != null) {
+            block.StoredAction();
+        }
+    }
+
+    public static void StartFall(this Block block, bool isChainable, IList<Block> linkedBlocks = null, Action callback = null)
+    {
+        if(block.IsFalling) { return; }
+
+        block.IsFalling = true;
+        block.IsChainable = isChainable;
+        block.IsMoveable = block.IsComboable = false;
+
+        block.PrevBoardLoc = block.BoardLoc;
+        block.BoardLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
+
+        if(linkedBlocks != null) 
+        {
+            foreach(var linkedBlock in linkedBlocks)
+            {
+                linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
+                linkedBlock.BoardLoc = new Vector3(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1, 0);
+            }
+        }
+
+        var fallDelta = new Vector2(0, -GameController.GC.BlockDist);
+        var fallAccel = new Vector2(0, -25f);
+        var fallVelocity = new Vector2(0, -25f);
+        var fallMaxVelocity = new Vector2(0, -280f);
+
+        var linkedObjs = linkedBlocks != null ? linkedBlocks.Select(x => x.gameObject).ToList() : null;
+
+        GameController.GC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, Vector2.zero, fallAccel, fallMaxVelocity,
+            () => block.StepFall(linkedBlocks), linkedObjs, callback);
+    }
+
+    public static bool StepFall(this Block block, IList<Block> linkedBlocks = null)
+    {
+        var blockList = block.gameObject.GetComponentInParent<BlockContainer>().BlockList;
+        var nextBoardLoc = new Vector2(block.BoardLoc.x, block.BoardLoc.y - 1);
+
+        //Remove from previous location (if not already filled)
+        if(blockList[block.PrevBoardLoc].GetInstanceID() == block.GetInstanceID()) {
+            blockList.Remove(block.PrevBoardLoc);
+        }
+
+        if(linkedBlocks != null) 
+        {
+            foreach(var linkedBlock in linkedBlocks) 
+            {
+                if(blockList[linkedBlock.PrevBoardLoc].GetInstanceID() == linkedBlock.GetInstanceID()) 
+                {
+                    blockList.Remove(linkedBlock.PrevBoardLoc);
+                }
+            }
+        }
+
+        if(blockList.ContainsKey(nextBoardLoc)) { return true; }
+
+        blockList.Add(nextBoardLoc, block);
+        block.PrevBoardLoc = block.BoardLoc;
+        block.BoardLoc = nextBoardLoc;
+
+        if(linkedBlocks != null) {
+            foreach(var linkedBlock in linkedBlocks) {
+                var nextLinkedBlockLoc = new Vector2(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1);
+
+                if(blockList.ContainsKey(nextLinkedBlockLoc)) {
+                    blockList.Remove(nextLinkedBlockLoc);
+                }
+                blockList.Add(nextLinkedBlockLoc, linkedBlock);
+                linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
+                linkedBlock.BoardLoc = nextLinkedBlockLoc;
+            }
+        }
+
+        return false;
     }
 
     public static void MoveBoardLoc(this Block block, Vector3 moveVector, bool movePrevBoardLoc = false)
@@ -80,27 +174,24 @@ public static class BlockExtensions
         var targetPosition = block.transform.localPosition + moveVector;
 
         if(callback != null) {
-            GameController.GC.TransformManager.Add_TimedLinearPos_Transform(block.gameObject, targetPosition, 0.1f, () => { block.OnFinishMove(); callback(); });
+            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, 0.1f, () => { block.OnFinishMove(); callback(); });
         } else {
-            GameController.GC.TransformManager.Add_TimedLinearPos_Transform(block.gameObject, targetPosition, 0.1f, block.OnFinishMove);
+            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, 0.1f, block.OnFinishMove);
         }
 
-        block.SetStates(false);
+        block.IsMoveable = block.IsComboable = false;
 
         if(bumpOrder) {
-            block.GetComponent<SpriteRenderer>().sortingOrder = 2;
-            block.Icon.GetComponent<SpriteRenderer>().sortingOrder = 3;
+            block.GetComponent<SpriteRenderer>().sortingOrder = 6;
+            block.Icon.GetComponent<SpriteRenderer>().sortingOrder = 7;
         }
     }
 
     public static void OnFinishMove(this Block block)
     {
-        block.SetStates(true);
-        block.transform.localPosition.Set(block.transform.localPosition.x, block.transform.localPosition.y, 1);
-
-        if(block.GetComponent<SpriteRenderer>().sortingOrder >= 2) {
+        if(block.GetComponent<SpriteRenderer>().sortingOrder >= 6) {
             block.GetComponent<SpriteRenderer>().sortingOrder = 0;
-            block.Icon.GetComponent<SpriteRenderer>().sortingOrder = 1; 
+            block.Icon.GetComponent<SpriteRenderer>().sortingOrder = 5; 
         }
     }
 }

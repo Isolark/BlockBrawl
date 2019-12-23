@@ -6,6 +6,7 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
 {
     public GameBoard PlayerGameBoard;
     public float BlockDist;
+    public float TimeScale = 1f;
     private InputActionHub InputHub;
 
     public static GameController GC;
@@ -26,6 +27,10 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     {
         GS_Current = GameState.Active;
         InitializeBinding();
+
+        if(TimeScale != 1) {
+            Time.timeScale = TimeScale;
+        }
     }
 
     void InitializeBinding()

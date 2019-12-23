@@ -69,7 +69,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1839169633
   m_SortingLayer: 1
-  m_SortingOrder: 1
+  m_SortingOrder: 5
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -173,7 +173,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6472154454156000429}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: ab17ba6996da5ae4f954f7d0ab8a47a1, type: 2}
   m_CullingMode: 0
@@ -199,9 +199,8 @@ MonoBehaviour:
   Icon: {fileID: 4685554534393052652}
   Type: 0
   BlockSprite: {fileID: 6472154454156000426}
-  BlockIconSprite: {fileID: 0}
-  BlockAnimCtrl: {fileID: 0}
-  BlockIconAnimCtrl: {fileID: 0}
+  BlockIconSprite: {fileID: 3612854647801914140}
+  BlockAnimCtrl: {fileID: 6472154454156000427}
   BoardLoc: {x: 0, y: 0, z: 0}
   PrevBoardLoc: {x: 0, y: 0, z: 0}
   IsComboable: 0

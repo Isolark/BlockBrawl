@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class BlockContainer : MonoBehaviour
 {
-    public ObjectPooler BlockPooler;
     public GameCursor Cursor;
     public Vector2 BoardSize;
     public int MaxTypes;
     public int StartingHeight;
+    public float IconDestroyDelay; //Delay between icons being destroyed; Reduce for faster Gameplay
+    public float ChainLinkDelay; //Delay between starting/adding to a chain VS starting a new chain (should allow for 2 diff rows being diff chains)
+    public float BlockFallDelay; //Delay before block falls while suspended in air
     public float Speed;
     public float BaseSpeed;
     public float ManualRaiseSpeed;
-
+    
+    private int ChainCount;
     private bool IsHoldingTrigger;
     private bool IsManuallyRaising;
     private float BlockDist;
@@ -22,6 +25,7 @@ public class BlockContainer : MonoBehaviour
     public float Target_Y; //After reaching this Y, have moved up a full "level"
     public IDictionary<Vector2, Block> BlockList;
     private IDictionary<Vector2, Block> TmpBlockList = new Dictionary<Vector2, Block>(); //For transferring after moving up a "level"
+    private IList<Block> ChainedBlockList; //All Blocks belonging to current chain
 
     public BlockContainer(int maxTypes, int startingHeight, float startingSpeed)
     {
@@ -36,7 +40,7 @@ public class BlockContainer : MonoBehaviour
         BlockList = new Dictionary<Vector2, Block>();
 
         //Block Container is responsible for providing BlockExtensions what is necessary to operate
-        BlockExtensions.BlockSL = GameObject.Find("BlockSL").GetComponent<SpriteLibrary>();
+        //BlockExtensions.BlockSL = GameObject.Find("BlockSL").GetComponent<SpriteLibrary>();
     }
 
     void Start()
@@ -50,7 +54,7 @@ public class BlockContainer : MonoBehaviour
         BoardSize = boardSize;
         Target_Y = transform.localPosition.y + GameController.GC.BlockDist;
 
-        SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-1, 0, 0, 1}, isComboable: false);
+        SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-2, 0, 0, 2}, isComboable: false);
     }
 
     public void SpawnRows(int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null, bool isComboable = true)
@@ -78,7 +82,7 @@ public class BlockContainer : MonoBehaviour
 
             for(var row = startingRow; row < modRows; row++)
             {
-                var block = BlockPooler.GetPooledObject(transform).GetComponent<Block>();
+                var block = BlockPooler.BP.GetPooledObject(transform).GetComponent<Block>();
 
                 block.BoardLoc = new Vector2(col, row);
                 block.Type = (BlockType)Random.Range(1, MaxTypes + 1);
@@ -114,6 +118,8 @@ public class BlockContainer : MonoBehaviour
 
                     //Shift blocks up
                     TmpBlockList = new Dictionary<Vector2, Block>();
+                    var comboableBlockList = new List<Block>();
+
                     foreach(var block in BlockList)
                     {
                         if(block.Value.HasIterated) { continue; }
@@ -131,22 +137,20 @@ public class BlockContainer : MonoBehaviour
 
                         if(block.Value.BoardLoc.y == 1) {
                             block.Value.OnEnterBoard();
+                            comboableBlockList.Add(block.Value);
                         }
                     }
 
                     BlockList = TmpBlockList;
-                    TmpBlockList.Clear();
 
                     foreach(var block in BlockList) {
                         block.Value.HasIterated = false;
-                        if(block.Value.BoardLoc.y == 1) { TmpBlockList.Add(block); }
                     }
-
-                    OnBlocksFinishMove(TmpBlockList.Select(x => x.Value).ToList());
 
                     InitialBlock_Y--;
 
                     SpawnRows();
+                    OnBlocksFinishMove(comboableBlockList);
 
                     //Shift cursor up
                     Cursor.MoveBoardLoc(Vector2.up);
@@ -203,13 +207,19 @@ public class BlockContainer : MonoBehaviour
         else if(leftBlockExists) {
             checkBlockList.Add(leftBlock);
 
-            leftBlock.Move(Vector2.right, callback: () => { BlockList.Remove(leftBlock.PrevBoardLoc); OnBlocksFinishMove(checkBlockList); });
+            leftBlock.Move(Vector2.right, callback: () => { 
+                BlockList.Remove(leftBlock.PrevBoardLoc); 
+                OnBlocksFinishMove(checkBlockList); 
+            });
             BlockList[leftBlock.BoardLoc] = leftBlock;
         }
         else {
             checkBlockList.Add(rightBlock);
 
-            rightBlock.Move(Vector2.left, callback: () => { BlockList.Remove(rightBlock.PrevBoardLoc); OnBlocksFinishMove(checkBlockList); });
+            rightBlock.Move(Vector2.left, callback: () => { 
+                BlockList.Remove(rightBlock.PrevBoardLoc); 
+                OnBlocksFinishMove(checkBlockList); 
+            });
             BlockList[rightBlock.BoardLoc] = rightBlock;
         }
     }
@@ -220,12 +230,54 @@ public class BlockContainer : MonoBehaviour
 
         foreach(var checkBlock in checkBlockList)
         {
+            checkBlock.IsFalling = false;
+
+            //If was the only block moved, may have other blocks that need to drop
+            if(checkBlockList.Count == 1) 
+            {
+                var blockPrevAbovePos = new Vector2(checkBlock.PrevBoardLoc.x, checkBlock.PrevBoardLoc.y + 1);
+                if(BlockList.ContainsKey(blockPrevAbovePos)) 
+                {
+                    var blocksToFall = GetBlocksAboveLoc(checkBlock.PrevBoardLoc);
+                    var leadFallBlock = blocksToFall.First();
+                    var linkedBlocks = blocksToFall.Count > 1 ? blocksToFall.Skip(1).ToList() : null;
+
+                    foreach(var fallBlock in blocksToFall) 
+                    {
+                        var nextPos = new Vector2(fallBlock.BoardLoc.x, fallBlock.BoardLoc.y - 1);
+                        if(BlockList.ContainsKey(nextPos)) {
+                            BlockList.Remove(nextPos);
+                        }
+                        BlockList.Add(nextPos, fallBlock);
+                    }
+
+                    GameController.GC.TimedEventManager.AddTimedAction(() => {
+                        leadFallBlock.StartFall(false, linkedBlocks, () => { OnBlocksFinishMove(blocksToFall); }); 
+                    }, BlockFallDelay); 
+                }
+            }
+
+            //If no Block beneath, start falling
+            var blockBelowPos = new Vector2(checkBlock.BoardLoc.x, checkBlock.BoardLoc.y - 1);
+            if(!BlockList.ContainsKey(blockBelowPos)) 
+            {
+                BlockList.Add(blockBelowPos, checkBlock);
+                GameController.GC.TimedEventManager.AddTimedAction(() => {
+                    checkBlock.StartFall(false, callback: () => { OnBlocksFinishMove(new List<Block>(){ checkBlock }); }); 
+                }, BlockFallDelay);
+                continue;
+            }
+
+            checkBlock.SetStates(true);
+
             //Don't check in the direction the block moved from
             var reverseDirVector = checkBlock.PrevBoardLoc - checkBlock.BoardLoc;
             var searchDirs = new List<Vector2>() { Vector2.left, Vector2.up, Vector2.right, Vector2.down };
             searchDirs.Remove(new Vector2(reverseDirVector.x, reverseDirVector.y));
 
             CheckSurroundingBlocks(checkBlock, searchDirs, ref matchingList);
+
+            checkBlock.IsChainable = false;
         }
         if(matchingList.Count >= 3) 
         {
@@ -233,29 +285,101 @@ public class BlockContainer : MonoBehaviour
         }
     }
 
-    private void OnBlocksStartDestroy(List<Block> destroyBlockList)
+    private List<Block> GetBlocksAboveLoc(Vector2 boardLoc, bool canBeFalling = false)
     {
-        //Order Left to Right; Top to Bottom
-        destroyBlockList = destroyBlockList.OrderBy(a => a.BoardLoc.x).ThenBy(a => a.BoardLoc.y).ToList();
+        var blocksAboveList = new List<Block>();
 
-        //Start animations and effects before actual destroy (located in block extensions largely)
+        for(var row = boardLoc.y; row < BoardSize.y; row++)
+        {
+            boardLoc += Vector2.up;
 
+            if(BlockList.ContainsKey(boardLoc) && (!BlockList[boardLoc].IsFalling || canBeFalling)) {
+                blocksAboveList.Add(BlockList[boardLoc]);
+            }
+        }
 
-        //TODO: Tie this to the completion of the 1st (leader) block
-        OnBlocksFinishDestroy(destroyBlockList);
+        return blocksAboveList;
     }
 
-    private void OnBlocksFinishDestroy()
+    //Start Flashing White Blocks
+    private void OnBlocksStartDestroy(List<Block> destroyBlockList)
     {
+        //Order: Top to Bottom -> Left to Right
+        destroyBlockList = destroyBlockList.OrderByDescending(a => a.BoardLoc.y).ThenBy(a => a.BoardLoc.x).ToList();
 
+        //Lead block store next destroy phase
+        destroyBlockList.Last().StoredAction = () => { OnBlocksIconDestroy(destroyBlockList); };
+
+        foreach(var block in destroyBlockList) {
+            block.StartDestroy();
+        }
+    }
+
+    private void OnBlocksIconDestroy(List<Block> destroyBlockList)
+    {
+        for(var i = 0; i < destroyBlockList.Count; i++)
+        {
+            var block = destroyBlockList[i];
+            block.StoredAction = null;
+
+            if(i == 0) {
+                block.IconDestroy();
+            } else {
+                GameController.GC.AddTimedAction(block.IconDestroy, IconDestroyDelay * i);
+            }
+
+            if(i == destroyBlockList.Count - 1) {
+                block.StoredAction = () => { 
+                    GameController.GC.AddTimedAction(() => { 
+                        OnBlocksFinishDestroy(destroyBlockList); }, 0.2f);
+                };
+            }
+        }
     }
 
     private void OnBlocksFinishDestroy(List<Block> destroyBlockList)
     {
+        var colRowList = new Dictionary<float, float>();
+
         foreach(var blockToDestroy in destroyBlockList)
         {
+            var colExists = colRowList.ContainsKey(blockToDestroy.BoardLoc.x);
+            if(!colExists || colRowList[blockToDestroy.BoardLoc.x] < blockToDestroy.BoardLoc.y)
+            {
+                if(colExists) {
+                    colRowList.Remove(blockToDestroy.BoardLoc.x);
+                }
+                colRowList.Add(blockToDestroy.BoardLoc.x, blockToDestroy.BoardLoc.y);
+            } 
+
             BlockList.Remove(blockToDestroy.BoardLoc);
             blockToDestroy.gameObject.SetActive(false);
+        }
+
+        //Drop blocks above the destroyed blocks
+        foreach(var col in colRowList.Keys)
+        {
+            var row = colRowList[col];
+            var blocksToFall = GetBlocksAboveLoc(new Vector2(col, row));
+
+            if(blocksToFall.Count > 0)
+            {
+                var leadFallBlock = blocksToFall.First();
+                var linkedBlocks = blocksToFall.Count > 1 ? blocksToFall.Skip(1).ToList() : null;
+
+                foreach(var fallBlock in blocksToFall) 
+                {
+                    var nextPos = new Vector2(fallBlock.BoardLoc.x, fallBlock.BoardLoc.y - 1);
+                    if(BlockList.ContainsKey(nextPos)) {
+                        BlockList.Remove(nextPos);
+                    }
+                    BlockList.Add(nextPos, fallBlock);
+                }
+
+                GameController.GC.TimedEventManager.AddTimedAction(() => {
+                    leadFallBlock.StartFall(true, linkedBlocks, () => { OnBlocksFinishMove(blocksToFall); }); 
+                }, BlockFallDelay); 
+            }
         }
     }
 
