@@ -1059,6 +1059,9 @@ MonoBehaviour:
   PlayerGameBoard: {fileID: 2140840349}
   BlockDist: 1
   TimeScale: 1
+  BlockFallVelocity: 30
+  BlockFallMaxVelocity: 265
+  BlockFallAcceleration: 30
 --- !u!4 &682472253
 Transform:
   m_ObjectHideFlags: 0
@@ -1130,6 +1133,7 @@ MonoBehaviour:
   Speed: 0.0002
   BaseSpeed: 0.0002
   ManualRaiseSpeed: 0.08
+  RaiseStopped: 0
   AtTop: 0
   InitialBlock_Y: 0
   Target_Y: 0

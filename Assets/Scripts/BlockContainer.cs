@@ -14,7 +14,10 @@ public class BlockContainer : MonoBehaviour
     public float Speed;
     public float BaseSpeed;
     public float ManualRaiseSpeed;
+    TimedAction RaiseStopTimer;
+    public float RaiseStopMultiplier;
     
+    private int ComboCount;
     private int ChainCount;
     private bool IsHoldingTrigger;
     private bool IsManuallyRaising;
@@ -38,9 +41,6 @@ public class BlockContainer : MonoBehaviour
     {
         AtTop = false;
         BlockList = new Dictionary<Vector2, Block>();
-
-        //Block Container is responsible for providing BlockExtensions what is necessary to operate
-        //BlockExtensions.BlockSL = GameObject.Find("BlockSL").GetComponent<SpriteLibrary>();
     }
 
     void Start()
@@ -62,10 +62,8 @@ public class BlockContainer : MonoBehaviour
         var tmpMatchList = new List<Block>();
         var searchDirs = new List<Vector2>();
 
-        if(numOfRows > 1) {
-            searchDirs.Add(Vector2.up); 
-            searchDirs.Add(Vector2.down); 
-        }
+        searchDirs.Add(Vector2.up); 
+        searchDirs.Add(Vector2.down); 
 
         for(var col = 0; col < numOfCols; col++)
         {
@@ -101,13 +99,13 @@ public class BlockContainer : MonoBehaviour
 
     public void Move()
     {
+        if(ComboCount > 0) { return; }
         if(!AtTop)
         {
             var yPos = transform.localPosition.y;
 
             if(yPos < Target_Y) 
             {
-                //Reached next "level". Shift down & move all blocks up
                 if(yPos + Speed > Target_Y)
                 {
                     transform.localPosition.Set(transform.localPosition.x, Target_Y, 1);
@@ -235,37 +233,16 @@ public class BlockContainer : MonoBehaviour
             //If was the only block moved, may have other blocks that need to drop
             if(checkBlockList.Count == 1) 
             {
-                var blockPrevAbovePos = new Vector2(checkBlock.PrevBoardLoc.x, checkBlock.PrevBoardLoc.y + 1);
-                if(BlockList.ContainsKey(blockPrevAbovePos)) 
-                {
-                    var blocksToFall = GetBlocksAboveLoc(checkBlock.PrevBoardLoc);
-                    var leadFallBlock = blocksToFall.First();
-                    var linkedBlocks = blocksToFall.Count > 1 ? blocksToFall.Skip(1).ToList() : null;
-
-                    foreach(var fallBlock in blocksToFall) 
-                    {
-                        var nextPos = new Vector2(fallBlock.BoardLoc.x, fallBlock.BoardLoc.y - 1);
-                        if(BlockList.ContainsKey(nextPos)) {
-                            BlockList.Remove(nextPos);
-                        }
-                        BlockList.Add(nextPos, fallBlock);
-                    }
-
-                    GameController.GC.TimedEventManager.AddTimedAction(() => {
-                        leadFallBlock.StartFall(false, linkedBlocks, () => { OnBlocksFinishMove(blocksToFall); }); 
-                    }, BlockFallDelay); 
-                }
+                var blocksToFall = GetBlocksAboveLoc(checkBlock.PrevBoardLoc);
+                if(blocksToFall.Count > 0) { OnBlockStartFall(blocksToFall); }
             }
 
             //If no Block beneath, start falling
             var blockBelowPos = new Vector2(checkBlock.BoardLoc.x, checkBlock.BoardLoc.y - 1);
             if(!BlockList.ContainsKey(blockBelowPos)) 
             {
-                BlockList.Add(blockBelowPos, checkBlock);
-                GameController.GC.TimedEventManager.AddTimedAction(() => {
-                    checkBlock.StartFall(false, callback: () => { OnBlocksFinishMove(new List<Block>(){ checkBlock }); }); 
-                }, BlockFallDelay);
-                continue;
+                var blocksToFall = GetBlocksAboveLoc(blockBelowPos);
+                if(blocksToFall.Count > 0) { OnBlockStartFall(blocksToFall); }
             }
 
             checkBlock.SetStates(true);
@@ -304,6 +281,8 @@ public class BlockContainer : MonoBehaviour
     //Start Flashing White Blocks
     private void OnBlocksStartDestroy(List<Block> destroyBlockList)
     {
+        ComboCount += destroyBlockList.Count;
+
         //Order: Top to Bottom -> Left to Right
         destroyBlockList = destroyBlockList.OrderByDescending(a => a.BoardLoc.y).ThenBy(a => a.BoardLoc.x).ToList();
 
@@ -356,31 +335,35 @@ public class BlockContainer : MonoBehaviour
             blockToDestroy.gameObject.SetActive(false);
         }
 
+        ComboCount -= destroyBlockList.Count;
+
         //Drop blocks above the destroyed blocks
         foreach(var col in colRowList.Keys)
         {
             var row = colRowList[col];
             var blocksToFall = GetBlocksAboveLoc(new Vector2(col, row));
 
-            if(blocksToFall.Count > 0)
-            {
-                var leadFallBlock = blocksToFall.First();
-                var linkedBlocks = blocksToFall.Count > 1 ? blocksToFall.Skip(1).ToList() : null;
-
-                foreach(var fallBlock in blocksToFall) 
-                {
-                    var nextPos = new Vector2(fallBlock.BoardLoc.x, fallBlock.BoardLoc.y - 1);
-                    if(BlockList.ContainsKey(nextPos)) {
-                        BlockList.Remove(nextPos);
-                    }
-                    BlockList.Add(nextPos, fallBlock);
-                }
-
-                GameController.GC.TimedEventManager.AddTimedAction(() => {
-                    leadFallBlock.StartFall(true, linkedBlocks, () => { OnBlocksFinishMove(blocksToFall); }); 
-                }, BlockFallDelay); 
-            }
+            if(blocksToFall.Count > 0) { OnBlockStartFall(blocksToFall); }
         }
+    }
+
+    private void OnBlockStartFall(List<Block> fallingBlockList)
+    {
+        var leadFallBlock = fallingBlockList.First();
+        var linkedBlocks = fallingBlockList.Count > 1 ? fallingBlockList.Skip(1).ToList() : null;
+
+        foreach(var fallBlock in fallingBlockList) 
+        {
+            var nextPos = new Vector2(fallBlock.BoardLoc.x, fallBlock.BoardLoc.y - 1);
+            if(BlockList.ContainsKey(nextPos)) {
+                BlockList.Remove(nextPos);
+            }
+            BlockList.Add(nextPos, fallBlock);
+        }
+
+        GameController.GC.TimedEventManager.AddTimedAction(() => {
+            leadFallBlock.StartFall(true, linkedBlocks, () => { OnBlocksFinishMove(fallingBlockList); }); 
+        }, BlockFallDelay); 
     }
 
     private bool CheckSurroundingBlocks(Block block, IEnumerable<Vector2> searchDirs, ref List<Block> matchingList, bool ignoreState = false)
@@ -435,7 +418,7 @@ public class BlockContainer : MonoBehaviour
         if(performed && !IsHoldingTrigger) {
             IsHoldingTrigger = true;
 
-            if(!IsManuallyRaising) {  
+            if(!IsManuallyRaising && ComboCount <= 0) {  
                 IsManuallyRaising = true;
                 Speed = ManualRaiseSpeed;
             } 

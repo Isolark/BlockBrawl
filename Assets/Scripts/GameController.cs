@@ -7,6 +7,10 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     public GameBoard PlayerGameBoard;
     public float BlockDist;
     public float TimeScale = 1f;
+    public float BlockFallVelocity;
+    public float BlockFallMaxVelocity;
+    public float BlockFallAcceleration;
+
     private InputActionHub InputHub;
 
     public static GameController GC;
