@@ -170,15 +170,6 @@ public class BlockContainer : MonoBehaviour
         }
     }
 
-    private void UnlockTrigger()
-    {
-        if(IsHoldingTrigger) {
-            Speed = ManualRaiseSpeed;
-        } else {
-            IsManuallyRaising = false;
-        }
-    }
-
     public void OnCursorConfirm(Vector2 cursorLoc)
     {
         Block leftBlock, rightBlock;
@@ -424,6 +415,15 @@ public class BlockContainer : MonoBehaviour
             } 
         } else if(!performed && IsHoldingTrigger) {
             IsHoldingTrigger = false;
+        }
+    }
+
+    private void UnlockTrigger()
+    {
+        if(IsHoldingTrigger) {
+            Speed = ManualRaiseSpeed;
+        } else {
+            IsManuallyRaising = false;
         }
     }
 }

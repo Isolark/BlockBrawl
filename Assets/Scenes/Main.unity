@@ -1127,13 +1127,13 @@ MonoBehaviour:
   BoardSize: {x: 0, y: 0}
   MaxTypes: 5
   StartingHeight: 3
-  IconDestroyDelay: 0.3
+  IconDestroyDelay: 0.2
   ChainLinkDelay: 0.2
-  BlockFallDelay: 0.1
-  Speed: 0.0002
-  BaseSpeed: 0.0002
+  BlockFallDelay: 0.075
+  Speed: 0.001
+  BaseSpeed: 0.001
   ManualRaiseSpeed: 0.08
-  RaiseStopped: 0
+  RaiseStopMultiplier: 0
   AtTop: 0
   InitialBlock_Y: 0
   Target_Y: 0
