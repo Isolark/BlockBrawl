@@ -1126,8 +1126,8 @@ MonoBehaviour:
   StartingHeight: 3
   IconDestroyDelay: 0.3
   ChainLinkDelay: 0.2
-  Speed: 0.002
-  BaseSpeed: 0.002
+  Speed: 0.0002
+  BaseSpeed: 0.0002
   ManualRaiseSpeed: 0.08
   AtTop: 0
   InitialBlock_Y: 0

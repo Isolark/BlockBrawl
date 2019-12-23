@@ -46,9 +46,15 @@ public class TransformManager : MonoBehaviour
         TransformItemList.Add(new ManualTransItem(target, pFinal, pVelocity, pAcceleration, callback:callback));
     }
 
-    public void Add_ManualDeltaPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Func<bool> checkCallback, Action callback = null)
+    public void Add_ManualDeltaPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pMaxVelocity, Vector2 pAcceleration, 
+        Func<bool> checkCallback, IList<GameObject> linkedObjs = null, Action callback = null)
     {
-        TransformItemList.Add(new ManualDeltaTransItem(target, pFinal, pVelocity, pAcceleration, checkCallback, callback:callback));
+        var transItem = new ManualDeltaTransItem(target, pFinal, pVelocity, pAcceleration, pMaxVelocity, checkCallback, callback:callback);
+        if(linkedObjs != null) {
+            transItem.SetLinkedObjs(linkedObjs); 
+        }
+
+        TransformItemList.Add(transItem);
     }
 
     private void OnUpdate()
@@ -84,6 +90,8 @@ public class ManualDeltaTransItem : ManualTransItem
         P_Delta = pFinal;
         P_Final = new Vector2(target.transform.localPosition.x, target.transform.localPosition.y) + P_Delta;
         CheckCallback = checkCallback;
+
+        Debug.Log(P_Final + " | " + pVelocity + " | " + pAcceleration);
     }
 
     public ManualDeltaTransItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Vector2 pMaxVelocity, 
@@ -96,7 +104,10 @@ public class ManualDeltaTransItem : ManualTransItem
 
     override protected bool OnCheck()
     {
-        return CheckCallback();
+        var checkBool = CheckCallback();
+        if(!checkBool) { P_Final = P_Final + P_Delta; }
+
+        return checkBool;
     }
 }
 
@@ -147,6 +158,8 @@ public class ManualTransItem : TransformItem
         IncPosition(deltaVector);
 
         P_Velocity += P_Acceleration * t;
+
+        Debug.Log("Velocity: " + P_Velocity + " | Accel: " + P_Acceleration);
 
         if(P_MaxVelocity != null && P_Velocity.magnitude > P_MaxVelocity.magnitude) {
             P_Velocity = P_MaxVelocity;

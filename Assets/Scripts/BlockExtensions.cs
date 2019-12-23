@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class BlockExtensions
@@ -68,7 +70,7 @@ public static class BlockExtensions
         }
     }
 
-    public static void StartFall(this Block block, bool isChainable, Action callback = null)
+    public static void StartFall(this Block block, bool isChainable, IList<Block> linkedBlocks = null, Action callback = null)
     {
         if(block.IsFalling) { return; }
 
@@ -76,16 +78,14 @@ public static class BlockExtensions
         block.IsChainable = isChainable;
         block.IsMoveable = block.IsComboable = false;
 
-        if(!isChainable) {
-            var fallDelta = new Vector2(0, -GameController.GC.BlockDist);
-            var fallAccel = new Vector2(0, -0.005f);
-            var fallMaxVelocity = new Vector2(0, -0.5f);
+        block.BoardLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
 
-            GameController.GC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, Vector2.zero, fallAccel, () => block.StepFall(), callback);
-        }
-        else { //TEMPORARY
-            block.BlockSprite.sprite = SpriteLibrary.SL.GetSpriteByName("Block");
-        }
+        var fallDelta = new Vector2(0, -GameController.GC.BlockDist);
+        var fallAccel = new Vector2(0, -1.5f);
+        var fallMaxVelocity = new Vector2(0, -50f);
+
+        GameController.GC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, Vector2.zero, fallAccel, fallMaxVelocity,
+            () => block.StepFall(), linkedBlocks.Select(x => x.gameObject).ToList(), callback);
     }
 
     public static bool StepFall(this Block block)
@@ -99,6 +99,8 @@ public static class BlockExtensions
         if(blockList.ContainsKey(nextBoardLoc)) { return true; }
 
         blockList.Add(nextBoardLoc, block);
+        block.BoardLoc = nextBoardLoc;
+
         return false;
     }
 

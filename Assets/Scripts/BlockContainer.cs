@@ -223,13 +223,32 @@ public class BlockContainer : MonoBehaviour
 
         foreach(var checkBlock in checkBlockList)
         {
+            //If was the only block moved, may have other blocks that need to drop
+            if(checkBlockList.Count == 1) 
+            {
+                var blockPrevAbovePos = new Vector2(checkBlock.PrevBoardLoc.x, checkBlock.PrevBoardLoc.y + 1);
+                if(BlockList.ContainsKey(blockPrevAbovePos)) 
+                {
+                    var blockToFall = BlockList[blockPrevAbovePos];
+                    BlockList.Add(checkBlock.PrevBoardLoc, blockToFall);
+
+                    var linkedBlocks = GetBlocksAboveLoc(blockPrevAbovePos);
+                    GameController.GC.TimedEventManager.AddTimedAction(() => {
+                        blockToFall.StartFall(false, linkedBlocks, () => { OnBlocksFinishMove(new List<Block>(){ blockToFall }); }); 
+                    }, 0.2f);
+
+                    continue;   
+                }
+            }
+
             //If no Block beneath, start falling
             var blockBelowPos = new Vector2(checkBlock.BoardLoc.x, checkBlock.BoardLoc.y - 1);
-            if(!BlockList.ContainsKey(blockBelowPos)) {
+            if(!BlockList.ContainsKey(blockBelowPos)) 
+            {
+                BlockList.Add(blockBelowPos, checkBlock);
                 GameController.GC.TimedEventManager.AddTimedAction(() => {
-                    checkBlock.StartFall(false, () => { OnBlocksFinishMove(new List<Block>(){ checkBlock }); }); 
+                    checkBlock.StartFall(false, callback: () => { OnBlocksFinishMove(new List<Block>(){ checkBlock }); }); 
                 }, 0.2f);
-
                 continue;
             }
 
@@ -241,11 +260,29 @@ public class BlockContainer : MonoBehaviour
             searchDirs.Remove(new Vector2(reverseDirVector.x, reverseDirVector.y));
 
             CheckSurroundingBlocks(checkBlock, searchDirs, ref matchingList);
+
+            checkBlock.IsChainable = false;
         }
         if(matchingList.Count >= 3) 
         {
             OnBlocksStartDestroy(matchingList);
         }
+    }
+
+    private IList<Block> GetBlocksAboveLoc(Vector2 boardLoc)
+    {
+        var blocksAboveList = new List<Block>();
+
+        for(var row = boardLoc.y; row < BoardSize.y; row++)
+        {
+            boardLoc += Vector2.up;
+
+            if(BlockList.ContainsKey(boardLoc)) {
+                blocksAboveList.Add(BlockList[boardLoc]);
+            }
+        }
+
+        return blocksAboveList;
     }
 
     //Start Flashing White Blocks
@@ -255,7 +292,7 @@ public class BlockContainer : MonoBehaviour
         destroyBlockList = destroyBlockList.OrderByDescending(a => a.BoardLoc.y).ThenBy(a => a.BoardLoc.x).ToList();
 
         //Lead block store next destroy phase
-        destroyBlockList.First().StoredAction = () => { OnBlocksIconDestroy(destroyBlockList); };
+        destroyBlockList.Last().StoredAction = () => { OnBlocksIconDestroy(destroyBlockList); };
 
         foreach(var block in destroyBlockList) {
             block.StartDestroy();
@@ -277,7 +314,8 @@ public class BlockContainer : MonoBehaviour
 
             if(i == destroyBlockList.Count - 1) {
                 block.StoredAction = () => { 
-                    GameController.GC.AddTimedAction(() => { OnBlocksFinishDestroy(destroyBlockList); }, 0.2f);
+                    GameController.GC.AddTimedAction(() => { 
+                        OnBlocksFinishDestroy(destroyBlockList); }, 0.2f);
                 };
             }
         }
@@ -289,8 +327,12 @@ public class BlockContainer : MonoBehaviour
 
         foreach(var blockToDestroy in destroyBlockList)
         {
-            if(!colRowList.ContainsKey(blockToDestroy.BoardLoc.x) || colRowList[blockToDestroy.BoardLoc.x] < blockToDestroy.BoardLoc.y)
+            var colExists = colRowList.ContainsKey(blockToDestroy.BoardLoc.x);
+            if(!colExists || colRowList[blockToDestroy.BoardLoc.x] < blockToDestroy.BoardLoc.y)
             {
+                if(colExists) {
+                    colRowList.Remove(blockToDestroy.BoardLoc.x);
+                }
                 colRowList.Add(blockToDestroy.BoardLoc.x, blockToDestroy.BoardLoc.y);
             } 
 
@@ -298,17 +340,18 @@ public class BlockContainer : MonoBehaviour
             blockToDestroy.enabled = false;
         }
 
-        Block blockToFall;
-
         foreach(var col in colRowList.Keys)
         {
-            var startingRow = colRowList[col];
+            var row = colRowList[col];
+            var blocksToFall = GetBlocksAboveLoc(new Vector2(col, row));
 
-            for(var row = startingRow + 1; row < BoardSize.y; row++)
+            if(blocksToFall.Count > 0)
             {
-                if(BlockList.TryGetValue(new Vector2(col, row), out blockToFall)) {
-                    blockToFall.StartFall(true);
-                }
+                var leadFallBlock = blocksToFall.First();
+                blocksToFall.Remove(leadFallBlock);
+
+                var linkedBlocks = blocksToFall.Count > 0 ? blocksToFall : null;
+                leadFallBlock.StartFall(true, linkedBlocks);
             }
         }
     }
