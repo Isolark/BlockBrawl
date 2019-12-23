@@ -557,61 +557,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &334887133
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 334887135}
-  - component: {fileID: 334887134}
-  m_Layer: 0
-  m_Name: BlockSL (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &334887134
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 334887133}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 15410c82048384646a24f748596f3d5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SpriteList:
-  - {fileID: 21300010, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
-  - {fileID: 21300000, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
-  - {fileID: 21300002, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
-  - {fileID: 21300004, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
-  - {fileID: 21300006, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
-  - {fileID: 21300008, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
-  - {fileID: 21300016, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
-  - {fileID: 21300018, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
-  - {fileID: 21300022, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
-  - {fileID: 21300024, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
-  - {fileID: 21300026, guid: 2df89ca00e0e4d6488e09974ea55932a, type: 3}
---- !u!4 &334887135
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 334887133}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -6.2, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &491725317
 GameObject:
   m_ObjectHideFlags: 0
@@ -1077,7 +1022,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pooledObj: {fileID: 7955299554398708497, guid: 3fca77af10d12914db5f70c1e46cfa51,
     type: 3}
-  poolMaxSize: 50
+  poolMaxSize: 10
   expandable: 1
 --- !u!1 &682472250
 GameObject:
@@ -1179,10 +1124,11 @@ MonoBehaviour:
   BoardSize: {x: 0, y: 0}
   MaxTypes: 5
   StartingHeight: 3
+  IconDestroyDelay: 0.3
+  ChainLinkDelay: 0.2
   Speed: 0.002
   BaseSpeed: 0.002
-  ManualRaiseSpeed: 0.05
-  IconDestroyDelay: 0.3
+  ManualRaiseSpeed: 0.08
   AtTop: 0
   InitialBlock_Y: 0
   Target_Y: 0
@@ -2651,7 +2597,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pooledObj: {fileID: 6472154454156000429, guid: 1d0e2a30d17335b4c837550fab0e0184,
     type: 3}
-  poolMaxSize: 100
+  poolMaxSize: 80
   expandable: 1
 --- !u!1 &2085138482
 GameObject:
@@ -2817,7 +2763,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BlockContainer: {fileID: 840835313}
-  BlockSL: {fileID: 530665944}
   Cursor: {fileID: 242245979}
   BoardSize: {x: 6, y: 12}
   CursorStartPosition: {x: 2, y: 2}
+  Score: 0

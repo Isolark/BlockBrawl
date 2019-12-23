@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TimedEventManager : MonoBehaviour 
@@ -10,6 +11,7 @@ public class TimedEventManager : MonoBehaviour
     public float TimeStep;
 
     private IList<TimedAction> ActionList;
+    private IList<TimedAction> StagingList;
     private IList<TimedAction> DeletionList;
     private float TimePaused;
     private float LastTime;
@@ -17,6 +19,7 @@ public class TimedEventManager : MonoBehaviour
     void Start()
     {
         ActionList = new List<TimedAction>();
+        StagingList = new List<TimedAction>();
         DeletionList = new List<TimedAction>();
         Unpause();
     }
@@ -37,7 +40,7 @@ public class TimedEventManager : MonoBehaviour
 
     public void AddTimedAction(Action action, float activationTime)
     {
-        ActionList.Add(new TimedAction(action, activationTime));
+        StagingList.Add(new TimedAction(action, activationTime));
     }
 
     //Main Coroutine
@@ -50,6 +53,12 @@ public class TimedEventManager : MonoBehaviour
             var timeDelta = Time.timeSinceLevelLoad - LastTime;
             LastTime = Time.timeSinceLevelLoad;
 
+            if(StagingList.Count > 0) {
+                foreach(var action in StagingList) {
+                    ActionList.Add(action);
+                }
+                StagingList.Clear();
+            }
             foreach(var action in ActionList)
             {
                 if(action.TickDown(timeDelta)) {
@@ -59,9 +68,6 @@ public class TimedEventManager : MonoBehaviour
             foreach(var actionToDelete in DeletionList)
             {
                 ActionList.Remove(actionToDelete);
-            }
-            if(DeletionList.Count > 0) {
-                DeletionList.Clear();
             }
         }
     }

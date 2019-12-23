@@ -24,9 +24,16 @@ public static class BlockExtensions
         block.GetComponent<SpriteRenderer>().color = block.Icon.GetComponent<SpriteRenderer>().color = Color.white;
     }
 
+    public static void InitStates(this Block block)
+    {
+        block.IsMoveable = block.IsComboable = true;
+        block.IsChainable = false;
+        block.IsFalling = false;
+    }
+
     public static void SetStates(this Block block, bool state)
     {
-        block.IsChainable = block.IsComboable = block.IsMoveable = state;
+        block.IsComboable = block.IsMoveable = state;
     }
 
     public static void IncrementType(this Block block, int maxTypes = 5)
@@ -61,6 +68,40 @@ public static class BlockExtensions
         }
     }
 
+    public static void StartFall(this Block block, bool isChainable, Action callback = null)
+    {
+        if(block.IsFalling) { return; }
+
+        block.IsFalling = true;
+        block.IsChainable = isChainable;
+        block.IsMoveable = block.IsComboable = false;
+
+        if(!isChainable) {
+            var fallDelta = new Vector2(0, -GameController.GC.BlockDist);
+            var fallAccel = new Vector2(0, -0.005f);
+            var fallMaxVelocity = new Vector2(0, -0.5f);
+
+            GameController.GC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, Vector2.zero, fallAccel, () => block.StepFall(), callback);
+        }
+        else { //TEMPORARY
+            block.BlockSprite.sprite = SpriteLibrary.SL.GetSpriteByName("Block");
+        }
+    }
+
+    public static bool StepFall(this Block block)
+    {
+        var blockList = block.gameObject.GetComponentInParent<BlockContainer>().BlockList;
+        var nextBoardLoc = new Vector2(block.BoardLoc.x, block.BoardLoc.y - 1);
+
+        //Remove from previous location
+        blockList.Remove(new Vector2(block.BoardLoc.x, block.BoardLoc.y + 1));
+
+        if(blockList.ContainsKey(nextBoardLoc)) { return true; }
+
+        blockList.Add(nextBoardLoc, block);
+        return false;
+    }
+
     public static void MoveBoardLoc(this Block block, Vector3 moveVector, bool movePrevBoardLoc = false)
     {
         block.BoardLoc += moveVector;
@@ -91,27 +132,24 @@ public static class BlockExtensions
         var targetPosition = block.transform.localPosition + moveVector;
 
         if(callback != null) {
-            GameController.GC.TransformManager.Add_TimedLinearPos_Transform(block.gameObject, targetPosition, 0.1f, () => { block.OnFinishMove(); callback(); });
+            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, 0.1f, () => { block.OnFinishMove(); callback(); });
         } else {
-            GameController.GC.TransformManager.Add_TimedLinearPos_Transform(block.gameObject, targetPosition, 0.1f, block.OnFinishMove);
+            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, 0.1f, block.OnFinishMove);
         }
 
-        block.SetStates(false);
+        block.IsMoveable = block.IsComboable = false;
 
         if(bumpOrder) {
-            block.GetComponent<SpriteRenderer>().sortingOrder = 2;
-            block.Icon.GetComponent<SpriteRenderer>().sortingOrder = 3;
+            block.GetComponent<SpriteRenderer>().sortingOrder = 6;
+            block.Icon.GetComponent<SpriteRenderer>().sortingOrder = 7;
         }
     }
 
     public static void OnFinishMove(this Block block)
     {
-        block.SetStates(true);
-        block.transform.localPosition.Set(block.transform.localPosition.x, block.transform.localPosition.y, 1);
-
-        if(block.GetComponent<SpriteRenderer>().sortingOrder >= 2) {
+        if(block.GetComponent<SpriteRenderer>().sortingOrder >= 6) {
             block.GetComponent<SpriteRenderer>().sortingOrder = 0;
-            block.Icon.GetComponent<SpriteRenderer>().sortingOrder = 1; 
+            block.Icon.GetComponent<SpriteRenderer>().sortingOrder = 5; 
         }
     }
 }
