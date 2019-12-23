@@ -90,8 +90,6 @@ public class ManualDeltaTransItem : ManualTransItem
         P_Delta = pFinal;
         P_Final = new Vector2(target.transform.localPosition.x, target.transform.localPosition.y) + P_Delta;
         CheckCallback = checkCallback;
-
-        Debug.Log(P_Final + " | " + pVelocity + " | " + pAcceleration);
     }
 
     public ManualDeltaTransItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Vector2 pMaxVelocity, 
@@ -159,7 +157,7 @@ public class ManualTransItem : TransformItem
 
         P_Velocity += P_Acceleration * t;
 
-        Debug.Log("Velocity: " + P_Velocity + " | Accel: " + P_Acceleration);
+        //Debug.Log("Velocity: " + P_Velocity + " | Accel: " + P_Acceleration);
 
         if(P_MaxVelocity != null && P_Velocity.magnitude > P_MaxVelocity.magnitude) {
             P_Velocity = P_MaxVelocity;

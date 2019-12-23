@@ -53,7 +53,7 @@ public class BlockContainer : MonoBehaviour
         BoardSize = boardSize;
         Target_Y = transform.localPosition.y + GameController.GC.BlockDist;
 
-        SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-1, 0, 0, 1}, isComboable: false);
+        SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-2, 0, 0, 2}, isComboable: false);
     }
 
     public void SpawnRows(int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null, bool isComboable = true)
@@ -206,13 +206,19 @@ public class BlockContainer : MonoBehaviour
         else if(leftBlockExists) {
             checkBlockList.Add(leftBlock);
 
-            leftBlock.Move(Vector2.right, callback: () => { BlockList.Remove(leftBlock.PrevBoardLoc); OnBlocksFinishMove(checkBlockList); });
+            leftBlock.Move(Vector2.right, callback: () => { 
+                BlockList.Remove(leftBlock.PrevBoardLoc); 
+                OnBlocksFinishMove(checkBlockList); 
+            });
             BlockList[leftBlock.BoardLoc] = leftBlock;
         }
         else {
             checkBlockList.Add(rightBlock);
 
-            rightBlock.Move(Vector2.left, callback: () => { BlockList.Remove(rightBlock.PrevBoardLoc); OnBlocksFinishMove(checkBlockList); });
+            rightBlock.Move(Vector2.left, callback: () => { 
+                BlockList.Remove(rightBlock.PrevBoardLoc); 
+                OnBlocksFinishMove(checkBlockList); 
+            });
             BlockList[rightBlock.BoardLoc] = rightBlock;
         }
     }
@@ -223,21 +229,30 @@ public class BlockContainer : MonoBehaviour
 
         foreach(var checkBlock in checkBlockList)
         {
+            checkBlock.IsFalling = false;
+
             //If was the only block moved, may have other blocks that need to drop
             if(checkBlockList.Count == 1) 
             {
                 var blockPrevAbovePos = new Vector2(checkBlock.PrevBoardLoc.x, checkBlock.PrevBoardLoc.y + 1);
                 if(BlockList.ContainsKey(blockPrevAbovePos)) 
                 {
-                    var blockToFall = BlockList[blockPrevAbovePos];
-                    BlockList.Add(checkBlock.PrevBoardLoc, blockToFall);
+                    var blocksToFall = GetBlocksAboveLoc(checkBlock.PrevBoardLoc);
+                    var leadFallBlock = blocksToFall.First();
+                    var linkedBlocks = blocksToFall.Count > 1 ? blocksToFall.Skip(1).ToList() : null;
 
-                    var linkedBlocks = GetBlocksAboveLoc(blockPrevAbovePos);
+                    foreach(var fallBlock in blocksToFall) 
+                    {
+                        var nextPos = new Vector2(fallBlock.BoardLoc.x, fallBlock.BoardLoc.y - 1);
+                        if(BlockList.ContainsKey(nextPos)) {
+                            BlockList.Remove(nextPos);
+                        }
+                        BlockList.Add(nextPos, fallBlock);
+                    }
+
                     GameController.GC.TimedEventManager.AddTimedAction(() => {
-                        blockToFall.StartFall(false, linkedBlocks, () => { OnBlocksFinishMove(new List<Block>(){ blockToFall }); }); 
-                    }, 0.2f);
-
-                    continue;   
+                        leadFallBlock.StartFall(false, linkedBlocks, () => { OnBlocksFinishMove(blocksToFall); }); 
+                    }, 0.2f); 
                 }
             }
 
@@ -269,7 +284,7 @@ public class BlockContainer : MonoBehaviour
         }
     }
 
-    private IList<Block> GetBlocksAboveLoc(Vector2 boardLoc)
+    private List<Block> GetBlocksAboveLoc(Vector2 boardLoc, bool canBeFalling = false)
     {
         var blocksAboveList = new List<Block>();
 
@@ -277,7 +292,7 @@ public class BlockContainer : MonoBehaviour
         {
             boardLoc += Vector2.up;
 
-            if(BlockList.ContainsKey(boardLoc)) {
+            if(BlockList.ContainsKey(boardLoc) && (!BlockList[boardLoc].IsFalling || canBeFalling)) {
                 blocksAboveList.Add(BlockList[boardLoc]);
             }
         }
@@ -337,21 +352,32 @@ public class BlockContainer : MonoBehaviour
             } 
 
             BlockList.Remove(blockToDestroy.BoardLoc);
-            blockToDestroy.enabled = false;
+            blockToDestroy.gameObject.SetActive(false);
         }
 
+        //Drop blocks above the destroyed blocks
         foreach(var col in colRowList.Keys)
         {
             var row = colRowList[col];
             var blocksToFall = GetBlocksAboveLoc(new Vector2(col, row));
-
+            
             if(blocksToFall.Count > 0)
             {
                 var leadFallBlock = blocksToFall.First();
-                blocksToFall.Remove(leadFallBlock);
+                var linkedBlocks = blocksToFall.Count > 1 ? blocksToFall.Skip(1).ToList() : null;
 
-                var linkedBlocks = blocksToFall.Count > 0 ? blocksToFall : null;
-                leadFallBlock.StartFall(true, linkedBlocks);
+                foreach(var fallBlock in blocksToFall) 
+                {
+                    var nextPos = new Vector2(fallBlock.BoardLoc.x, fallBlock.BoardLoc.y - 1);
+                    if(BlockList.ContainsKey(nextPos)) {
+                        BlockList.Remove(nextPos);
+                    }
+                    BlockList.Add(nextPos, fallBlock);
+                }
+
+                GameController.GC.TimedEventManager.AddTimedAction(() => {
+                    leadFallBlock.StartFall(false, linkedBlocks, () => { OnBlocksFinishMove(blocksToFall); }); 
+                }, 0.2f); 
             }
         }
     }

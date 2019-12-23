@@ -78,28 +78,63 @@ public static class BlockExtensions
         block.IsChainable = isChainable;
         block.IsMoveable = block.IsComboable = false;
 
+        block.PrevBoardLoc = block.BoardLoc;
         block.BoardLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
+
+        if(linkedBlocks != null) 
+        {
+            foreach(var linkedBlock in linkedBlocks)
+            {
+                linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
+                linkedBlock.BoardLoc = new Vector3(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1, 0);
+            }
+        }
 
         var fallDelta = new Vector2(0, -GameController.GC.BlockDist);
         var fallAccel = new Vector2(0, -1.5f);
         var fallMaxVelocity = new Vector2(0, -50f);
 
+        var linkedObjs = linkedBlocks != null ? linkedBlocks.Select(x => x.gameObject).ToList() : null;
+
         GameController.GC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, Vector2.zero, fallAccel, fallMaxVelocity,
-            () => block.StepFall(), linkedBlocks.Select(x => x.gameObject).ToList(), callback);
+            () => block.StepFall(linkedBlocks), linkedObjs, callback);
     }
 
-    public static bool StepFall(this Block block)
+    public static bool StepFall(this Block block, IList<Block> linkedBlocks = null)
     {
         var blockList = block.gameObject.GetComponentInParent<BlockContainer>().BlockList;
         var nextBoardLoc = new Vector2(block.BoardLoc.x, block.BoardLoc.y - 1);
 
-        //Remove from previous location
-        blockList.Remove(new Vector2(block.BoardLoc.x, block.BoardLoc.y + 1));
+        //Remove from previous location (if not already filled)
+        if(blockList[block.PrevBoardLoc].GetInstanceID() == block.GetInstanceID()) {
+            blockList.Remove(new Vector2(block.BoardLoc.x, block.BoardLoc.y + 1));
+        }
+
+        if(linkedBlocks != null) 
+        {
+            foreach(var linkedBlock in linkedBlocks) 
+            {
+                if(blockList[linkedBlock.PrevBoardLoc].GetInstanceID() == linkedBlock.GetInstanceID()) 
+                {
+                    blockList.Remove(linkedBlock.PrevBoardLoc);
+                }
+            }
+        }
 
         if(blockList.ContainsKey(nextBoardLoc)) { return true; }
 
         blockList.Add(nextBoardLoc, block);
+        block.PrevBoardLoc = block.BoardLoc;
         block.BoardLoc = nextBoardLoc;
+
+        if(linkedBlocks != null) {
+            foreach(var linkedBlock in linkedBlocks) {
+                var nextLinkedBlockLoc = new Vector2(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1);
+                blockList.Add(nextLinkedBlockLoc, linkedBlock);
+                linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
+                linkedBlock.BoardLoc = nextLinkedBlockLoc;
+            }
+        }
 
         return false;
     }
