@@ -10,6 +10,7 @@ public class BlockContainer : MonoBehaviour
     public int StartingHeight;
     public float IconDestroyDelay; //Delay between icons being destroyed; Reduce for faster Gameplay
     public float ChainLinkDelay; //Delay between starting/adding to a chain VS starting a new chain (should allow for 2 diff rows being diff chains)
+    public float BlockFallDelay; //Delay before block falls while suspended in air
     public float Speed;
     public float BaseSpeed;
     public float ManualRaiseSpeed;
@@ -252,7 +253,7 @@ public class BlockContainer : MonoBehaviour
 
                     GameController.GC.TimedEventManager.AddTimedAction(() => {
                         leadFallBlock.StartFall(false, linkedBlocks, () => { OnBlocksFinishMove(blocksToFall); }); 
-                    }, 0.2f); 
+                    }, BlockFallDelay); 
                 }
             }
 
@@ -263,7 +264,7 @@ public class BlockContainer : MonoBehaviour
                 BlockList.Add(blockBelowPos, checkBlock);
                 GameController.GC.TimedEventManager.AddTimedAction(() => {
                     checkBlock.StartFall(false, callback: () => { OnBlocksFinishMove(new List<Block>(){ checkBlock }); }); 
-                }, 0.2f);
+                }, BlockFallDelay);
                 continue;
             }
 
@@ -360,7 +361,7 @@ public class BlockContainer : MonoBehaviour
         {
             var row = colRowList[col];
             var blocksToFall = GetBlocksAboveLoc(new Vector2(col, row));
-            
+
             if(blocksToFall.Count > 0)
             {
                 var leadFallBlock = blocksToFall.First();
@@ -376,8 +377,8 @@ public class BlockContainer : MonoBehaviour
                 }
 
                 GameController.GC.TimedEventManager.AddTimedAction(() => {
-                    leadFallBlock.StartFall(false, linkedBlocks, () => { OnBlocksFinishMove(blocksToFall); }); 
-                }, 0.2f); 
+                    leadFallBlock.StartFall(true, linkedBlocks, () => { OnBlocksFinishMove(blocksToFall); }); 
+                }, BlockFallDelay); 
             }
         }
     }

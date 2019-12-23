@@ -91,8 +91,9 @@ public static class BlockExtensions
         }
 
         var fallDelta = new Vector2(0, -GameController.GC.BlockDist);
-        var fallAccel = new Vector2(0, -1.5f);
-        var fallMaxVelocity = new Vector2(0, -50f);
+        var fallAccel = new Vector2(0, -25f);
+        var fallVelocity = new Vector2(0, -25f);
+        var fallMaxVelocity = new Vector2(0, -280f);
 
         var linkedObjs = linkedBlocks != null ? linkedBlocks.Select(x => x.gameObject).ToList() : null;
 
@@ -107,7 +108,7 @@ public static class BlockExtensions
 
         //Remove from previous location (if not already filled)
         if(blockList[block.PrevBoardLoc].GetInstanceID() == block.GetInstanceID()) {
-            blockList.Remove(new Vector2(block.BoardLoc.x, block.BoardLoc.y + 1));
+            blockList.Remove(block.PrevBoardLoc);
         }
 
         if(linkedBlocks != null) 
@@ -130,6 +131,10 @@ public static class BlockExtensions
         if(linkedBlocks != null) {
             foreach(var linkedBlock in linkedBlocks) {
                 var nextLinkedBlockLoc = new Vector2(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1);
+
+                if(blockList.ContainsKey(nextLinkedBlockLoc)) {
+                    blockList.Remove(nextLinkedBlockLoc);
+                }
                 blockList.Add(nextLinkedBlockLoc, linkedBlock);
                 linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
                 linkedBlock.BoardLoc = nextLinkedBlockLoc;

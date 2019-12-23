@@ -143,8 +143,9 @@ public class ManualTransItem : TransformItem
         {
             if(OnCheck())
             {
-                deltaVector = new Vector2(Target.transform.localPosition.x, Target.transform.localPosition.y) - P_Final;
+                deltaVector = P_Final - new Vector2(Target.transform.localPosition.x, Target.transform.localPosition.y);
                 IncPosition(deltaVector);
+                //RoundPositions();
 
                 if(Callback != null) {
                     Callback();
@@ -233,6 +234,17 @@ public abstract class TransformItem
         if(LinkedObjs != null) {
             foreach(var obj in LinkedObjs) {
                 obj.transform.localPosition += pDelta;
+            }
+        }
+    }
+
+    virtual protected void RoundPositions()
+    {
+        Target.transform.localPosition = new Vector2(Mathf.Round(Target.transform.localPosition.x * 10)/10, Mathf.Round(Target.transform.localPosition.y*10)/10);
+
+        if(LinkedObjs != null) {
+            foreach(var obj in LinkedObjs) {
+                obj.transform.localPosition = new Vector2(Mathf.Round(obj.transform.localPosition.x * 10)/10, Mathf.Round(obj.transform.localPosition.y *10)/10);;
             }
         }
     }
