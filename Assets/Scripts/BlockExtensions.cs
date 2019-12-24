@@ -97,7 +97,7 @@ public static class BlockExtensions
 
         var linkedObjs = linkedBlocks != null ? linkedBlocks.Select(x => x.gameObject).ToList() : null;
 
-        GameController.GC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, Vector2.zero, fallAccel, fallMaxVelocity,
+        GameController.GC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, fallVelocity, fallMaxVelocity, fallAccel,
             () => block.StepFall(linkedBlocks), linkedObjs, callback);
     }
 

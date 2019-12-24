@@ -1059,9 +1059,9 @@ MonoBehaviour:
   PlayerGameBoard: {fileID: 2140840349}
   BlockDist: 1
   TimeScale: 1
-  BlockFallVelocity: 30
-  BlockFallMaxVelocity: 265
-  BlockFallAcceleration: 30
+  BlockFallVelocity: 35
+  BlockFallMaxVelocity: 35
+  BlockFallAcceleration: 0
 --- !u!4 &682472253
 Transform:
   m_ObjectHideFlags: 0
@@ -1127,13 +1127,17 @@ MonoBehaviour:
   BoardSize: {x: 0, y: 0}
   MaxTypes: 5
   StartingHeight: 3
-  IconDestroyDelay: 0.2
+  IconDestroyDelay: 0.15
   ChainLinkDelay: 0.2
-  BlockFallDelay: 0.075
+  BlockFallDelay: 0.11
   Speed: 0.001
   BaseSpeed: 0.001
   ManualRaiseSpeed: 0.08
-  RaiseStopMultiplier: 0
+  RaiseStopComboMultiplier: 0
+  RaiseStopChainMultiplier: 0
+  BlockDestroyCount: 0
+  ComboCount: 0
+  ChainCount: 0
   AtTop: 0
   InitialBlock_Y: 0
   Target_Y: 0

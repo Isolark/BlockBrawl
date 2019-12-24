@@ -145,7 +145,6 @@ public class ManualTransItem : TransformItem
             {
                 deltaVector = P_Final - new Vector2(Target.transform.localPosition.x, Target.transform.localPosition.y);
                 IncPosition(deltaVector);
-                //RoundPositions();
 
                 if(Callback != null) {
                     Callback();
@@ -156,11 +155,11 @@ public class ManualTransItem : TransformItem
 
         IncPosition(deltaVector);
 
-        P_Velocity += P_Acceleration * t;
+        P_Velocity += (P_Acceleration * t);
 
         //Debug.Log("Velocity: " + P_Velocity + " | Accel: " + P_Acceleration);
 
-        if(P_MaxVelocity != null && P_Velocity.magnitude > P_MaxVelocity.magnitude) {
+        if(P_MaxVelocity != null && P_Velocity.sqrMagnitude > P_MaxVelocity.sqrMagnitude) {
             P_Velocity = P_MaxVelocity;
             P_Acceleration = Vector2.zero;
         }
@@ -237,17 +236,5 @@ public abstract class TransformItem
             }
         }
     }
-
-    virtual protected void RoundPositions()
-    {
-        Target.transform.localPosition = new Vector2(Mathf.Round(Target.transform.localPosition.x * 10)/10, Mathf.Round(Target.transform.localPosition.y*10)/10);
-
-        if(LinkedObjs != null) {
-            foreach(var obj in LinkedObjs) {
-                obj.transform.localPosition = new Vector2(Mathf.Round(obj.transform.localPosition.x * 10)/10, Mathf.Round(obj.transform.localPosition.y *10)/10);;
-            }
-        }
-    }
-
     abstract public bool OnMove();
 }
