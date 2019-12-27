@@ -13,9 +13,14 @@ public class BaseController : MonoBehaviour
     public delegate void OnUpdateDelegate();
     public event OnUpdateDelegate UpdateDelegate;
 
-    public virtual void AddTimedAction(Action action, float activationTime)
+    public virtual TimedAction AddTimedAction(Action action, float activationTime, bool isContinuous = false)
     {
-        TimedEventManager.AddTimedAction(action, activationTime);
+        return TimedEventManager.AddTimedAction(action, activationTime, isContinuous);
+    }
+
+    public virtual void RemoveTimedAction(TimedAction timedAction)
+    {
+        TimedEventManager.RemoveTimedAction(timedAction);
     }
 
     protected virtual void FixedUpdate()

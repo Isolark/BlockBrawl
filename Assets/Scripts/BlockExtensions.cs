@@ -31,7 +31,7 @@ public static class BlockExtensions
     {
         block.IsMoveable = block.IsComboable = true;
         block.IsChainable = false;
-        block.IsFalling = false;
+        block.IsFalling = block.IsFallLocked = false;
         block.IsDestroying = false;
     }
 
@@ -48,10 +48,10 @@ public static class BlockExtensions
         else { block.Type = (BlockType)typeInt + 1; }
     }
 
-    public static bool IsMatch(this Block block, Block blockToMatch, bool ignoreComboable = false)
+    public static bool IsMatch(this Block block, Block blockToMatch, bool ignoreState = false)
     {
         return block.GetInstanceID() != blockToMatch.GetInstanceID() && 
-            block.Type == blockToMatch.Type && (block.IsComboable || ignoreComboable);
+            block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFallLocked) || ignoreState);
     }
 
     //Flashing, states set to false
@@ -92,7 +92,7 @@ public static class BlockExtensions
         
         block.IsFalling = true;
         block.IsChainable = isChainable;
-        block.IsMoveable = block.IsComboable = false;
+        block.IsMoveable = block.IsComboable = block.IsFallLocked = false;
 
         block.PrevBoardLoc = block.BoardLoc;
         block.BoardLoc = targetBoardLoc;
@@ -190,11 +190,12 @@ public static class BlockExtensions
         //Calculate movement
         moveVector.Scale(new Vector3(GameController.GC.BlockDist, GameController.GC.BlockDist, 0));
         var targetPosition = block.transform.localPosition + moveVector;
+        var switchSpeed = GameController.GC.BlockSwitchSpeed;
 
         if(callback != null) {
-            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, 0.1f, () => { block.OnFinishMove(); callback(); });
+            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, switchSpeed, () => { block.OnFinishMove(); callback(); });
         } else {
-            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, 0.1f, block.OnFinishMove);
+            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, switchSpeed, block.OnFinishMove);
         }
 
         block.IsMoveable = block.IsComboable = false;

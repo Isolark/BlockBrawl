@@ -37,12 +37,25 @@ public class TimedEventManager : MonoBehaviour
         Paused = false;
     }
 
-    public TimedAction AddTimedAction(Action action, float activationTime)
+    public TimedAction AddTimedAction(Action action, float activationTime, bool isContinuous = false)
     {
-        var timedAction = new TimedAction(action, activationTime);
+        var timedAction = new TimedAction(action, activationTime, isContinuous);
         StagingList.Add(timedAction);
 
         return timedAction;
+    }
+
+    public void RemoveTimedAction(TimedAction timedAction)
+    {
+        if(StagingList.Contains(timedAction)) {
+            StagingList.Remove(timedAction);
+        }
+        if(ActionList.Contains(timedAction)) {
+            ActionList.Remove(timedAction);
+        }
+        if(DeletionList.Contains(timedAction)) {
+            DeletionList.Remove(timedAction);
+        }
     }
 
     private void OnUpdate()
@@ -71,12 +84,17 @@ public class TimedEventManager : MonoBehaviour
 public class TimedAction
 {
     public float ActivationTime;
+    private float InitialActivationTime;
+    public bool IsActive;
+    public bool IsContinuous;
     private Action MyAction;
 
-    public TimedAction(Action myAction, float activationTime)
+    public TimedAction(Action myAction, float activationTime, bool isContinuous = false)
     {
         MyAction = myAction;
-        ActivationTime = activationTime;
+        InitialActivationTime = ActivationTime = activationTime;
+        IsContinuous = isContinuous;
+        IsActive = true;
     }
 
     public bool TickDown(float timeDelta)
@@ -85,6 +103,12 @@ public class TimedAction
 
         if(ActivationTime <= 0) {
             MyAction();
+
+            if(IsContinuous) {
+                var startingActivationTime = InitialActivationTime + ActivationTime;
+                ActivationTime = startingActivationTime;
+                return false;
+            }
             return true;
         }
         return false;

@@ -17,6 +17,7 @@ public class Block : MonoBehaviour
     public bool IsComboable;
     public bool IsChainable;
     public bool IsMoveable;
+    public bool IsFallLocked;
     public bool IsFalling;
     public bool IsDestroying;
     public bool HasIterated;

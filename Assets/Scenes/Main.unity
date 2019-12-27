@@ -1459,11 +1459,15 @@ MonoBehaviour:
   TimedEventManager: {fileID: 1017041817}
   TransformManager: {fileID: 491725319}
   PlayerGameBoard: {fileID: 2140840349}
+  GameStatsMenu: {fileID: 1287782067}
   BlockDist: 1
   TimeScale: 1
   BlockFallVelocity: 35
   BlockFallMaxVelocity: 35
   BlockFallAcceleration: 0
+  BlockSwitchSpeed: 0.1
+  RaiseTimeStopComboMultiplier: 0.3
+  RaiseTimeStopChainMultiplier: 0.8
 --- !u!4 &682472253
 Transform:
   m_ObjectHideFlags: 0
@@ -1686,16 +1690,13 @@ MonoBehaviour:
   StartingHeight: 3
   IconDestroyDelay: 0.15
   ChainLinkDelay: 0.2
-  BlockFallDelay: 0.11
-  BlockSwitchSpeed: 0
-  Speed: 0.0001
-  BaseSpeed: 0.0001
+  BlockFallDelay: 0.12
+  RaiseSpeed: 0.0001
+  BaseRaiseSpeed: 0.0001
   ManualRaiseSpeed: 0.08
-  RaiseStopComboMultiplier: 0
-  RaiseStopChainMultiplier: 0
+  RaiseAcceleration: 0.0001
+  RaiseStopTime: 0
   BlockDestroyCount: 0
-  ComboCount: 0
-  ChainCount: 0
   AtTop: 0
   InitialBlock_Y: 0
   Target_Y: 0
