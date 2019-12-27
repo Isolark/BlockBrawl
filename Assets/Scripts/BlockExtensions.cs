@@ -8,6 +8,7 @@ public static class BlockExtensions
     public static void Initialize(this Block block, bool isOnBoard = false)
     {
         block.SetStates(isOnBoard);
+        block.StoredAction = null;
 
         var blockSpr = block.GetComponent<SpriteRenderer>();
         var blockIconSpr = block.Icon.GetComponent<SpriteRenderer>();
@@ -22,7 +23,7 @@ public static class BlockExtensions
 
     public static void OnEnterBoard(this Block block)
     {
-        block.SetStates(true);
+        block.InitStates();
         block.GetComponent<SpriteRenderer>().color = block.Icon.GetComponent<SpriteRenderer>().color = Color.white;
     }
 
@@ -47,9 +48,10 @@ public static class BlockExtensions
         else { block.Type = (BlockType)typeInt + 1; }
     }
 
-    public static bool IsMatch(this Block block, BlockType blockType, bool ignoreComboable = false)
+    public static bool IsMatch(this Block block, Block blockToMatch, bool ignoreComboable = false)
     {
-        return block.Type == blockType && (block.IsComboable || ignoreComboable);
+        return block.GetInstanceID() != blockToMatch.GetInstanceID() && 
+            block.Type == blockToMatch.Type && (block.IsComboable || ignoreComboable);
     }
 
     //Flashing, states set to false
@@ -72,16 +74,29 @@ public static class BlockExtensions
         }
     }
 
+    //If Block was locked in expectation of falling, allow to move (if not destroying)
+    public static void RemoveFallLock(this Block block)
+    {
+        if(block.IsDestroying) { return; }
+        block.IsMoveable = true;
+    }
+
     public static void StartFall(this Block block, bool isChainable, IList<Block> linkedBlocks = null, Action callback = null)
     {
-        if(block.IsFalling || block.IsDestroying) { return; }
+        if(block.IsFalling || block.IsDestroying ) { return; }
 
+        var blockList = block.gameObject.GetComponentInParent<BlockContainer>().BlockList;
+        var targetBoardLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
+
+        if(blockList.ContainsKey(targetBoardLoc) && blockList[targetBoardLoc].GetInstanceID() != block.GetInstanceID()) { return; }
+        
         block.IsFalling = true;
         block.IsChainable = isChainable;
         block.IsMoveable = block.IsComboable = false;
 
         block.PrevBoardLoc = block.BoardLoc;
-        block.BoardLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
+        block.BoardLoc = targetBoardLoc;
+        blockList[targetBoardLoc] = block;
 
         if(linkedBlocks != null) 
         {
@@ -89,6 +104,7 @@ public static class BlockExtensions
             {
                 linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
                 linkedBlock.BoardLoc = new Vector3(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1, 0);
+                blockList[linkedBlock.BoardLoc] = linkedBlock;
             }
         }
 
@@ -117,7 +133,7 @@ public static class BlockExtensions
         {
             foreach(var linkedBlock in linkedBlocks) 
             {
-                if(blockList[linkedBlock.PrevBoardLoc].GetInstanceID() == linkedBlock.GetInstanceID()) 
+                if(blockList.ContainsKey(linkedBlock.PrevBoardLoc) && blockList[linkedBlock.PrevBoardLoc].GetInstanceID() == linkedBlock.GetInstanceID()) 
                 {
                     blockList.Remove(linkedBlock.PrevBoardLoc);
                 }

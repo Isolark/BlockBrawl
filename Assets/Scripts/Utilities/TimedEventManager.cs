@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class TimedEventManager : MonoBehaviour 
 {
     public BaseController BaseController;
 
-    public float TimeStep;
-
     private IList<TimedAction> ActionList;
     private IList<TimedAction> StagingList;
     private IList<TimedAction> DeletionList;
-    private float TimePaused;
-    private float LastTime;
+    private bool Paused;
+    private float PrevTime;
 
     void Start()
     {
@@ -24,18 +20,21 @@ public class TimedEventManager : MonoBehaviour
         Unpause();
     }
 
+    void Destroy()
+    {
+        Pause();
+    }
+
     public void Pause()
     {
-        StopCoroutine(TimedUpdate());
-
-        TimePaused = Time.timeSinceLevelLoad;
+        BaseController.UpdateDelegate -= OnUpdate;
+        Paused = true;
     }
 
     public void Unpause()
     {
-        StartCoroutine(TimedUpdate());
-
-        LastTime = Time.timeSinceLevelLoad;
+        BaseController.UpdateDelegate += OnUpdate;
+        Paused = false;
     }
 
     public TimedAction AddTimedAction(Action action, float activationTime)
@@ -46,32 +45,25 @@ public class TimedEventManager : MonoBehaviour
         return timedAction;
     }
 
-    //Main Coroutine
-    private IEnumerator TimedUpdate()
+    private void OnUpdate()
     {
-        for(;;)
-        {
-            yield return new WaitForSeconds(TimeStep);
-            
-            var timeDelta = Time.timeSinceLevelLoad - LastTime;
-            LastTime = Time.timeSinceLevelLoad;
+        if(Paused) { return; }
 
-            if(StagingList.Count > 0) {
-                foreach(var action in StagingList) {
-                    ActionList.Add(action);
-                }
-                StagingList.Clear();
+        if(StagingList.Count > 0) {
+            foreach(var action in StagingList) {
+                ActionList.Add(action);
             }
-            foreach(var action in ActionList)
-            {
-                if(action.TickDown(timeDelta)) {
-                    DeletionList.Add(action);
-                }
+            StagingList.Clear();
+        }
+        foreach(var action in ActionList)
+        {
+            if(action.TickDown(Time.deltaTime)) {
+                DeletionList.Add(action);
             }
-            foreach(var actionToDelete in DeletionList)
-            {
-                ActionList.Remove(actionToDelete);
-            }
+        }
+        foreach(var actionToDelete in DeletionList)
+        {
+            ActionList.Remove(actionToDelete);
         }
     }
 }
