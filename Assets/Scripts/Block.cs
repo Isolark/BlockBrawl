@@ -18,6 +18,7 @@ public class Block : MonoBehaviour
     public bool IsChainable;
     public bool IsMoveable;
     public bool IsFalling;
+    public bool IsDestroying;
     public bool HasIterated;
 
     //Action Ref

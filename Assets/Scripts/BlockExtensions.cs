@@ -31,6 +31,7 @@ public static class BlockExtensions
         block.IsMoveable = block.IsComboable = true;
         block.IsChainable = false;
         block.IsFalling = false;
+        block.IsDestroying = false;
     }
 
     public static void SetStates(this Block block, bool state)
@@ -55,6 +56,7 @@ public static class BlockExtensions
     public static void StartDestroy(this Block block)
     {
         block.SetStates(false);
+        block.IsDestroying = true;
 
         var whiteBlockFX = SpriteFXPooler.SP.GetPooledObject("BlockLayer", parent: block.transform).GetComponent<SpriteFX>();
         whiteBlockFX.Initialize("Block-White", "BlockCtrl");
@@ -72,7 +74,7 @@ public static class BlockExtensions
 
     public static void StartFall(this Block block, bool isChainable, IList<Block> linkedBlocks = null, Action callback = null)
     {
-        if(block.IsFalling) { return; }
+        if(block.IsFalling || block.IsDestroying) { return; }
 
         block.IsFalling = true;
         block.IsChainable = isChainable;
@@ -107,7 +109,7 @@ public static class BlockExtensions
         var nextBoardLoc = new Vector2(block.BoardLoc.x, block.BoardLoc.y - 1);
 
         //Remove from previous location (if not already filled)
-        if(blockList[block.PrevBoardLoc].GetInstanceID() == block.GetInstanceID()) {
+        if(blockList.ContainsKey(block.PrevBoardLoc) && blockList[block.PrevBoardLoc].GetInstanceID() == block.GetInstanceID()) {
             blockList.Remove(block.PrevBoardLoc);
         }
 
