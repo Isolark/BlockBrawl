@@ -16,7 +16,6 @@ public class BlockContainer : MonoBehaviour
     public float ManualRaiseSpeed;
     public float RaiseAcceleration;
     TimedAction RaiseSpeedTimer;
-    TimedAction RaiseStopTimer;
     public float RaiseStopTime;
     public int BlockDestroyCount; //Stops Move(), but not RaiseStopTimer; Timer is created anew if time > what is left of original
 
@@ -25,7 +24,7 @@ public class BlockContainer : MonoBehaviour
     public int ChainCount; //Once BlockDestroyCount strikes 0, reset this (by default) 
     private int PrevChainCount;
     private int ResetChainCounter;
-    private Block PrevChainBlock; //Block that was part of the most recent chain (after its fall is done, can reset if no other chains)
+
     public bool IsHoldingTrigger;
     public bool IsManuallyRaising;
     public bool CanManuallyRaise;
@@ -38,8 +37,6 @@ public class BlockContainer : MonoBehaviour
     private IDictionary<Vector2, Block> TmpBlockList; //For transferring after moving up a "level"
     private List<Block> ComboBlockList; //All Blocks belonging to current combo
     private List<Block> ChainedBlockList; //All Blocks belonging to current chain
-
-    private List<Block> ChainLinkBlockList;
 
     public BlockContainer(int maxTypes, int startingHeight, float startingSpeed)
     {
@@ -54,7 +51,6 @@ public class BlockContainer : MonoBehaviour
         TmpBlockList = new Dictionary<Vector2, Block>();
         ComboBlockList = new List<Block>();
         ChainedBlockList = new List<Block>();
-        ChainLinkBlockList = new List<Block>();
     }
 
     void Start()
