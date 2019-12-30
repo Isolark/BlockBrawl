@@ -8,6 +8,7 @@ public static class BlockExtensions
     public static void Initialize(this Block block, bool isOnBoard = false)
     {
         block.SetStates(isOnBoard);
+        block.StoredAction = null;
 
         var blockSpr = block.GetComponent<SpriteRenderer>();
         var blockIconSpr = block.Icon.GetComponent<SpriteRenderer>();
@@ -22,7 +23,7 @@ public static class BlockExtensions
 
     public static void OnEnterBoard(this Block block)
     {
-        block.SetStates(true);
+        block.InitStates();
         block.GetComponent<SpriteRenderer>().color = block.Icon.GetComponent<SpriteRenderer>().color = Color.white;
     }
 
@@ -30,7 +31,8 @@ public static class BlockExtensions
     {
         block.IsMoveable = block.IsComboable = true;
         block.IsChainable = false;
-        block.IsFalling = false;
+        block.IsFalling = block.IsFallLocked = false;
+        block.IsDestroying = false;
     }
 
     public static void SetStates(this Block block, bool state)
@@ -46,15 +48,17 @@ public static class BlockExtensions
         else { block.Type = (BlockType)typeInt + 1; }
     }
 
-    public static bool IsMatch(this Block block, BlockType blockType, bool ignoreComboable = false)
+    public static bool IsMatch(this Block block, Block blockToMatch, bool ignoreState = false)
     {
-        return block.Type == blockType && (block.IsComboable || ignoreComboable);
+        return block.GetInstanceID() != blockToMatch.GetInstanceID() && 
+            block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFallLocked) || ignoreState);
     }
 
     //Flashing, states set to false
     public static void StartDestroy(this Block block)
     {
         block.SetStates(false);
+        block.IsDestroying = true;
 
         var whiteBlockFX = SpriteFXPooler.SP.GetPooledObject("BlockLayer", parent: block.transform).GetComponent<SpriteFX>();
         whiteBlockFX.Initialize("Block-White", "BlockCtrl");
@@ -70,23 +74,42 @@ public static class BlockExtensions
         }
     }
 
+    //If Block was locked in expectation of falling, allow to move (if not destroying)
+    public static void RemoveFallLock(this Block block)
+    {
+        if(block.IsDestroying) { return; }
+        block.IsFallLocked = false;
+        block.IsMoveable = true;
+    }
+
     public static void StartFall(this Block block, bool isChainable, IList<Block> linkedBlocks = null, Action callback = null)
     {
-        if(block.IsFalling) { return; }
+        if(block.IsFalling || block.IsDestroying ) { return; }
 
+        var blockList = block.gameObject.GetComponentInParent<BlockContainer>().BlockList;
+        var targetBoardLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
+
+        //if(blockList.ContainsKey(targetBoardLoc) && blockList[targetBoardLoc].GetInstanceID() != block.GetInstanceID()) { return; }
+        
         block.IsFalling = true;
         block.IsChainable = isChainable;
-        block.IsMoveable = block.IsComboable = false;
+        block.IsMoveable = block.IsComboable = block.IsFallLocked = false;
 
         block.PrevBoardLoc = block.BoardLoc;
-        block.BoardLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
+        block.BoardLoc = targetBoardLoc;
+        blockList[targetBoardLoc] = block;
 
         if(linkedBlocks != null) 
         {
             foreach(var linkedBlock in linkedBlocks)
             {
+                linkedBlock.IsFalling = true;
+                linkedBlock.IsChainable = isChainable;
+                linkedBlock.IsMoveable = linkedBlock.IsComboable = linkedBlock.IsFallLocked = false;
+
                 linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
                 linkedBlock.BoardLoc = new Vector3(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1, 0);
+                blockList[linkedBlock.BoardLoc] = linkedBlock;
             }
         }
 
@@ -97,7 +120,7 @@ public static class BlockExtensions
 
         var linkedObjs = linkedBlocks != null ? linkedBlocks.Select(x => x.gameObject).ToList() : null;
 
-        GameController.GC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, Vector2.zero, fallAccel, fallMaxVelocity,
+        GameController.GC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, fallVelocity, fallMaxVelocity, fallAccel,
             () => block.StepFall(linkedBlocks), linkedObjs, callback);
     }
 
@@ -107,7 +130,7 @@ public static class BlockExtensions
         var nextBoardLoc = new Vector2(block.BoardLoc.x, block.BoardLoc.y - 1);
 
         //Remove from previous location (if not already filled)
-        if(blockList[block.PrevBoardLoc].GetInstanceID() == block.GetInstanceID()) {
+        if(blockList.ContainsKey(block.PrevBoardLoc) && blockList[block.PrevBoardLoc].GetInstanceID() == block.GetInstanceID()) {
             blockList.Remove(block.PrevBoardLoc);
         }
 
@@ -115,7 +138,7 @@ public static class BlockExtensions
         {
             foreach(var linkedBlock in linkedBlocks) 
             {
-                if(blockList[linkedBlock.PrevBoardLoc].GetInstanceID() == linkedBlock.GetInstanceID()) 
+                if(blockList.ContainsKey(linkedBlock.PrevBoardLoc) && blockList[linkedBlock.PrevBoardLoc].GetInstanceID() == linkedBlock.GetInstanceID()) 
                 {
                     blockList.Remove(linkedBlock.PrevBoardLoc);
                 }
@@ -172,11 +195,12 @@ public static class BlockExtensions
         //Calculate movement
         moveVector.Scale(new Vector3(GameController.GC.BlockDist, GameController.GC.BlockDist, 0));
         var targetPosition = block.transform.localPosition + moveVector;
+        var switchSpeed = GameController.GC.BlockSwitchSpeed;
 
         if(callback != null) {
-            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, 0.1f, () => { block.OnFinishMove(); callback(); });
+            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, switchSpeed, () => { block.OnFinishMove(); callback(); });
         } else {
-            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, 0.1f, block.OnFinishMove);
+            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, switchSpeed, block.OnFinishMove);
         }
 
         block.IsMoveable = block.IsComboable = false;
