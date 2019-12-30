@@ -78,6 +78,7 @@ public static class BlockExtensions
     public static void RemoveFallLock(this Block block)
     {
         if(block.IsDestroying) { return; }
+        block.IsFallLocked = false;
         block.IsMoveable = true;
     }
 
@@ -88,7 +89,7 @@ public static class BlockExtensions
         var blockList = block.gameObject.GetComponentInParent<BlockContainer>().BlockList;
         var targetBoardLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
 
-        if(blockList.ContainsKey(targetBoardLoc) && blockList[targetBoardLoc].GetInstanceID() != block.GetInstanceID()) { return; }
+        //if(blockList.ContainsKey(targetBoardLoc) && blockList[targetBoardLoc].GetInstanceID() != block.GetInstanceID()) { return; }
         
         block.IsFalling = true;
         block.IsChainable = isChainable;
@@ -102,6 +103,10 @@ public static class BlockExtensions
         {
             foreach(var linkedBlock in linkedBlocks)
             {
+                linkedBlock.IsFalling = true;
+                linkedBlock.IsChainable = isChainable;
+                linkedBlock.IsMoveable = linkedBlock.IsComboable = linkedBlock.IsFallLocked = false;
+
                 linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
                 linkedBlock.BoardLoc = new Vector3(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1, 0);
                 blockList[linkedBlock.BoardLoc] = linkedBlock;
