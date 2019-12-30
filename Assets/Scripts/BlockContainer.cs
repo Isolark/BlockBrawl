@@ -16,16 +16,18 @@ public class BlockContainer : MonoBehaviour
     public float ManualRaiseSpeed;
     public float RaiseAcceleration;
     TimedAction RaiseSpeedTimer;
-    TimedAction RaiseStopTimer;
     public float RaiseStopTime;
     public int BlockDestroyCount; //Stops Move(), but not RaiseStopTimer; Timer is created anew if time > what is left of original
 
     private Vector2 PopupDisplayLoc; //Set in priority of UP, LEFT, RIGHT, DOWN
     private int ComboCount; //Only Persists until next Move() (by default)
     public int ChainCount; //Once BlockDestroyCount strikes 0, reset this (by default) 
-    private Block PrevChainBlock; //Block that was part of the most recent chain (after its fall is done, can reset if no other chains)
+    private int PrevChainCount;
+    private int ResetChainCounter;
+
     public bool IsHoldingTrigger;
     public bool IsManuallyRaising;
+    public bool CanManuallyRaise;
     private float BlockDist;
 
     public bool AtTop;
@@ -45,7 +47,6 @@ public class BlockContainer : MonoBehaviour
 
     void Awake()
     {
-        AtTop = false;
         BlockList = new Dictionary<Vector2, Block>();
         TmpBlockList = new Dictionary<Vector2, Block>();
         ComboBlockList = new List<Block>();
@@ -60,6 +61,8 @@ public class BlockContainer : MonoBehaviour
 
     public void Initialize(Vector2 boardSize)
     {
+        ResetChainCounter = -1;
+        AtTop = CanManuallyRaise = false;
         BoardSize = boardSize;
         Target_Y = transform.localPosition.y + GameController.GC.BlockDist;
         ComboCount = ChainCount = 1;
@@ -72,6 +75,7 @@ public class BlockContainer : MonoBehaviour
         RaiseSpeedTimer = GameController.GC.AddTimedAction(() => { RaiseSpeed += RaiseAcceleration; }, 30f, true);
 
         SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-2, 0, 0, 2}, isComboable: false);
+        ResetChain();
     }
 
     public void IncrementRaiseStopTime(float raiseStopTime)
@@ -81,6 +85,7 @@ public class BlockContainer : MonoBehaviour
 
     public void ResetChain()
     {
+        ResetChainCounter = -1;
         ChainCount = 1;
         GameController.GC.UpdateGameStatMenu(ChainCount);
     }
@@ -138,82 +143,95 @@ public class BlockContainer : MonoBehaviour
             ComboBlockList.Clear();
         }
 
+        if(ChainCount > 1 && ResetChainCounter == 0 && BlockList.Count(x => x.Value.IsChainable) <= 0) {
+            ResetChain();
+        }
+
         //Check if no destructions still, if so, reduce timestop
         if(BlockDestroyCount > 0) { return; }
+
+        //If nothing currently being destroyed, can trigger raise (even in timestop)
+        if(CanManuallyRaise && IsHoldingTrigger) { 
+            IsManuallyRaising = true;
+            CanManuallyRaise = false;
+            RaiseSpeed = ManualRaiseSpeed;
+        }
+
         if(RaiseStopTime > 0) 
         {
-            if(!IsManuallyRaising) { RaiseStopTime = 0; } 
+            if(IsManuallyRaising) { RaiseStopTime = 0; } 
             else { RaiseStopTime -= Time.deltaTime; }
             
             if(RaiseStopTime > 0) { return; }
             else { RaiseStopTime = 0; }
         }
 
+        if(AtTop) { return; }
+
         //Raise Blocks
-        if(!AtTop)
+        var yPos = transform.localPosition.y;
+
+        if(yPos < Target_Y) 
         {
-            var yPos = transform.localPosition.y;
-
-            if(yPos < Target_Y) 
+            if(yPos + RaiseSpeed > Target_Y)
             {
-                if(yPos + RaiseSpeed > Target_Y)
+                transform.localPosition.Set(transform.localPosition.x, Target_Y, 1);
+                Target_Y++;
+
+                //Shift blocks up
+                TmpBlockList = new Dictionary<Vector2, Block>();
+                var comboableBlockList = new List<Block>();
+
+                foreach(var block in BlockList)
                 {
-                    transform.localPosition.Set(transform.localPosition.x, Target_Y, 1);
-                    Target_Y++;
+                    if(block.Value.HasIterated) { continue; }
+                    block.Value.HasIterated = true;
 
-                    //Shift blocks up
-                    TmpBlockList = new Dictionary<Vector2, Block>();
-                    var comboableBlockList = new List<Block>();
-
-                    foreach(var block in BlockList)
-                    {
-                        if(block.Value.HasIterated) { continue; }
-                        block.Value.HasIterated = true;
-
-                        var nextKey = block.Key + Vector2.up;
-                        
-                        if(!AtTop && nextKey.y >= BoardSize.y)
-                        {
-                            AtTop = Cursor.AtTop = true;
-                        }
-
-                        TmpBlockList.Add(nextKey, block.Value);
-                        block.Value.MoveBoardLoc(Vector2.up, true);
-
-                        if(block.Value.BoardLoc.y == 1) {
-                            block.Value.OnEnterBoard();
-                            comboableBlockList.Add(block.Value);
-                        }
-                    }
-
-                    BlockList = TmpBlockList;
-
-                    foreach(var block in BlockList) {
-                        block.Value.HasIterated = false;
-                    }
-
-                    InitialBlock_Y--;
-
-                    SpawnRows();
-                    OnBlocksFinishMove(comboableBlockList);
-
-                    //Shift cursor up
-                    Cursor.MoveBoardLoc(Vector2.up);
-                    if(!AtTop && Cursor.BoardLoc.y >= BoardSize.y) {
-                        Cursor.OnMove(Vector2.down);
-                    }
+                    var nextKey = block.Key + Vector2.up;
                     
-                    //If was manually moving faster, stop & wait half a second before next check
-                    RaiseSpeed = BaseRaiseSpeed;
+                    if(!AtTop && nextKey.y >= BoardSize.y)
+                    {
+                        AtTop = Cursor.AtTop = true;
+                    }
 
-                    if(IsManuallyRaising) {
-                        GameController.GC.AddTimedAction(UnlockTrigger, 0.05f);
+                    TmpBlockList.Add(nextKey, block.Value);
+                    block.Value.MoveBoardLoc(Vector2.up, true);
+
+                    if(block.Value.BoardLoc.y == 1) {
+                        block.Value.OnEnterBoard();
+                        comboableBlockList.Add(block.Value);
                     }
                 }
-                else
-                {
-                    transform.localPosition += new Vector3(0, RaiseSpeed, 0);
+
+                BlockList = TmpBlockList;
+
+                foreach(var block in BlockList) {
+                    block.Value.HasIterated = false;
                 }
+
+                InitialBlock_Y--;
+
+                SpawnRows();
+                OnBlocksFinishMove(comboableBlockList);
+
+                //Shift cursor up
+                Cursor.MoveBoardLoc(Vector2.up);
+                if(!AtTop && Cursor.BoardLoc.y >= BoardSize.y) {
+                    Cursor.OnMove(Vector2.down);
+                }
+                
+                //If was manually moving faster, stop & wait half a second before next check
+                RaiseSpeed = BaseRaiseSpeed;
+
+                if(IsManuallyRaising) {
+                    CanManuallyRaise = false;
+                    RaiseSpeed = BaseRaiseSpeed;
+                    GameController.GC.AddTimedAction(UnlockTrigger, 0.05f);
+                }
+            }
+            else
+            {
+                transform.localPosition += new Vector3(0, RaiseSpeed, 0);
             }
         }
     }
@@ -274,35 +292,33 @@ public class BlockContainer : MonoBehaviour
             checkBlock.IsFalling = false;
             checkBlock.SetStates(true);
 
-            //If no Block beneath, start falling
+            //Fall if no block under
             var blockBelowPos = new Vector2(checkBlock.BoardLoc.x, checkBlock.BoardLoc.y - 1);
             if(!BlockList.ContainsKey(blockBelowPos)) 
             {
                 LockBlocksAboveLoc(blockBelowPos, checkBlock.IsChainable);
                 checkForMatches = false;
-                //GameController.GC.AddTimedAction(() => { DropBlocksAboveLoc(blockBelowPos); }, BlockFallDelay);
             }
 
-            //If was the only block moved, may have other blocks that need to drop
+            //Drop any that were above
             if(checkBlockList.Count == 1) 
             {
                 var prevLoc = new Vector2(checkBlock.PrevBoardLoc.x, checkBlock.PrevBoardLoc.y);
-                var lockedBlocks = LockBlocksAboveLoc(prevLoc);
-
-                // GameController.GC.AddTimedAction(() => { 
-                //     foreach(var lockedBlock in lockedBlocks) {
-                //         lockedBlock.RemoveFallLock();
-                //     }
-                //     DropBlocksAboveLoc(prevLoc);
-                // } , BlockFallDelay);
+                LockBlocksAboveLoc(prevLoc);
             }
 
-            //If from fall, make sure you're on a "grounded" block
-            if(fromFall && checkBlock.IsChainable && checkBlock.BoardLoc.y > 1 && !BlockList.ContainsKey(new Vector2(checkBlock.BoardLoc.x, checkBlock.BoardLoc.y - 2)))
+            //If from fall, have to be on "grounded" block
+            if(fromFall && checkBlock.IsChainable && checkBlock.BoardLoc.y > 1)
             {
-                BlockList[new Vector2(checkBlock.BoardLoc.x, checkBlock.BoardLoc.y - 1)].IsChainable = true;
-                isPassingChain = true;
-                checkForMatches = false;
+                Block groundBlock;
+                BlockList.TryGetValue(new Vector2(checkBlock.BoardLoc.x, checkBlock.BoardLoc.y - 2), out groundBlock);
+
+                if(groundBlock == null || groundBlock.IsFallLocked || groundBlock.IsFalling) {
+                    isPassingChain = true;
+                    checkForMatches = false;
+                    BlockList.TryGetValue(new Vector2(checkBlock.BoardLoc.x, checkBlock.BoardLoc.y -1), out groundBlock);
+                    if(groundBlock != null) { groundBlock.IsChainable = true; }
+                }
             }
 
             if(checkForMatches)
@@ -340,10 +356,6 @@ public class BlockContainer : MonoBehaviour
                 ComboBlockList.AddRange(matchingList);
             }
         }
-        else if(ChainCount > 1 && !isPassingChain && checkBlockList.Contains(PrevChainBlock))
-        {
-            ResetChain();
-        }
     }
 
     private void OnBlocksStartDestroy(IEnumerable<Block> blocksToDestroy, bool isChain = false)
@@ -358,6 +370,9 @@ public class BlockContainer : MonoBehaviour
         var totalRaiseTimeStop = 0.5f + ((comboCount - 3) * GameController.GC.RaiseTimeStopComboMultiplier);
         if(isChain)  
         {
+            if(ResetChainCounter == -1) { ResetChainCounter = 1; }
+            else { ResetChainCounter++; }
+
             ChainCount += 1;
             GameController.GC.UpdateGameStatMenu(ChainCount);
             totalRaiseTimeStop += ChainCount * GameController.GC.RaiseTimeStopChainMultiplier;
@@ -368,10 +383,6 @@ public class BlockContainer : MonoBehaviour
         //Lead block store next destroy phase
         var lastBlock = destroyBlockList.Last();
         lastBlock.StoredAction = () => { OnBlocksIconDestroy(destroyBlockList, isChain); };
-
-        if(isChain) {
-            PrevChainBlock = lastBlock;
-        }
 
         //TODO: Use the 1st block in this list as the point at which to display the count (pass through or do here)
         foreach(var block in destroyBlockList) {
@@ -435,33 +446,22 @@ public class BlockContainer : MonoBehaviour
         BlockDestroyCount -= destroyBlockList.Count;
 
         //Drop blocks above the destroyed blocks
-        foreach(var fallLoc in fallLocList)
-        {
-            var lockedBlocks = LockBlocksAboveLoc(fallLoc, true);
+        LockBlocksAboveLoc(fallLocList, true, isChain);
+    }
 
-            if(ChainCount > 0) 
-            {
-                if((lockedBlocks == null || lockedBlocks.Count() == 0) && destroyBlockList.Contains(PrevChainBlock)) { 
-                    ResetChain(); 
-                }
-                else if(lockedBlocks != null) {
-                    PrevChainBlock = lockedBlocks.Last();
-                }
-            }
-            // GameController.GC.AddTimedAction(() => { 
-            //     foreach(var lockedBlock in lockedBlocks) {
-            //         lockedBlock.RemoveFallLock();
-            //     }
-            //     DropBlocksAboveLoc(fallLoc, true, isChain ? ChainCount : 0); 
-            // }, BlockFallDelay);    
+    private void LockBlocksAboveLoc(IList<Vector2> boardLocList, bool isChainable = false, bool isFromChain = false)
+    {
+        for(var i = 0; i < boardLocList.Count; i++)
+        {
+            LockBlocksAboveLoc(boardLocList[i], isChainable, isFromChain);
         }
     }
 
-    private IEnumerable<Block> LockBlocksAboveLoc(Vector2 boardLoc, bool isChainable = false)
+    private void LockBlocksAboveLoc(Vector2 boardLoc, bool isChainable = false, bool isFromChain = false)
     {
         var blockToLockList = GetBlocksAboveLoc(boardLoc);
 
-        if(blockToLockList.Count == 0) { return null; }
+        if(blockToLockList.Count == 0) { return; }
 
         Block prevLockedBlock = null;
 
@@ -476,7 +476,6 @@ public class BlockContainer : MonoBehaviour
                     BlockList[nextLoc] = blockToLock;
                     prevLockedBlock = blockToLock;
                 }
-
             }
         }
 
@@ -484,30 +483,18 @@ public class BlockContainer : MonoBehaviour
             foreach(var blockToUnlock in blockToLockList) {
                 blockToUnlock.RemoveFallLock();
             }
-            OnBlockStartFall(blockToLockList, isChainable); 
+            DropBlocksAboveLoc(boardLoc, isChainable, isFromChain);
         }, BlockFallDelay);
-
-        return blockToLockList;
     }
 
-    //TODO: Remove if not needed
-    private void DropBlocksAboveLoc(Vector2 boardLoc, bool isChain = false)
+    private void DropBlocksAboveLoc(Vector2 boardLoc, bool isChainable = false, bool isFromChain = false)
     {
         var blockToFallList = GetBlocksAboveLoc(boardLoc + Vector2.down);
+        OnBlockStartFall(blockToFallList, isChainable);
 
-        OnBlockStartFall(blockToFallList, isChain);
-
-        //W/ Mult falling lists
-        // var blockListsToFall = GetBlocksAboveLoc(boardLoc);
-
-        // if(!blockListsToFall.Exists(x => x.Count > 0)) { 
-        //     ResetChain(); 
-        //     return; 
-        // }
-        // foreach(var blockToFallList in blockListsToFall) 
-        // {
-        //     if(blockToFallList.Count > 0) { OnBlockStartFall(blockToFallList, isChain, lastChainCount); }
-        // }
+        if(isFromChain && ResetChainCounter != -1) {
+            ResetChainCounter--;
+        }
     }
 
     //Returns consecutive blocks above a location (spaces are separated in individual lists)
@@ -515,18 +502,10 @@ public class BlockContainer : MonoBehaviour
     {
         var maxRow = onlyFirstRow ? boardLoc.y + 1 : BoardSize.y;
         var currentList = new List<Block>();
-        //var blocksAboveLists = new List<List<Block>>(){ currentList };
     
         for(var row = boardLoc.y; row < maxRow; row++)
         {
             boardLoc += Vector2.up;
-
-            // if(!BlockList.ContainsKey(boardLoc)) { 
-            //     Debug.Log("Multiple Falling Lists");
-            //     currentList = new List<Block>();
-            //     blocksAboveLists.Add(currentList);
-            //     continue;
-            // }
 
             if(BlockList.ContainsKey(boardLoc))
             {
@@ -570,13 +549,6 @@ public class BlockContainer : MonoBehaviour
             if(fallBlock.IsDestroying || fallBlock.IsFalling) { removeFlag = true; }
             if(removeFlag && linkedBlocks != null && linkedBlocks.Contains(fallBlock)) { 
                 linkedBlocks.Remove(fallBlock); 
-            } else {
-                //TODO: Remove if unnecessary (done in "LockedBlocks")
-                // var nextPos = new Vector2(fallBlock.BoardLoc.x, fallBlock.BoardLoc.y - 1);
-                // if(BlockList.ContainsKey(nextPos)) {
-                //     BlockList.Remove(nextPos);
-                // }
-                // BlockList.Add(nextPos, fallBlock);
             }
         }
 
@@ -636,26 +608,13 @@ public class BlockContainer : MonoBehaviour
     {
         if(performed && !IsHoldingTrigger) {
             IsHoldingTrigger = true;
-
-            if(!IsManuallyRaising && BlockDestroyCount <= 0) {  
-                IsManuallyRaising = true;
-                RaiseSpeed = ManualRaiseSpeed;
-            } 
         } else if(!performed && IsHoldingTrigger) {
             IsHoldingTrigger = false;
-
-            if(IsManuallyRaising && BlockDestroyCount > 0) {
-                IsManuallyRaising = false;
-            }
         }
     }
 
     private void UnlockTrigger()
     {
-        if(IsHoldingTrigger) {
-            RaiseSpeed = ManualRaiseSpeed;
-        } else {
-            IsManuallyRaising = false;
-        }
+        CanManuallyRaise = true;
     }
 }
