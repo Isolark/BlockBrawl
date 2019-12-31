@@ -30,6 +30,7 @@ public static class BlockExtensions
     public static void InitStates(this Block block)
     {
         block.IsMoveable = block.IsComboable = true;
+        block.IsMoving = false;
         block.IsChainable = false;
         block.IsFalling = block.IsFallLocked = false;
         block.IsDestroying = false;
@@ -103,8 +104,9 @@ public static class BlockExtensions
         {
             foreach(var linkedBlock in linkedBlocks)
             {
+                if(!linkedBlock.IsChainable) { linkedBlock.IsChainable = isChainable; }
+                
                 linkedBlock.IsFalling = true;
-                linkedBlock.IsChainable = isChainable;
                 linkedBlock.IsMoveable = linkedBlock.IsComboable = linkedBlock.IsFallLocked = false;
 
                 linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
@@ -204,6 +206,7 @@ public static class BlockExtensions
         }
 
         block.IsMoveable = block.IsComboable = false;
+        block.IsMoving = true;
 
         if(bumpOrder) {
             block.GetComponent<SpriteRenderer>().sortingOrder = 6;
@@ -217,5 +220,7 @@ public static class BlockExtensions
             block.GetComponent<SpriteRenderer>().sortingOrder = 0;
             block.Icon.GetComponent<SpriteRenderer>().sortingOrder = 5; 
         }
+
+        block.IsMoving = false;
     }
 }
