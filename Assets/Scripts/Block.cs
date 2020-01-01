@@ -8,6 +8,7 @@ public class Block : MonoBehaviour
 
     //Vars
     public BlockType Type;
+    public BlockStatus Status;
     public SpriteRenderer BlockSprite;
     public SpriteRenderer BlockIconSprite;
     public Animator BlockAnimCtrl;

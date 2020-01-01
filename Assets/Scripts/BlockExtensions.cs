@@ -34,6 +34,7 @@ public static class BlockExtensions
         block.IsChainable = false;
         block.IsFalling = block.IsFallLocked = false;
         block.IsDestroying = false;
+        block.Status = BlockStatus.Normal;
     }
 
     public static void SetStates(this Block block, bool state)
@@ -90,8 +91,6 @@ public static class BlockExtensions
         var blockList = block.gameObject.GetComponentInParent<BlockContainer>().BlockList;
         var targetBoardLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
 
-        //if(blockList.ContainsKey(targetBoardLoc) && blockList[targetBoardLoc].GetInstanceID() != block.GetInstanceID()) { return; }
-        
         block.IsFalling = true;
         block.IsChainable = isChainable;
         block.IsMoveable = block.IsComboable = block.IsFallLocked = false;
@@ -105,7 +104,7 @@ public static class BlockExtensions
             foreach(var linkedBlock in linkedBlocks)
             {
                 if(!linkedBlock.IsChainable) { linkedBlock.IsChainable = isChainable; }
-                
+
                 linkedBlock.IsFalling = true;
                 linkedBlock.IsMoveable = linkedBlock.IsComboable = linkedBlock.IsFallLocked = false;
 
