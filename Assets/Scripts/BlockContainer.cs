@@ -74,7 +74,7 @@ public class BlockContainer : MonoBehaviour
         }
         RaiseSpeedTimer = GameController.GC.AddTimedAction(() => { RaiseSpeed += RaiseAcceleration; }, 30f, true);
 
-        SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-2, 0, 0, 2}, isComboable: false);
+        SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-2, 0, 0, 2});
         ResetChain();
 
         CanManuallyRaise = true;
@@ -92,7 +92,12 @@ public class BlockContainer : MonoBehaviour
         GameController.GC.UpdateGameStatMenu(ChainCount);
     }
 
-    public void SpawnRows(int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null, bool isComboable = true)
+    public void SpawnRows(int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null)
+    {
+        SpawnRows(BlockStatus.Normal, numOfRows, numOfCols, startingRow, rowModVals);
+    }
+
+    public void SpawnRows(BlockStatus status, int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null)
     {
         var tmpMatchList = new List<Block>();
         var searchDirs = new List<Vector2>();
@@ -154,7 +159,7 @@ public class BlockContainer : MonoBehaviour
         if(BlockDestroyCount > 0) { return; }
 
         //If nothing currently being destroyed, can trigger raise (even in timestop)
-        if(CanManuallyRaise && IsHoldingTrigger) { 
+        if(CanManuallyRaise && IsHoldingTrigger && !BlockList.Values.Any(x => x.IsFallLocked || x.IsFalling || x.IsMoving)) { 
             IsManuallyRaising = true;
             CanManuallyRaise = false;
             RaiseSpeed = ManualRaiseSpeed;
@@ -187,20 +192,18 @@ public class BlockContainer : MonoBehaviour
 
                 foreach(var block in BlockList)
                 {
+                    var nextKey = block.Key + Vector2.up;
+                    TmpBlockList.Add(nextKey, block.Value);
+
                     if(block.Value.HasIterated) { continue; }
                     block.Value.HasIterated = true;
-
-                    var nextKey = block.Key + Vector2.up;
                     
-                    if(!AtTop && nextKey.y >= BoardSize.y)
-                    {
-                        AtTop = Cursor.AtTop = true;
-                    }
-
-                    TmpBlockList.Add(nextKey, block.Value);
                     block.Value.MoveBoardLoc(Vector2.up, true);
+                    
+                    if(!AtTop && nextKey.y >= BoardSize.y) { AtTop = Cursor.AtTop = true; }
 
-                    if(block.Value.BoardLoc.y == 1) {
+                    if(block.Value.BoardLoc.y == 1) 
+                    {
                         block.Value.OnEnterBoard();
                         comboableBlockList.Add(block.Value);
                     }
@@ -522,7 +525,7 @@ public class BlockContainer : MonoBehaviour
             {
                 var block = BlockList[boardLoc];
 
-                if(!currentList.Contains(block) && !block.IsFalling || canBeFalling) {
+                if(!currentList.Contains(block) && !block.IsDestroying && !block.IsFalling || canBeFalling) {
                     currentList.Add(BlockList[boardLoc]);
                 }
             }
@@ -554,6 +557,8 @@ public class BlockContainer : MonoBehaviour
 
     private void OnBlockStartFall(List<Block> fallingBlockList, bool isChainable = false)
     {
+        if(fallingBlockList.Count == 0) { return; }
+
         var leadFallBlock = fallingBlockList.First();
 
         for(;;)
