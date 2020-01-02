@@ -19,10 +19,16 @@ public class Block : MonoBehaviour
     public bool IsChainable;
     public bool IsMoveable;
     public bool IsMoving;
-    public bool IsFallLocked;
     public bool IsFalling;
+    //public bool IsFallLocked;
     public bool IsDestroying;
+
+    //If all blocks in a garbage block have a fall flag, it can fall
+    public bool FallFlag;
+    public int FallLockCount;
+    public bool IsFallLocked => FallLockCount > 0;
     public bool HasIterated;
+
 
     //Action Ref
     public Action StoredAction;

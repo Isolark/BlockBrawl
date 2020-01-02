@@ -38,6 +38,7 @@ public class BlockContainer : MonoBehaviour
     private IDictionary<Vector2, Block> TmpBlockList; //For transferring after moving up a "level"
     private List<Block> ComboBlockList; //All Blocks belonging to current combo
     private List<Block> ChainedBlockList; //All Blocks belonging to current chain
+    public Block NullBlock;
 
     public BlockContainer(int maxTypes, int startingHeight, float startingSpeed)
     {
@@ -248,10 +249,10 @@ public class BlockContainer : MonoBehaviour
 
         //Find Blocks. If either immobile or both don't exist, return
         var leftBlockExists = BlockList.TryGetValue(cursorLoc, out leftBlock);
-        if(leftBlockExists && (!leftBlock.IsMoveable || leftBlock.IsFalling || leftBlock.IsFallLocked)) return;
+        if(leftBlockExists && (!leftBlock.IsMoveable || leftBlock.IsDestroying || leftBlock.IsFalling || leftBlock.IsFallLocked)) return;
 
         var rightBlockExists = BlockList.TryGetValue(cursorLoc + Vector2.right, out rightBlock);
-        if((rightBlockExists && (!rightBlock.IsMoveable || rightBlock.IsFalling || rightBlock.IsFallLocked)) || (!rightBlockExists && !leftBlockExists)) return;
+        if((rightBlockExists && (!rightBlock.IsMoveable || rightBlock.IsDestroying || rightBlock.IsFalling || rightBlock.IsFallLocked)) || (!rightBlockExists && !leftBlockExists)) return;
         
         //Move Blocks if they exist & prepare for checking matches
         var checkBlockList = new List<Block>();
@@ -268,14 +269,18 @@ public class BlockContainer : MonoBehaviour
         else if(leftBlockExists) {
             checkBlockList.Add(leftBlock);
 
+            BlockList[leftBlock.BoardLoc] = NullBlock;
+
             leftBlock.Move(Vector2.right, callback: () => { 
-                BlockList.Remove(leftBlock.PrevBoardLoc); 
+                BlockList.Remove(leftBlock.PrevBoardLoc);
                 OnBlocksFinishMove(checkBlockList); 
             });
             BlockList[leftBlock.BoardLoc] = leftBlock;
         }
         else {
             checkBlockList.Add(rightBlock);
+
+            BlockList[rightBlock.BoardLoc] = NullBlock;
 
             rightBlock.Move(Vector2.left, callback: () => { 
                 BlockList.Remove(rightBlock.PrevBoardLoc); 
@@ -290,6 +295,10 @@ public class BlockContainer : MonoBehaviour
         var matchingList = new List<Block>();
         var chainRemovalList = new List<Block>();
         var isPassingChain = false;
+
+        if(isFromFall) {
+            checkBlockList.ForEach(x => x.HasIterated = true);
+        }
 
         foreach(var checkBlock in checkBlockList)
         {
@@ -341,9 +350,15 @@ public class BlockContainer : MonoBehaviour
             }
         }
 
+        if(isFromFall) {
+            checkBlockList.ForEach(x => x.HasIterated = false);
+        }
+
         //Add matches to chain or combo list ELSE end chain if appropriate
         if(matchingList.Count >= 3) 
         {
+            matchingList.ForEach(x => x.IsMoveable = false);
+            
             if(matchingList.Exists(x => x.IsChainable)) 
             {
                 ChainedBlockList.AddRange(matchingList);
@@ -475,27 +490,47 @@ public class BlockContainer : MonoBehaviour
 
     private bool LockBlocksAboveLoc(Vector2 boardLoc, bool isChainable = false)
     {
-        var blockToLockList = GetBlocksAboveLoc(boardLoc);
+        var blockToLockList = GetBlocksAboveLoc(boardLoc, canBeFallLocked: true);
+        var nullBlockLocList = new List<Vector2>();
 
         if(blockToLockList.Count == 0) { return false; }
 
-        Block prevLockedBlock = null;
+        var wasFallLocked = blockToLockList.Exists(x => x.IsFallLocked);
+        //Block prevLockedBlock = null;
 
         foreach(var blockToLock in blockToLockList) 
         {
-            if(!blockToLock.IsDestroying && !blockToLock.IsFallLocked && !blockToLock.IsFalling) 
+            if(!blockToLock.IsDestroying && !blockToLock.IsFalling) 
             {
                 var nextLoc = blockToLock.BoardLoc + Vector3.down;
 
-                if(!BlockList.ContainsKey(nextLoc) || BlockList[nextLoc] == prevLockedBlock) {
-                    blockToLock.IsFallLocked = true;
-                    BlockList[nextLoc] = blockToLock;
-                    prevLockedBlock = blockToLock;
+                Block blockBelow;
+                var isBlockBelow = BlockList.TryGetValue(nextLoc, out blockBelow);
+
+                //if(blockToLock.IsMoving && !isBlockBelow) { continue; }
+
+                if(isBlockBelow && blockBelow.IsDestroying) { continue; }
+
+                blockToLock.FallLockCount++;
+
+                if(!isBlockBelow) 
+                { 
+                    BlockList[nextLoc] = NullBlock;
+                    nullBlockLocList.Add(nextLoc);
                 }
+
+                // if(!BlockList.ContainsKey(nextLoc) || BlockList[nextLoc] == prevLockedBlock) {
+                //     blockToLock.IsFallLocked = true;
+                //     BlockList[nextLoc] = blockToLock;
+                //     prevLockedBlock = blockToLock;
+                // }
             }
         }
 
         GameController.GC.AddTimedAction(() => { 
+            foreach(var nullBlockLoc in nullBlockLocList) {
+                if(BlockList[nullBlockLoc] == NullBlock) { BlockList.Remove(nullBlockLoc); }
+            }
             foreach(var blockToUnlock in blockToLockList) {
                 blockToUnlock.RemoveFallLock();
             }
@@ -507,12 +542,12 @@ public class BlockContainer : MonoBehaviour
 
     private void DropBlocksAboveLoc(Vector2 boardLoc, bool isChainable = false)
     {
-        var blockToFallList = GetBlocksAboveLoc(boardLoc + Vector2.down);
+        var blockToFallList = GetBlocksAboveLoc(boardLoc);
         OnBlockStartFall(blockToFallList, isChainable);
     }
 
     //Returns consecutive blocks above a location (spaces are separated in individual lists)
-    private List<Block> GetBlocksAboveLoc(Vector2 boardLoc, bool onlyFirstRow = false, bool canBeFalling = false)
+    private List<Block> GetBlocksAboveLoc(Vector2 boardLoc, bool onlyFirstRow = false, bool canBeFallLocked = false)
     {
         var maxRow = onlyFirstRow ? boardLoc.y + 1 : BoardSize.y;
         var currentList = new List<Block>();
@@ -525,7 +560,13 @@ public class BlockContainer : MonoBehaviour
             {
                 var block = BlockList[boardLoc];
 
-                if(!currentList.Contains(block) && !block.IsDestroying && !block.IsFalling || canBeFalling) {
+                //TODO: Replace logic for garbage? Still need to get blocks to fall if the whole garbage is falling too
+                if(!block.CanFall()) {
+                    break;
+                }
+
+                if(!currentList.Contains(block) && !block.IsFalling && (!block.IsFallLocked || canBeFallLocked)) 
+                {
                     currentList.Add(BlockList[boardLoc]);
                 }
             }
@@ -546,7 +587,7 @@ public class BlockContainer : MonoBehaviour
             {
                 return false;
             } 
-            else if(!groundBlock.IsMoving) 
+            else if(!groundBlock.IsMoving && !groundBlock.HasIterated) 
             {
                 return true;
             }
@@ -563,10 +604,10 @@ public class BlockContainer : MonoBehaviour
 
         for(;;)
         {
-            //Cancel the fall if there is now a block underneath that is not the lead block's "intent"
+            //Cancel the fall if there is now a block underneath that is not the Placeholder (NullBlock)
             var leadOpenLoc = new Vector2(leadFallBlock.BoardLoc.x, leadFallBlock.BoardLoc.y - 1);
             if(leadFallBlock.IsDestroying || leadFallBlock.IsFalling || 
-                (BlockList.ContainsKey(leadOpenLoc) && BlockList[leadOpenLoc].GetInstanceID() != leadFallBlock.GetInstanceID())) 
+                (BlockList.ContainsKey(leadOpenLoc) && BlockList[leadOpenLoc] != NullBlock))
             {
                 fallingBlockList.Remove(leadFallBlock);
                 leadFallBlock = fallingBlockList.FirstOrDefault();

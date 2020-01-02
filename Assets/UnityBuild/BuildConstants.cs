@@ -30,8 +30,8 @@ public static class BuildConstants
         Universal,
     }
 
-    public static readonly System.DateTime buildDate = new System.DateTime(637134510652567152);
-    public const string version = "1.0.1826.1164";
+    public static readonly System.DateTime buildDate = new System.DateTime(637135492786764953);
+    public const string version = "1.0.1827.1952";
     public const ReleaseType releaseType = ReleaseType.Release;
     public const Platform platform = Platform.WebGL;
     public const Architecture architecture = Architecture.WebGL;

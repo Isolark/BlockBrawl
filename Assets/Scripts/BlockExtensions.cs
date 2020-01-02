@@ -32,8 +32,11 @@ public static class BlockExtensions
         block.IsMoveable = block.IsComboable = true;
         block.IsMoving = false;
         block.IsChainable = false;
-        block.IsFalling = block.IsFallLocked = false;
+        block.IsFalling = false;
+        block.FallFlag = false;
+        block.FallLockCount = 0;
         block.IsDestroying = false;
+        
         block.Status = BlockStatus.Normal;
     }
 
@@ -50,10 +53,16 @@ public static class BlockExtensions
         else { block.Type = (BlockType)typeInt + 1; }
     }
 
+    public static bool CanFall(this Block block)
+    {
+        //TODO: Add Garbage Block logic for checking if anything below any of the blocks
+        return !block.IsDestroying;
+    }
+
     public static bool IsMatch(this Block block, Block blockToMatch, bool ignoreState = false)
     {
         return block.GetInstanceID() != blockToMatch.GetInstanceID() && 
-            block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFallLocked) || ignoreState);
+            block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFalling) || ignoreState);
     }
 
     //Flashing, states set to false
@@ -80,24 +89,37 @@ public static class BlockExtensions
     public static void RemoveFallLock(this Block block)
     {
         if(block.IsDestroying) { return; }
-        block.IsFallLocked = false;
-        block.IsMoveable = true;
+
+        block.FallLockCount--;
+        if(block.FallLockCount < 0) { block.FallLockCount = 0; }
+
+        block.IsMoveable = !block.IsMoving;
+    }
+
+    public static void NullSwapMove(this Block block, IDictionary<Vector2, Block> blockList, Block nullBlock, Vector2 nextLoc)
+    {
+        blockList[block.BoardLoc] = nullBlock;
+        block.PrevBoardLoc = block.BoardLoc;
+        block.BoardLoc = nextLoc;
+        blockList[nextLoc] = block;
     }
 
     public static void StartFall(this Block block, bool isChainable, IList<Block> linkedBlocks = null, Action callback = null)
     {
         if(block.IsFalling || block.IsDestroying ) { return; }
 
-        var blockList = block.gameObject.GetComponentInParent<BlockContainer>().BlockList;
-        var targetBoardLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
+        var container = block.gameObject.GetComponentInParent<BlockContainer>();
+        var blockList = container.BlockList;
+        var nullBlock = container.NullBlock;
 
         block.IsFalling = true;
         block.IsChainable = isChainable;
-        block.IsMoveable = block.IsComboable = block.IsFallLocked = false;
+        block.IsMoveable = block.IsComboable = false;
+        block.FallLockCount = 0;
 
-        block.PrevBoardLoc = block.BoardLoc;
-        block.BoardLoc = targetBoardLoc;
-        blockList[targetBoardLoc] = block;
+        var nextLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
+        
+        block.NullSwapMove(blockList, nullBlock, nextLoc);
 
         if(linkedBlocks != null) 
         {
@@ -106,11 +128,11 @@ public static class BlockExtensions
                 if(!linkedBlock.IsChainable) { linkedBlock.IsChainable = isChainable; }
 
                 linkedBlock.IsFalling = true;
-                linkedBlock.IsMoveable = linkedBlock.IsComboable = linkedBlock.IsFallLocked = false;
+                linkedBlock.IsMoveable = linkedBlock.IsComboable = false;
+                linkedBlock.FallLockCount = 0;
 
-                linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
-                linkedBlock.BoardLoc = new Vector3(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1, 0);
-                blockList[linkedBlock.BoardLoc] = linkedBlock;
+                var nextLinkedLoc = new Vector3(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1, 0);
+                linkedBlock.NullSwapMove(blockList, nullBlock, nextLinkedLoc);
             }
         }
 
@@ -127,11 +149,17 @@ public static class BlockExtensions
 
     public static bool StepFall(this Block block, IList<Block> linkedBlocks = null)
     {
-        var blockList = block.gameObject.GetComponentInParent<BlockContainer>().BlockList;
+        var container = block.gameObject.GetComponentInParent<BlockContainer>();
+        var blockList = container.BlockList;
+        var nullBlock = container.NullBlock;
+
         var nextBoardLoc = new Vector2(block.BoardLoc.x, block.BoardLoc.y - 1);
 
         //Remove from previous location (if not already filled)
-        if(blockList.ContainsKey(block.PrevBoardLoc) && blockList[block.PrevBoardLoc].GetInstanceID() == block.GetInstanceID()) {
+        if(blockList.ContainsKey(block.PrevBoardLoc) && 
+            (blockList[block.PrevBoardLoc].GetInstanceID() == nullBlock.GetInstanceID() ||
+            blockList[block.PrevBoardLoc].GetInstanceID() == block.GetInstanceID())) 
+        {
             blockList.Remove(block.PrevBoardLoc);
         }
 
@@ -139,18 +167,42 @@ public static class BlockExtensions
         {
             foreach(var linkedBlock in linkedBlocks) 
             {
-                if(blockList.ContainsKey(linkedBlock.PrevBoardLoc) && blockList[linkedBlock.PrevBoardLoc].GetInstanceID() == linkedBlock.GetInstanceID()) 
+                if(blockList.ContainsKey(linkedBlock.PrevBoardLoc) && 
+                    (blockList[linkedBlock.PrevBoardLoc].GetInstanceID() == nullBlock.GetInstanceID() ||
+                    blockList[linkedBlock.PrevBoardLoc].GetInstanceID() == linkedBlock.GetInstanceID())) 
                 {
                     blockList.Remove(linkedBlock.PrevBoardLoc);
                 }
             }
         }
 
-        if(blockList.ContainsKey(nextBoardLoc)) { return true; }
+        if(blockList.ContainsKey(nextBoardLoc)) 
+        { 
+            var blockBelow = blockList[nextBoardLoc];
 
-        blockList.Add(nextBoardLoc, block);
-        block.PrevBoardLoc = block.BoardLoc;
-        block.BoardLoc = nextBoardLoc;
+            if(blockBelow == nullBlock) 
+            {
+                Block leftBlock;
+                var isLeftBlock = blockList.TryGetValue(nextBoardLoc + Vector2.left, out leftBlock);
+
+                if(isLeftBlock && leftBlock.IsMoving && 
+                    (leftBlock.PrevBoardLoc.x == nextBoardLoc.x && leftBlock.PrevBoardLoc.y == nextBoardLoc.y)) { return true; }
+
+                Block rightBlock;
+                var isRightBlock = blockList.TryGetValue(nextBoardLoc + Vector2.right, out rightBlock);
+
+                if(isRightBlock && rightBlock.IsMoving && 
+                    (rightBlock.PrevBoardLoc.x == nextBoardLoc.x && rightBlock.PrevBoardLoc.y == nextBoardLoc.y)) { return true; }
+
+                blockList.Remove(nextBoardLoc);
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        block.NullSwapMove(blockList, nullBlock, nextBoardLoc);
 
         if(linkedBlocks != null) {
             foreach(var linkedBlock in linkedBlocks) {
@@ -159,9 +211,8 @@ public static class BlockExtensions
                 if(blockList.ContainsKey(nextLinkedBlockLoc)) {
                     blockList.Remove(nextLinkedBlockLoc);
                 }
-                blockList.Add(nextLinkedBlockLoc, linkedBlock);
-                linkedBlock.PrevBoardLoc = linkedBlock.BoardLoc;
-                linkedBlock.BoardLoc = nextLinkedBlockLoc;
+
+                linkedBlock.NullSwapMove(blockList, nullBlock, nextLinkedBlockLoc);
             }
         }
 
