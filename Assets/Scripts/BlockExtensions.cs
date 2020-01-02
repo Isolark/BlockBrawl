@@ -62,7 +62,7 @@ public static class BlockExtensions
     public static bool IsMatch(this Block block, Block blockToMatch, bool ignoreState = false)
     {
         return block.GetInstanceID() != blockToMatch.GetInstanceID() && 
-            block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFallLocked) || ignoreState);
+            block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFalling) || ignoreState);
     }
 
     //Flashing, states set to false

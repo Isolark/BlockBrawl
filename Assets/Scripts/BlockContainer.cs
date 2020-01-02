@@ -357,6 +357,8 @@ public class BlockContainer : MonoBehaviour
         //Add matches to chain or combo list ELSE end chain if appropriate
         if(matchingList.Count >= 3) 
         {
+            matchingList.ForEach(x => x.IsMoveable = false);
+            
             if(matchingList.Exists(x => x.IsChainable)) 
             {
                 ChainedBlockList.AddRange(matchingList);
