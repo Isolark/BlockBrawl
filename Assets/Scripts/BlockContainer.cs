@@ -407,9 +407,20 @@ public class BlockContainer : MonoBehaviour
         var lastBlock = destroyBlockList.Last();
         lastBlock.StoredAction = () => { OnBlocksIconDestroy(destroyBlockList, isChain); };
 
+        var firstBlockFlag = destroyBlockList.Count > 3 || isChain;
+
         //TODO: Use the 1st block in this list as the point at which to display the count (pass through or do here)
-        foreach(var block in destroyBlockList) {
-            block.StartDestroy();
+        foreach(var block in destroyBlockList) 
+        {
+            if(firstBlockFlag) 
+            {
+                block.StartDestroy(destroyBlockList.Count, ChainCount);
+                firstBlockFlag = false;
+            }
+            else 
+            {
+                block.StartDestroy();
+            }
         }
     }
 

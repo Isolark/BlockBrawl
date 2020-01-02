@@ -65,6 +65,12 @@ public static class BlockExtensions
             block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFalling) || ignoreState);
     }
 
+    //Destroy and display combo and or chain. Need to create the ComboPops that will 
+    public static void StartDestroy(this Block block, int comboCount, int chainCount)
+    {
+        block.StartDestroy();
+    }
+
     //Flashing, states set to false
     public static void StartDestroy(this Block block)
     {
