@@ -27,13 +27,13 @@ public class TimedEventManager : MonoBehaviour
 
     public void Pause()
     {
-        BaseController.UpdateDelegate -= OnUpdate;
+        BaseController.FixedUpdateDelegate -= OnUpdate;
         Paused = true;
     }
 
     public void Unpause()
     {
-        BaseController.UpdateDelegate += OnUpdate;
+        BaseController.FixedUpdateDelegate += OnUpdate;
         Paused = false;
     }
 
