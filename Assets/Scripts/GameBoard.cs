@@ -15,9 +15,9 @@ public class GameBoard : MonoBehaviour
         Cursor.LockToBoard(BoardSize, CursorStartPosition);
         BlockContainer.Initialize(BoardSize);
     }
-    public void ManUpdate()
+    public void OnUpdate()
     {
-        BlockContainer.Move();
+        BlockContainer.OnUpdate();
     }
 
     public void OnConfirm()

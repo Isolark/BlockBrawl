@@ -8,6 +8,7 @@ public class Block : MonoBehaviour
 
     //Vars
     public BlockType Type;
+    public BlockStatus Status;
     public SpriteRenderer BlockSprite;
     public SpriteRenderer BlockIconSprite;
     public Animator BlockAnimCtrl;
@@ -17,8 +18,17 @@ public class Block : MonoBehaviour
     public bool IsComboable;
     public bool IsChainable;
     public bool IsMoveable;
+    public bool IsMoving;
     public bool IsFalling;
+    //public bool IsFallLocked;
+    public bool IsDestroying;
+
+    //If all blocks in a garbage block have a fall flag, it can fall
+    public bool FallFlag;
+    public int FallLockCount;
+    public bool IsFallLocked => FallLockCount > 0;
     public bool HasIterated;
+
 
     //Action Ref
     public Action StoredAction;
