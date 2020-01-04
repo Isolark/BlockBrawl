@@ -403,23 +403,21 @@ public class BlockContainer : MonoBehaviour
 
         IncrementRaiseStopTime(totalRaiseTimeStop);
     
-        //Lead block store next destroy phase
-        var lastBlock = destroyBlockList.Last();
-        lastBlock.StoredAction = () => { OnBlocksIconDestroy(destroyBlockList, isChain); };
-
         var firstBlockFlag = destroyBlockList.Count > 3 || isChain;
 
         //TODO: Use the 1st block in this list as the point at which to display the count (pass through or do here)
-        foreach(var block in destroyBlockList) 
+        for(var i = 0; i < destroyBlockList.Count; i++)
         {
-            if(firstBlockFlag) 
-            {
-                block.StartDestroy(destroyBlockList.Count, ChainCount);
-                firstBlockFlag = false;
+            var block = destroyBlockList[i];
+
+            if(i == 0 && firstBlockFlag) { 
+                block.StartDestroy(destroyBlockList.Count, isChain ? ChainCount : 1); 
             }
-            else 
-            {
-                block.StartDestroy();
+            else if(i < destroyBlockList.Count - 1) { 
+                block.StartDestroy(); 
+            }
+            else {
+                block.StartDestroy(() => { OnBlocksIconDestroy(destroyBlockList, isChain); });
             }
         }
     }
@@ -511,7 +509,7 @@ public class BlockContainer : MonoBehaviour
 
         foreach(var blockToLock in blockToLockList) 
         {
-            if(!blockToLock.IsDestroying && !blockToLock.IsFalling) 
+            if(!blockToLock.IsDestroying && !blockToLock.IsFalling && !blockToLock.IsMoving) 
             {
                 var nextLoc = blockToLock.BoardLoc + Vector3.down;
 
@@ -540,7 +538,7 @@ public class BlockContainer : MonoBehaviour
 
         GameController.GC.AddTimedAction(() => { 
             foreach(var nullBlockLoc in nullBlockLocList) {
-                if(BlockList[nullBlockLoc] == NullBlock) { BlockList.Remove(nullBlockLoc); }
+                if(BlockList[nullBlockLoc].GetInstanceID() == NullBlock.GetInstanceID()) { BlockList.Remove(nullBlockLoc); }
             }
             foreach(var blockToUnlock in blockToLockList) {
                 blockToUnlock.RemoveFallLock();

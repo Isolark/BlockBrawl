@@ -69,16 +69,39 @@ public static class BlockExtensions
     public static void StartDestroy(this Block block, int comboCount, int chainCount)
     {
         block.StartDestroy();
+
+        var isCombo = comboCount > 3;
+        var isChain = chainCount > 1;
+
+        var startingY = isCombo && isChain ? 0 : 0.375f;
+
+        if(isCombo)
+        {
+            var comboPop = new ComboPop(comboCount, false, block);
+            comboPop.PopFX.transform.localPosition += new Vector3(0, startingY, 0);
+            comboPop.Play();
+            startingY += 0.65f;
+        }
+        if(isChain)
+        {
+            var chainPop = new ComboPop(chainCount, true, block);
+            chainPop.PopFX.transform.localPosition += new Vector3(0, startingY, 0);
+            chainPop.Play();
+        }
     }
 
     //Flashing, states set to false
-    public static void StartDestroy(this Block block)
+    public static void StartDestroy(this Block block, Action callback = null)
     {
         block.SetStates(false);
         block.IsDestroying = true;
 
-        var whiteBlockFX = SpriteFXPooler.SP.GetPooledObject("BlockLayer", parent: block.transform).GetComponent<SpriteFX>();
-        whiteBlockFX.Initialize("Block-White", "BlockCtrl");
+        var whiteBlockFX = SpriteFXPooler.SP.GetPooledObject("SpriteFX", "BlockLayer", 1, parent: block.transform).GetComponent<SpriteFX>();
+        whiteBlockFX.Initialize("Block-White", "BlockCtrl", true);
+        whiteBlockFX.StateCallbacks.Add("Block-FadeOutWhite", () => { block.BlockSprite.sprite = null; });
+
+        if(callback != null) { whiteBlockFX.StateCallbacks.Add("None", () => { callback();}); }
+
         whiteBlockFX.FXAnimCtrl.SetTrigger("Play");
     }
 
@@ -186,7 +209,7 @@ public static class BlockExtensions
         { 
             var blockBelow = blockList[nextBoardLoc];
 
-            if(blockBelow == nullBlock) 
+            if(blockBelow.GetInstanceID() == nullBlock.GetInstanceID()) 
             {
                 Block leftBlock;
                 var isLeftBlock = blockList.TryGetValue(nextBoardLoc + Vector2.left, out leftBlock);

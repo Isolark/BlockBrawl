@@ -33,15 +33,15 @@ public class Block : MonoBehaviour
     //Action Ref
     public Action StoredAction;
     
-    public void OnFinishAnimation(string clipName)
-    {
-        if(clipName == "Block-FadeOutWhite") 
-        {
-            BlockSprite.sprite = null;
-        }
-        else if (StoredAction != null) 
-        {
-            StoredAction();
-        }
-    }
+    // public void OnFinishAnimation(string clipName)
+    // {
+    //     if(clipName == "Block-FadeOutWhite") 
+    //     {
+    //         BlockSprite.sprite = null;
+    //     }
+    //     else if (StoredAction != null) 
+    //     {
+    //         StoredAction();
+    //     }
+    // }
 }

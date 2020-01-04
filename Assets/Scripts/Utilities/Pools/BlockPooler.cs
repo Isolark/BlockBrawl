@@ -23,6 +23,11 @@ public class BlockPooler : ObjectPooler
         base.Awake();
     }
 
+    public GameObject GetPooledObject(Transform parent = null)
+    {
+        return base.GetPooledObject("Block", parent);
+    }
+
     override protected void CleanObj(ref GameObject obj)
     {
         var block = obj.GetComponent<Block>();

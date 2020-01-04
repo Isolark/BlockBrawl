@@ -26,14 +26,21 @@ public class TextMeshPooler : ObjectPooler
         base.Awake();
     }
 
-    public GameObject GetPooledObject(string storedTextName, Transform parent = null)
+    public GameObject GetPooledObject(string storedTextName, string layerName, int layerOrder = 0, string objName = "GameText", Transform parent = null)
     {
-        var obj = GetPooledObject(parent);
+        var obj = base.GetPooledObject(objName, parent);
         var objText = obj.GetComponent<TMP_Text>();
+        var objMesh = obj.GetComponent<MeshRenderer>();
         var storedText = GetStoredTextByName(storedTextName);
         
+        if(!string.IsNullOrWhiteSpace(layerName)) { objMesh.sortingLayerName = layerName; } 
+
+        objMesh.sortingOrder = layerOrder;
         objText.fontSize = storedText.FontSize;
         objText.color = storedText.VertexColor;
+        objText.fontStyle = storedText.IsBold ? FontStyles.Bold : FontStyles.Normal;
+
+        Debug.Log(objText.fontWeight);
 
         return obj;
     }
