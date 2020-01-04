@@ -73,19 +73,19 @@ public static class BlockExtensions
         var isCombo = comboCount > 3;
         var isChain = chainCount > 1;
 
-        var startingY = isCombo && isChain ? 0 : 0.375f;
+        var startingY = isCombo && isChain ? 0 : 0.35f;
 
         if(isCombo)
         {
             var comboPop = new ComboPop(comboCount, false, block);
-            comboPop.PopFX.transform.localPosition += new Vector3(0, startingY, 0);
+            comboPop.PopHolder.transform.localPosition += new Vector3(0, startingY, 0);
             comboPop.Play();
             startingY += 0.65f;
         }
         if(isChain)
         {
             var chainPop = new ComboPop(chainCount, true, block);
-            chainPop.PopFX.transform.localPosition += new Vector3(0, startingY, 0);
+            chainPop.PopHolder.transform.localPosition += new Vector3(0, startingY, 0);
             chainPop.Play();
         }
     }

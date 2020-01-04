@@ -52,12 +52,6 @@ public abstract class ObjectPooler : MonoBehaviour
         
         obj.name = objName;
 
-        CleanObj(ref obj);
-
         return obj;
-    }
-
-    protected virtual void CleanObj(ref GameObject obj)
-    {
     }
 }

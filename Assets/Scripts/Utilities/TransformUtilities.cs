@@ -22,6 +22,12 @@ public static class TransformUtilities
         target.transform.localPosition += Vector3.Scale(size, spritePercents);
     }
 
+    public static void ResetSelf(this Transform transform)
+    {
+        transform.localPosition = transform.position = Vector3.zero;
+        transform.rotation = transform.localRotation = new Quaternion(0, 0, 0, 0);
+        transform.localScale = Vector3.one;
+    }
     public static void ResetAllChildrenRecursively(this Transform parent)
     {
         while(parent.childCount > 0)
@@ -30,6 +36,7 @@ public static class TransformUtilities
         }
 
         parent.SetParent(null);
+        parent.ResetSelf();
         parent.gameObject.SetActive(false);
     }
 }

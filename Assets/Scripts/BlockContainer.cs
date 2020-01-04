@@ -73,12 +73,14 @@ public class BlockContainer : MonoBehaviour
         if(RaiseSpeedTimer != null) {
             GameController.GC.RemoveTimedAction(RaiseSpeedTimer);
         }
-        RaiseSpeedTimer = GameController.GC.AddTimedAction(() => { RaiseSpeed += RaiseAcceleration; }, 30f, true);
+        RaiseSpeedTimer = GameController.GC.AddTimedAction(() => { BaseRaiseSpeed += RaiseAcceleration; }, 30f, true);
 
         SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-2, 0, 0, 2});
         ResetChain();
 
         CanManuallyRaise = true;
+
+        GameController.GC.PlayMusic("Enjoy It");
     }
 
     public void IncrementRaiseStopTime(float raiseStopTime)
@@ -157,7 +159,7 @@ public class BlockContainer : MonoBehaviour
         }
 
         //Check if no destructions still, if so, reduce timestop
-        if(BlockDestroyCount > 0) { return; }
+        if(BlockDestroyCount > 0 || FallingChainCounter > 0) { return; }
 
         //If nothing currently being destroyed, can trigger raise (even in timestop)
         if(CanManuallyRaise && IsHoldingTrigger && !BlockList.Values.Any(x => x.IsFallLocked || x.IsFalling || x.IsMoving)) { 
@@ -232,6 +234,7 @@ public class BlockContainer : MonoBehaviour
 
                 if(IsManuallyRaising) {
                     CanManuallyRaise = false;
+                    IsManuallyRaising = false;
                     RaiseSpeed = BaseRaiseSpeed;
                     GameController.GC.AddTimedAction(UnlockTrigger, 0.05f);
                 }
@@ -288,6 +291,8 @@ public class BlockContainer : MonoBehaviour
             });
             BlockList[rightBlock.BoardLoc] = rightBlock;
         }
+
+        GameController.GC.PlaySound("BlockMove");
     }
 
     private void OnBlocksFinishMove(List<Block> checkBlockList, bool isFromFall = false)
@@ -379,7 +384,7 @@ public class BlockContainer : MonoBehaviour
                 if(FallingChainCounter > 0 && !isPassingChain) { 
                     FallingChainCounter--; 
                 }
-            }, GameController.GC.BlockSwitchSpeed / 2);
+            }, GameController.GC.BlockSwitchSpeed);
         }
     }
 
@@ -392,7 +397,7 @@ public class BlockContainer : MonoBehaviour
         var comboCount = destroyBlockList.Count();
         BlockDestroyCount += comboCount;
 
-        var totalRaiseTimeStop = 0.5f + ((comboCount - 3) * GameController.GC.RaiseTimeStopComboMultiplier);
+        var totalRaiseTimeStop = 0.1f + ((comboCount - 3) * GameController.GC.RaiseTimeStopComboMultiplier);
 
         if(isChain)  
         {

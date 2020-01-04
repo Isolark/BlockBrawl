@@ -24,8 +24,9 @@ public class SpriteFXPooler : ObjectPooler
     }
 
     public GameObject GetPooledObject(string objName = "SpriteFX", string layerName = "Default", int layerOrder = 0, bool destroySelf = true, Transform parent = null)
-    {
+    {  
         var spriteFX = base.GetPooledObject(objName, parent).GetComponent<SpriteFX>();
+        CleanObj(ref spriteFX);
         
         if(!string.IsNullOrWhiteSpace(layerName)) { spriteFX.FXSprite.sortingLayerName = layerName; }
 
@@ -35,10 +36,8 @@ public class SpriteFXPooler : ObjectPooler
         return spriteFX.gameObject;
     }
 
-    override protected void CleanObj(ref GameObject gameObj)
+    private void CleanObj(ref SpriteFX spriteFX)
     {
-        var spriteFX = gameObj.GetComponent<SpriteFX>();
-
         spriteFX.StateCallbacks.Clear();
         spriteFX.FXAnimCtrl.runtimeAnimatorController = null;
         spriteFX.FXAnimCtrl.enabled = false;

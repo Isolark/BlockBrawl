@@ -7,6 +7,8 @@ public class BaseController : MonoBehaviour
     public GameState GS_Current; 
     public TimedEventManager TimedEventManager;
     public TransformManager TransformManager;
+    public AudioSource MusicPlayer;
+    public AudioSource SoundFXPlayer;
 
     public delegate void OnFixedUpdateDelegate();
     public event OnFixedUpdateDelegate FixedUpdateDelegate;
@@ -21,6 +23,17 @@ public class BaseController : MonoBehaviour
     public virtual void RemoveTimedAction(TimedAction timedAction)
     {
         TimedEventManager.RemoveTimedAction(timedAction);
+    }
+
+    public virtual void PlaySound(string soundName)
+    {
+        SoundFXPlayer.PlayOneShot(AudioLibrary.AL.GetAudioClipByName(soundName));
+    }
+
+    public virtual void PlayMusic(string musicName)
+    {
+        MusicPlayer.clip = AudioLibrary.AL.GetAudioClipByName(musicName);
+        MusicPlayer.Play();
     }
 
     protected virtual void FixedUpdate()

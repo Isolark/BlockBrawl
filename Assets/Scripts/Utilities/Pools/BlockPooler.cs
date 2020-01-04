@@ -25,12 +25,14 @@ public class BlockPooler : ObjectPooler
 
     public GameObject GetPooledObject(Transform parent = null)
     {
-        return base.GetPooledObject("Block", parent);
+        var block = base.GetPooledObject("Block", parent).GetComponent<Block>();
+        CleanObj(ref block);
+
+        return block.gameObject;
     }
 
-    override protected void CleanObj(ref GameObject obj)
+    private void CleanObj(ref Block block)
     {
-        var block = obj.GetComponent<Block>();
         block.BlockSprite.color = Color.white;
         block.StoredAction = null;
     }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 //Coordinates multiple effects going off and passing "damage" to opponent
@@ -8,12 +7,10 @@ using UnityEngine;
 //  As they are added to the opponent, their damage shifts over to accomodate. Therefore, the spot they go to varies. Will need to communicate to thing displaying it (bar)
 public class ComboPop
 {
+    public SpriteFX PopHolder; //No logic, just holds everything
     public SpriteFX PopFX; //Holds logic for the actual combo pop animation. Directs SpriteFXs beneath it
     public SpriteFX PopContainerFX;
     public SpriteFX PopTwirlFX;
-
-    public SpriteFX PopContainerSprite;
-    public TMP_Text PopContainerText;
 
     public int Value;
 
@@ -28,15 +25,16 @@ public class ComboPop
     public ComboPop(int value, bool isChain, Block parentBlock)
     {
         Value = value;    
-        PopFX = SpriteFXPooler.SP.GetPooledObject("ComboPopFX", "SpriteLayer", parent: parentBlock.transform).GetComponent<SpriteFX>();
+        PopHolder = SpriteFXPooler.SP.GetPooledObject("PopHolder", "SpriteLayer", parent: parentBlock.transform).GetComponent<SpriteFX>();
+        PopFX = SpriteFXPooler.SP.GetPooledObject("ComboPopFX", "SpriteLayer", 0, false, parent: PopHolder.transform).GetComponent<SpriteFX>();
 
         PopContainerFX = SpriteFXPooler.SP.GetPooledObject("PopContainerFX", "SpriteLayer", parent: PopFX.transform).GetComponent<SpriteFX>();
-        PopContainerSprite = SpriteFXPooler.SP.GetPooledObject("PopSprite", "SpriteLayer", 1, parent: PopContainerFX.transform).GetComponent<SpriteFX>();
-        PopContainerSprite.SetSprite((isChain ? "PopBlue" : "PopRed"));
+        var popContainerSprite = SpriteFXPooler.SP.GetPooledObject("PopSprite", "SpriteLayer", 1, parent: PopContainerFX.transform).GetComponent<SpriteFX>();
+        popContainerSprite.SetSprite((isChain ? "PopBlue" : "PopRed"));
 
-        PopContainerText = TextMeshPooler.TMP.GetPooledObject("ComboPop-TxtConfig", "SpriteLayer", 2, "PopText", parent: PopContainerFX.transform).GetComponent<TMP_Text>();
-        PopContainerText.alignment = TextAlignmentOptions.Center;
-        PopContainerText.text = isChain ? "x" + Value.ToString() : Value.ToString();
+        var popContainerText = TextMeshPooler.TMP.GetPooledObject("ComboPop-TxtConfig", "SpriteLayer", 2, "PopText", parent: PopContainerFX.transform).GetComponent<TMP_Text>();
+        popContainerText.alignment = TextAlignmentOptions.Center;
+        popContainerText.text = isChain ? "x" + Value.ToString() : Value.ToString();
 
         PopTwirlFX = SpriteFXPooler.SP.GetPooledObject("PopTwirlFX", "SpriteLayer", parent: PopFX.transform).GetComponent<SpriteFX>();
         var PopSpriteLeft = SpriteFXPooler.SP.GetPooledObject("PopTwirlSpriteLeft", "SpriteLayer", 0, parent: PopTwirlFX.transform).GetComponent<SpriteFX>();
@@ -52,7 +50,7 @@ public class ComboPop
         PopSpriteBot.SetSprite("Tomato-Large");
 
         PopFX.SetAnimator("ComboPopCtrl", true);
-        PopFX.StateCallbacks.Add("None", () => Debug.Log("Pop Done"));
+        PopFX.StateCallbacks.Add("None", () => { PopHolder.OnDestroy(); });
     }
 
     public void Play()
