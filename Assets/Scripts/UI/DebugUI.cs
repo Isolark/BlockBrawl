@@ -7,11 +7,13 @@ public class DebugUI : MonoBehaviour
     public Button LocateBlockBtn;
     public TMP_InputField LocateBlockX;
     public TMP_InputField LocateBlockY;
+    public Button NullLogBtn;
 
     // Start is called before the first frame update
     void Start()
     {
         LocateBlockBtn.onClick.AddListener(LocateBlock);
+        NullLogBtn.onClick.AddListener(LogNullBlockLocations);
     }
 
     // Update is called once per frame
@@ -29,5 +31,10 @@ public class DebugUI : MonoBehaviour
 
         var blockLoc = new Vector2(x, y);
         DebugController.DC.LocateBlock(blockLoc);
+    }
+
+    void LogNullBlockLocations()
+    {
+        DebugController.DC.LogNullBlockLocations();
     }
 }

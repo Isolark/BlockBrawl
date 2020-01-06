@@ -7,7 +7,7 @@ public static class BlockExtensions
 {
     public static void Initialize(this Block block, bool isOnBoard = false)
     {
-        block.SetStates(isOnBoard);
+        block.IsMoveable = block.IsComboable = isOnBoard;
         block.StoredAction = null;
 
         var blockSpr = block.GetComponent<SpriteRenderer>();
@@ -40,10 +40,10 @@ public static class BlockExtensions
         block.Status = BlockStatus.Normal;
     }
 
-    public static void SetStates(this Block block, bool state)
-    {
-        block.IsComboable = block.IsMoveable = state;
-    }
+    // public static void SetStates(this Block block, bool state)
+    // {
+    //     block.IsComboable = block.IsMoveable = state;
+    // }
 
     public static void IncrementType(this Block block, int maxTypes = 5)
     {
@@ -56,7 +56,7 @@ public static class BlockExtensions
     public static bool CanFall(this Block block)
     {
         //TODO: Add Garbage Block logic for checking if anything below any of the blocks
-        return !block.IsDestroying;
+        return !block.IsDestroying && (!block.IsMoving || block.IsFallLocked);
     }
 
     public static bool IsMatch(this Block block, Block blockToMatch, bool ignoreState = false)
@@ -93,7 +93,6 @@ public static class BlockExtensions
     //Flashing, states set to false
     public static void StartDestroy(this Block block, Action callback = null)
     {
-        block.SetStates(false);
         block.IsDestroying = true;
 
         var whiteBlockFX = SpriteFXPooler.SP.GetPooledObject("SpriteFX", "BlockLayer", 1, parent: block.transform).GetComponent<SpriteFX>();

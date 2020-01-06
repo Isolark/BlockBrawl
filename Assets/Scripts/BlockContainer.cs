@@ -310,11 +310,11 @@ public class BlockContainer : MonoBehaviour
             var checkForMatches = true;
 
             checkBlock.IsFalling = false;
-            checkBlock.SetStates(true);
+            checkBlock.IsMoveable = checkBlock.IsComboable = true;
 
             //Fall if no block under
             var blockBelowPos = new Vector2(checkBlock.BoardLoc.x, checkBlock.BoardLoc.y - 1);
-            if(!BlockList.ContainsKey(blockBelowPos)) 
+            if(!BlockList.ContainsKey(blockBelowPos) && !checkBlock.IsFallLocked) 
             {
                 LockBlocksAboveLoc(blockBelowPos, checkBlock.IsChainable);
                 checkForMatches = false;
@@ -362,7 +362,7 @@ public class BlockContainer : MonoBehaviour
         //Add matches to chain or combo list ELSE end chain if appropriate
         if(matchingList.Count >= 3) 
         {
-            matchingList.ForEach(x => x.IsMoveable = false);
+            matchingList.ForEach(x => x.IsMoveable = x.IsComboable = false);
             
             if(matchingList.Exists(x => x.IsChainable)) 
             {
@@ -384,7 +384,7 @@ public class BlockContainer : MonoBehaviour
                 if(FallingChainCounter > 0 && !isPassingChain) { 
                     FallingChainCounter--; 
                 }
-            }, GameController.GC.BlockSwitchSpeed);
+            }, GameController.GC.BlockSwitchSpeed * 0.8f);
         }
     }
 
@@ -509,9 +509,6 @@ public class BlockContainer : MonoBehaviour
 
         if(blockToLockList.Count == 0) { return false; }
 
-        var wasFallLocked = blockToLockList.Exists(x => x.IsFallLocked);
-        //Block prevLockedBlock = null;
-
         foreach(var blockToLock in blockToLockList) 
         {
             if(!blockToLock.IsDestroying && !blockToLock.IsFalling && !blockToLock.IsMoving) 
@@ -520,8 +517,6 @@ public class BlockContainer : MonoBehaviour
 
                 Block blockBelow;
                 var isBlockBelow = BlockList.TryGetValue(nextLoc, out blockBelow);
-
-                //if(blockToLock.IsMoving && !isBlockBelow) { continue; }
 
                 if(isBlockBelow && blockBelow.IsDestroying) { continue; }
 
@@ -532,18 +527,12 @@ public class BlockContainer : MonoBehaviour
                     BlockList[nextLoc] = NullBlock;
                     nullBlockLocList.Add(nextLoc);
                 }
-
-                // if(!BlockList.ContainsKey(nextLoc) || BlockList[nextLoc] == prevLockedBlock) {
-                //     blockToLock.IsFallLocked = true;
-                //     BlockList[nextLoc] = blockToLock;
-                //     prevLockedBlock = blockToLock;
-                // }
             }
         }
 
         GameController.GC.AddTimedAction(() => { 
             foreach(var nullBlockLoc in nullBlockLocList) {
-                if(BlockList[nullBlockLoc].GetInstanceID() == NullBlock.GetInstanceID()) { BlockList.Remove(nullBlockLoc); }
+                if(BlockList.ContainsKey(nullBlockLoc) && BlockList[nullBlockLoc].GetInstanceID() == NullBlock.GetInstanceID()) { BlockList.Remove(nullBlockLoc); }
             }
             foreach(var blockToUnlock in blockToLockList) {
                 blockToUnlock.RemoveFallLock();

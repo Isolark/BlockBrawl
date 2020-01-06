@@ -40,8 +40,6 @@ public class TextMeshPooler : ObjectPooler
         objText.color = storedText.VertexColor;
         objText.fontStyle = storedText.IsBold ? FontStyles.Bold : FontStyles.Normal;
 
-        Debug.Log(objText.fontWeight);
-
         return obj;
     }
 

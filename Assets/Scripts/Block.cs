@@ -21,6 +21,7 @@ public class Block : MonoBehaviour
     public bool IsMoving;
     public bool IsFalling;
     //public bool IsFallLocked;
+    public bool IsReallyFallLocked;
     public bool IsDestroying;
 
     //If all blocks in a garbage block have a fall flag, it can fall

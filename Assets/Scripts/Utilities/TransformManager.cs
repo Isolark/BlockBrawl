@@ -100,6 +100,21 @@ public class ManualDeltaTransItem : ManualTransItem
         CheckCallback = checkCallback;
     }
 
+    override public bool OnMove()
+    {
+        var t = Time.deltaTime;
+        var deltaVector = new Vector3(P_Velocity.x * t, P_Velocity.y * t, 0);
+        var deltaAcceleration = P_Acceleration * t;
+
+        while(deltaVector.sqrMagnitude / P_Delta.sqrMagnitude > 1)
+        {
+            if(OnMove(P_Delta, Vector2.zero)) { return true; }
+            deltaVector = deltaVector - new Vector3(P_Delta.x, P_Delta.y, 0);
+        }
+
+        return OnMove(deltaVector, deltaAcceleration);
+    }
+
     override protected bool OnCheck()
     {
         var checkBool = CheckCallback();
@@ -130,10 +145,8 @@ public class ManualTransItem : TransformItem
         P_Acceleration = pAcceleration;
     }
 
-    override public bool OnMove()
+    protected bool OnMove(Vector3 deltaVector, Vector2 deltaAcceleration)
     {
-        var t = Time.deltaTime;
-        var deltaVector = new Vector3(P_Velocity.x * t, P_Velocity.y * t, 0);
         var nextVector = Target.transform.localPosition + deltaVector;
 
         if(P_Velocity.x > 0 && nextVector.x >= P_Final.x || 
@@ -155,9 +168,8 @@ public class ManualTransItem : TransformItem
 
         IncPosition(deltaVector);
 
-        P_Velocity += (P_Acceleration * t);
-
-        //Debug.Log("Velocity: " + P_Velocity + " | Accel: " + P_Acceleration);
+        //Increase Velocity
+        P_Velocity += deltaAcceleration;
 
         if(P_MaxVelocity != null && P_Velocity.sqrMagnitude > P_MaxVelocity.sqrMagnitude) {
             P_Velocity = P_MaxVelocity;
@@ -165,6 +177,15 @@ public class ManualTransItem : TransformItem
         }
 
         return false;
+    }
+
+    override public bool OnMove()
+    {
+        var t = Time.deltaTime;
+        var deltaVector = new Vector3(P_Velocity.x * t, P_Velocity.y * t, 0);
+        var deltaAcceleration = P_Acceleration * t;
+
+        return OnMove(deltaVector, deltaAcceleration);
     }
 
     virtual protected bool OnCheck() { return true; }
