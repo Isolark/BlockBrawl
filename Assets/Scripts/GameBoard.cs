@@ -3,10 +3,11 @@
 public class GameBoard : MonoBehaviour
 {
     public BlockContainer BlockContainer;
-    public SpriteLibrary BlockSL;
     public GameCursor Cursor;
     public Vector2 BoardSize;
     public Vector2 CursorStartPosition;
+
+    public int Score;
 
     // Start is called before the first frame update
     void Start()
@@ -14,9 +15,9 @@ public class GameBoard : MonoBehaviour
         Cursor.LockToBoard(BoardSize, CursorStartPosition);
         BlockContainer.Initialize(BoardSize);
     }
-    public void ManUpdate()
+    public void OnUpdate()
     {
-        BlockContainer.Move();
+        BlockContainer.OnUpdate();
     }
 
     public void OnConfirm()

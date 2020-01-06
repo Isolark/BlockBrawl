@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,75 +6,95 @@ public class TimedEventManager : MonoBehaviour
 {
     public BaseController BaseController;
 
-    public float TimeStep;
-
     private IList<TimedAction> ActionList;
+    private IList<TimedAction> StagingList;
     private IList<TimedAction> DeletionList;
-    private float TimePaused;
-    private float LastTime;
+    private bool Paused;
+    private float PrevTime;
 
     void Start()
     {
         ActionList = new List<TimedAction>();
+        StagingList = new List<TimedAction>();
         DeletionList = new List<TimedAction>();
         Unpause();
     }
 
+    void Destroy()
+    {
+        Pause();
+    }
+
     public void Pause()
     {
-        StopCoroutine(TimedUpdate());
-
-        TimePaused = Time.timeSinceLevelLoad;
+        BaseController.FixedUpdateDelegate -= OnUpdate;
+        Paused = true;
     }
 
     public void Unpause()
     {
-        StartCoroutine(TimedUpdate());
-
-        LastTime = Time.timeSinceLevelLoad;
+        BaseController.FixedUpdateDelegate += OnUpdate;
+        Paused = false;
     }
 
-    public void AddTimedAction(Action action, float activationTime)
+    public TimedAction AddTimedAction(Action action, float activationTime, bool isContinuous = false)
     {
-        ActionList.Add(new TimedAction(action, activationTime));
+        var timedAction = new TimedAction(action, activationTime, isContinuous);
+        StagingList.Add(timedAction);
+
+        return timedAction;
     }
 
-    //Main Coroutine
-    private IEnumerator TimedUpdate()
+    public void RemoveTimedAction(TimedAction timedAction)
     {
-        for(;;)
+        if(StagingList.Contains(timedAction)) {
+            StagingList.Remove(timedAction);
+        }
+        if(ActionList.Contains(timedAction)) {
+            ActionList.Remove(timedAction);
+        }
+        if(DeletionList.Contains(timedAction)) {
+            DeletionList.Remove(timedAction);
+        }
+    }
+
+    private void OnUpdate()
+    {
+        if(Paused) { return; }
+
+        if(StagingList.Count > 0) {
+            foreach(var action in StagingList) {
+                ActionList.Add(action);
+            }
+            StagingList.Clear();
+        }
+        foreach(var action in ActionList)
         {
-            yield return new WaitForSeconds(TimeStep);
-            
-            var timeDelta = Time.timeSinceLevelLoad - LastTime;
-            LastTime = Time.timeSinceLevelLoad;
-
-            foreach(var action in ActionList)
-            {
-                if(action.TickDown(timeDelta)) {
-                    DeletionList.Add(action);
-                }
+            if(action.TickDown(Time.deltaTime)) {
+                DeletionList.Add(action);
             }
-            foreach(var actionToDelete in DeletionList)
-            {
-                ActionList.Remove(actionToDelete);
-            }
-            if(DeletionList.Count > 0) {
-                DeletionList.Clear();
-            }
+        }
+        foreach(var actionToDelete in DeletionList)
+        {
+            ActionList.Remove(actionToDelete);
         }
     }
 }
 
 public class TimedAction
 {
-    private float ActivationTime;
+    public float ActivationTime;
+    private float InitialActivationTime;
+    public bool IsActive;
+    public bool IsContinuous;
     private Action MyAction;
 
-    public TimedAction(Action myAction, float activationTime)
+    public TimedAction(Action myAction, float activationTime, bool isContinuous = false)
     {
         MyAction = myAction;
-        ActivationTime = activationTime;
+        InitialActivationTime = ActivationTime = activationTime;
+        IsContinuous = isContinuous;
+        IsActive = true;
     }
 
     public bool TickDown(float timeDelta)
@@ -84,6 +103,12 @@ public class TimedAction
 
         if(ActivationTime <= 0) {
             MyAction();
+
+            if(IsContinuous) {
+                var startingActivationTime = InitialActivationTime + ActivationTime;
+                ActivationTime = startingActivationTime;
+                return false;
+            }
             return true;
         }
         return false;

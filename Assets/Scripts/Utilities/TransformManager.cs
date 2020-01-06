@@ -36,19 +36,25 @@ public class TransformManager : MonoBehaviour
         Paused = false;
     }
 
-    public void Add_TimedLinearPos_Transform(GameObject target, Vector2 pFinal, float timeDelta, Action callback = null)
+    public void Add_LinearTimePos_Transform(GameObject target, Vector2 pFinal, float timeDelta, Action callback = null)
     {
-        TransformItemList.Add(new LinearTransformItem(target, pFinal, timeDelta, callback:callback));
+        TransformItemList.Add(new LinearTimeTransItem(target, pFinal, timeDelta, callback:callback));
     }
 
-    public void Add_ManualPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Action callback = null)
+    public void Add_ManualFinalPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Action callback = null)
     {
-        TransformItemList.Add(new ManualTransformItem(target, pFinal, pVelocity, pAcceleration, callback:callback));
+        TransformItemList.Add(new ManualTransItem(target, pFinal, pVelocity, pAcceleration, callback:callback));
     }
 
-    public void Add_InfManualPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Func<bool> checkCallback, Action callback = null)
+    public void Add_ManualDeltaPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pMaxVelocity, Vector2 pAcceleration, 
+        Func<bool> checkCallback, IList<GameObject> linkedObjs = null, Action callback = null)
     {
-        TransformItemList.Add(new InfManualTransformItem(target, pFinal, pVelocity, pAcceleration, checkCallback, callback:callback));
+        var transItem = new ManualDeltaTransItem(target, pFinal, pVelocity, pAcceleration, pMaxVelocity, checkCallback, callback:callback);
+        if(linkedObjs != null) {
+            transItem.SetLinkedObjs(linkedObjs); 
+        }
+
+        TransformItemList.Add(transItem);
     }
 
     private void OnUpdate()
@@ -73,31 +79,54 @@ public class TransformManager : MonoBehaviour
 
 
 
-public class InfManualTransformItem : ManualTransformItem
+public class ManualDeltaTransItem : ManualTransItem
 {
+    private Vector2 P_Delta;
     private Func<bool> CheckCallback;
 
-    public InfManualTransformItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Func<bool> checkCallback = null, Action callback = null) 
+    public ManualDeltaTransItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Func<bool> checkCallback = null, Action callback = null) 
         : base(target, pFinal, pVelocity, pAcceleration, callback)
     {
+        P_Delta = pFinal;
+        P_Final = new Vector2(target.transform.localPosition.x, target.transform.localPosition.y) + P_Delta;
+        CheckCallback = checkCallback;
+    }
+
+    public ManualDeltaTransItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Vector2 pMaxVelocity, 
+        Func<bool> checkCallback = null, Action callback = null) : base(target, pFinal, pVelocity, pAcceleration, pMaxVelocity, callback)
+    {
+        P_Delta = pFinal;
+        P_Final = new Vector2(target.transform.localPosition.x, target.transform.localPosition.y) + P_Delta;
         CheckCallback = checkCallback;
     }
 
     override protected bool OnCheck()
     {
-        return CheckCallback();
+        var checkBool = CheckCallback();
+        if(!checkBool) { P_Final = P_Final + P_Delta; }
+
+        return checkBool;
     }
 }
 
-public class ManualTransformItem : TransformItem
+public class ManualTransItem : TransformItem
 {
     protected Vector2 P_Velocity;
+    protected Vector2 P_MaxVelocity;
     protected Vector2 P_Acceleration;
 
-    public ManualTransformItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Action callback = null)
+    public ManualTransItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Action callback = null)
         : base(target, pFinal, callback)
     {
         P_Velocity = pVelocity;
+        P_Acceleration = pAcceleration;
+    }
+
+    public ManualTransItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Vector2 pMaxVelocity, Action callback = null)
+        : base(target, pFinal, callback)
+    {
+        P_Velocity = pVelocity;
+        P_MaxVelocity = pMaxVelocity;
         P_Acceleration = pAcceleration;
     }
 
@@ -114,7 +143,9 @@ public class ManualTransformItem : TransformItem
         {
             if(OnCheck())
             {
-                Target.transform.localPosition = P_Final;
+                deltaVector = P_Final - new Vector2(Target.transform.localPosition.x, Target.transform.localPosition.y);
+                IncPosition(deltaVector);
+
                 if(Callback != null) {
                     Callback();
                 }
@@ -122,8 +153,16 @@ public class ManualTransformItem : TransformItem
             }
         }
 
-        Target.transform.localPosition = nextVector;
-        P_Velocity += P_Acceleration * t;
+        IncPosition(deltaVector);
+
+        P_Velocity += (P_Acceleration * t);
+
+        //Debug.Log("Velocity: " + P_Velocity + " | Accel: " + P_Acceleration);
+
+        if(P_MaxVelocity != null && P_Velocity.sqrMagnitude > P_MaxVelocity.sqrMagnitude) {
+            P_Velocity = P_MaxVelocity;
+            P_Acceleration = Vector2.zero;
+        }
 
         return false;
     }
@@ -131,13 +170,14 @@ public class ManualTransformItem : TransformItem
     virtual protected bool OnCheck() { return true; }
 }
 
-public class LinearTransformItem : TransformItem
+//NOTE: Currently doesn't support linked obj movement
+public class LinearTimeTransItem : TransformItem
 {
     // T_Current is added to by time.Delta until reaches T_Final
     protected float T_Final;
     protected float T_Current;
 
-    public LinearTransformItem(GameObject target, Vector2 pFinal, float tFinal, Action callback = null) : base(target, pFinal, callback)
+    public LinearTimeTransItem(GameObject target, Vector2 pFinal, float tFinal, Action callback = null) : base(target, pFinal, callback)
     {
         T_Final = tFinal;
         T_Current = 0;
@@ -168,6 +208,7 @@ public class LinearTransformItem : TransformItem
 public abstract class TransformItem
 {
     protected GameObject Target;
+    protected IList<GameObject> LinkedObjs;
     protected Vector2 P_Final;
     protected Action Callback;
 
@@ -179,5 +220,21 @@ public abstract class TransformItem
         Callback = callback;
     }
 
+    virtual public void SetLinkedObjs(IList<GameObject> linkedObjs)
+    {
+        LinkedObjs = linkedObjs;
+    }
+
+    virtual public void IncPosition(Vector2 pDelta2)
+    {
+        var pDelta = new Vector3(pDelta2.x, pDelta2.y, 0);
+        Target.transform.localPosition += pDelta;
+
+        if(LinkedObjs != null) {
+            foreach(var obj in LinkedObjs) {
+                obj.transform.localPosition += pDelta;
+            }
+        }
+    }
     abstract public bool OnMove();
 }

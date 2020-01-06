@@ -5,7 +5,16 @@ using UnityEngine.InputSystem;
 public class GameController : BaseController, InputActionHub.IPlayerActions
 {
     public GameBoard PlayerGameBoard;
+    public GameStatsUI GameStatsMenu;
     public float BlockDist;
+    public float TimeScale = 1f;
+    public float BlockFallVelocity;
+    public float BlockFallMaxVelocity;
+    public float BlockFallAcceleration;
+    public float BlockSwitchSpeed; //Speed at which blocks can be switched
+    public float RaiseTimeStopComboMultiplier; //RaiseStopTimer Time += (ComboCount * Multiplier)
+    public float RaiseTimeStopChainMultiplier; //RaiseStopTimer Time += (ChainCount * Multiplier)
+
     private InputActionHub InputHub;
 
     public static GameController GC;
@@ -26,6 +35,18 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     {
         GS_Current = GameState.Active;
         InitializeBinding();
+
+        if(TimeScale != 1) {
+            Time.timeScale = TimeScale;
+        }
+    }
+
+    public void UpdateGameStatMenu(int currentChain)
+    {
+        GameStatsMenu.CurrentChainValue.text = "x" + currentChain.ToString();
+
+        var maxChain = int.Parse(GameStatsMenu.MaxChainValue.text.Substring(1));
+        if(currentChain > maxChain) { GameStatsMenu.MaxChainValue.text = "x" + currentChain.ToString(); }
     }
 
     void InitializeBinding()
@@ -72,7 +93,7 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
 
         if(GS_Current == GameState.Active)
         {
-            PlayerGameBoard.ManUpdate();
+            PlayerGameBoard.OnUpdate();
         }
     }
 
@@ -108,21 +129,4 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
             PlayerGameBoard.SendMessage("OnTrigger", context.performed);
         }
     }
-
-
-    // public void OnConfirm(InputValue value)
-    // {
-    //     if(GS_Current == GameState.Active)
-    //     {
-    //         PlayerCursor.SendMessage("OnConfirm", value);
-    //     }
-    // }
-
-    // public void OnCancel(InputValue value)
-    // {
-    //     if(GS_Current == GameState.Active)
-    //     {
-    //         PlayerCursor.SendMessage("OnCancel", value);
-    //     }
-    // }
 }

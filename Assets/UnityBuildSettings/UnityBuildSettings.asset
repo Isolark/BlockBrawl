@@ -46,10 +46,10 @@ MonoBehaviour:
   _basicSettings:
     baseBuildFolder: bin
     buildPath: $YEAR-$MONTH-$DAY/$BUILD/$RELEASE_TYPE/$PLATFORM/$ARCHITECTURE/$DISTRIBUTION
-    openFolderPostBuild: 1
+    openFolderPostBuild: 0
   _productParameters:
-    buildCounter: 5
-    lastGeneratedVersion: 1.0.1802.4102
+    buildCounter: 6
+    lastGeneratedVersion: 1.0.1817.3862
     version: 1.0.$DAYSSINCE("January 1, 2015").$SECONDS
     autoGenerate: 1
   _releaseTypeList:
@@ -181,8 +181,8 @@ MonoBehaviour:
     showConfigs: 0
     showBuildInfo: 0
     hideDisabled: 0
-    treeView: 0
-    selectedKeyChain: 
+    treeView: 1
+    selectedKeyChain: Release/OSX/OSX/Universal
   _preBuildActions:
     buildActions: []
   _postBuildActions:
