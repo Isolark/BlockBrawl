@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 //Parent controller for debugging in game (currently tailored to the GameController's scene)
 public class DebugController : MonoBehaviour
@@ -30,6 +31,17 @@ public class DebugController : MonoBehaviour
             var blockObj = blockContainer.BlockList[blockLoc].gameObject;
             blockObj.GetComponent<SpriteRenderer>().sprite = SpriteLibrary.SL.GetSpriteByName("Block");
             blockObj.SetActive(true);
+        }
+    }
+
+    public void LogNullBlockLocations()
+    {
+        var blockList = GameController.GC.PlayerGameBoard.BlockContainer.BlockList;
+        var nullBlock = GameController.GC.PlayerGameBoard.BlockContainer.NullBlock;
+
+        foreach(var loc in blockList.Where(x => x.Value == nullBlock))
+        {
+            Debug.Log("Null Block at: " + loc.Key);
         }
     }
 }

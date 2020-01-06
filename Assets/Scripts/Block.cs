@@ -21,6 +21,7 @@ public class Block : MonoBehaviour
     public bool IsMoving;
     public bool IsFalling;
     //public bool IsFallLocked;
+    public bool IsReallyFallLocked;
     public bool IsDestroying;
 
     //If all blocks in a garbage block have a fall flag, it can fall
@@ -33,12 +34,15 @@ public class Block : MonoBehaviour
     //Action Ref
     public Action StoredAction;
     
-    public void OnFinishAnimation(string clipName)
-    {
-        if(clipName == "Block-FadeOutWhite") {
-            BlockSprite.sprite = null;
-        } else if (StoredAction != null) {
-            StoredAction();
-        }
-    }
+    // public void OnFinishAnimation(string clipName)
+    // {
+    //     if(clipName == "Block-FadeOutWhite") 
+    //     {
+    //         BlockSprite.sprite = null;
+    //     }
+    //     else if (StoredAction != null) 
+    //     {
+    //         StoredAction();
+    //     }
+    // }
 }

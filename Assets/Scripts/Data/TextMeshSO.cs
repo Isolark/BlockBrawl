@@ -5,4 +5,5 @@ public class TextMeshSO : ScriptableObject
 {
     public float FontSize;
     public Color VertexColor;
+    public bool IsBold;
 }

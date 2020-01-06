@@ -7,7 +7,7 @@ public static class BlockExtensions
 {
     public static void Initialize(this Block block, bool isOnBoard = false)
     {
-        block.SetStates(isOnBoard);
+        block.IsMoveable = block.IsComboable = isOnBoard;
         block.StoredAction = null;
 
         var blockSpr = block.GetComponent<SpriteRenderer>();
@@ -40,10 +40,10 @@ public static class BlockExtensions
         block.Status = BlockStatus.Normal;
     }
 
-    public static void SetStates(this Block block, bool state)
-    {
-        block.IsComboable = block.IsMoveable = state;
-    }
+    // public static void SetStates(this Block block, bool state)
+    // {
+    //     block.IsComboable = block.IsMoveable = state;
+    // }
 
     public static void IncrementType(this Block block, int maxTypes = 5)
     {
@@ -56,7 +56,7 @@ public static class BlockExtensions
     public static bool CanFall(this Block block)
     {
         //TODO: Add Garbage Block logic for checking if anything below any of the blocks
-        return !block.IsDestroying;
+        return !block.IsDestroying && (!block.IsMoving || block.IsFallLocked);
     }
 
     public static bool IsMatch(this Block block, Block blockToMatch, bool ignoreState = false)
@@ -65,14 +65,42 @@ public static class BlockExtensions
             block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFalling) || ignoreState);
     }
 
-    //Flashing, states set to false
-    public static void StartDestroy(this Block block)
+    //Destroy and display combo and or chain. Need to create the ComboPops that will 
+    public static void StartDestroy(this Block block, int comboCount, int chainCount)
     {
-        block.SetStates(false);
+        block.StartDestroy();
+
+        var isCombo = comboCount > 3;
+        var isChain = chainCount > 1;
+
+        var startingY = isCombo && isChain ? 0 : 0.35f;
+
+        if(isCombo)
+        {
+            var comboPop = new ComboPop(comboCount, false, block);
+            comboPop.PopHolder.transform.localPosition += new Vector3(0, startingY, 0);
+            comboPop.Play();
+            startingY += 0.65f;
+        }
+        if(isChain)
+        {
+            var chainPop = new ComboPop(chainCount, true, block);
+            chainPop.PopHolder.transform.localPosition += new Vector3(0, startingY, 0);
+            chainPop.Play();
+        }
+    }
+
+    //Flashing, states set to false
+    public static void StartDestroy(this Block block, Action callback = null)
+    {
         block.IsDestroying = true;
 
-        var whiteBlockFX = SpriteFXPooler.SP.GetPooledObject("BlockLayer", parent: block.transform).GetComponent<SpriteFX>();
-        whiteBlockFX.Initialize("Block-White", "BlockCtrl");
+        var whiteBlockFX = SpriteFXPooler.SP.GetPooledObject("SpriteFX", "BlockLayer", 1, parent: block.transform).GetComponent<SpriteFX>();
+        whiteBlockFX.Initialize("Block-White", "BlockCtrl", true);
+        whiteBlockFX.StateCallbacks.Add("Block-FadeOutWhite", () => { block.BlockSprite.sprite = null; });
+
+        if(callback != null) { whiteBlockFX.StateCallbacks.Add("None", () => { callback();}); }
+
         whiteBlockFX.FXAnimCtrl.SetTrigger("Play");
     }
 
@@ -180,7 +208,7 @@ public static class BlockExtensions
         { 
             var blockBelow = blockList[nextBoardLoc];
 
-            if(blockBelow == nullBlock) 
+            if(blockBelow.GetInstanceID() == nullBlock.GetInstanceID()) 
             {
                 Block leftBlock;
                 var isLeftBlock = blockList.TryGetValue(nextBoardLoc + Vector2.left, out leftBlock);

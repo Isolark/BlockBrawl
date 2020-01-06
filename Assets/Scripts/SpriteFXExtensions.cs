@@ -3,22 +3,25 @@ using UnityEngine;
 
 public static class SpriteFXExtensions
 {
-    public static void Initialize(this SpriteFX spriteFX, string spriteName, string animName)
+    public static void Initialize(this SpriteFX spriteFX, string spriteName, string animCtrlName, bool isEnabled = false)
     {
-        spriteFX.FXSprite.sprite = SpriteLibrary.SL.GetSpriteByName(spriteName);
-        spriteFX.FXAnimCtrl.runtimeAnimatorController = AnimatorLibrary.AL.GetAnimatorByName(animName);
-        spriteFX.FXAnimCtrl.enabled = true;
+        spriteFX.SetSprite(spriteName);
+        spriteFX.SetAnimator(animCtrlName, isEnabled);
     }
 
-    public static void Initialize(this SpriteFX spriteFX, string animName, IList<string> triggerList)
+    public static void SetSprite(this SpriteFX spriteFX, string spriteName)
     {
+        spriteFX.FXSprite.sprite = SpriteLibrary.SL.GetSpriteByName(spriteName);
+    }
 
+    public static void SetAnimator(this SpriteFX spriteFX, string animCtrlName, bool isEnabled = false)
+    {
+        spriteFX.FXAnimCtrl.runtimeAnimatorController = AnimatorLibrary.AL.GetAnimatorByName(animCtrlName);
+        spriteFX.FXAnimCtrl.enabled = isEnabled;
     }
 
     public static void OnDestroy(this SpriteFX spriteFX) 
-    {
-        spriteFX.FXAnimCtrl.enabled = false;
-        spriteFX.FXSprite.color = Color.white;
-        spriteFX.gameObject.SetActive(false);
+    {        
+        spriteFX.transform.ResetAllChildrenRecursively();
     }
 }
