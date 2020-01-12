@@ -27,7 +27,7 @@ MonoBehaviour:
       test: OSX
   pathToButlerExe: C:\Unity\Tools\butler.exe
   nameOfItchUser: Sosuko
-  nameOfItchGame: block-brawl-prototype
+  nameOfItchGame: tetra-nights
   useGeneratedBuildVersion: 1
   showUploadProgress: 0
   itchChannelOverride: 
@@ -48,8 +48,8 @@ MonoBehaviour:
     buildPath: $YEAR-$MONTH-$DAY/$BUILD/$RELEASE_TYPE/$PLATFORM/$ARCHITECTURE/$DISTRIBUTION
     openFolderPostBuild: 0
   _productParameters:
-    buildCounter: 6
-    lastGeneratedVersion: 1.0.1817.3862
+    buildCounter: 7
+    lastGeneratedVersion: 1.0.1831.1965
     version: 1.0.$DAYSSINCE("January 1, 2015").$SECONDS
     autoGenerate: 1
   _releaseTypeList:
@@ -138,7 +138,7 @@ MonoBehaviour:
       _Values:
       - enabled: 1
         childKeys: []
-      - enabled: 1
+      - enabled: 0
         childKeys:
         - Release/PC/Windows x86
       - enabled: 1
@@ -151,7 +151,7 @@ MonoBehaviour:
       - enabled: 1
         childKeys:
         - Release/OSX/OSX/Universal
-      - enabled: 1
+      - enabled: 0
         childKeys:
         - Release/OSX/OSX
       - enabled: 1
@@ -210,10 +210,10 @@ MonoBehaviour:
     clauses:
     - type: 1
       comparison: 0
-      test: WebGL
+      test: WEBGL
   pathToButlerExe: C:\Unity\Tools\butler.exe
   nameOfItchUser: Sosuko
-  nameOfItchGame: block-brawl-prototype
+  nameOfItchGame: tetra-nights
   useGeneratedBuildVersion: 1
   showUploadProgress: 0
   itchChannelOverride: html

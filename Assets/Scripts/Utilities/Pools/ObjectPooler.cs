@@ -17,12 +17,13 @@ public abstract class ObjectPooler : MonoBehaviour
         for(var x = 0; x < poolMaxSize; x++)
         {
             var obj = Instantiate(pooledObj);
+            obj.name = obj.name.Replace("(Clone)", string.Empty);
             obj.SetActive(false);
             pool.Add(obj);
         }
     }
 
-    public virtual GameObject GetPooledObject(Transform parent = null)
+    public virtual GameObject GetPooledObject(string objName, Transform parent = null)
     {
         GameObject obj = null;
 
@@ -48,12 +49,9 @@ public abstract class ObjectPooler : MonoBehaviour
                 obj.transform.localPosition = Vector2.zero;
             }
         }
+        
+        obj.name = objName;
 
-        CleanObj(ref obj);
         return obj;
-    }
-
-    protected virtual void CleanObj(ref GameObject obj)
-    {
     }
 }

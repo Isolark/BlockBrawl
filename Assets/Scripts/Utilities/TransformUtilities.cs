@@ -21,4 +21,22 @@ public static class TransformUtilities
         var size = new Vector3(spriteRef.bounds.size.x, spriteRef.bounds.size.y, 0);
         target.transform.localPosition += Vector3.Scale(size, spritePercents);
     }
+
+    public static void ResetSelf(this Transform transform)
+    {
+        transform.localPosition = transform.position = Vector3.zero;
+        transform.rotation = transform.localRotation = new Quaternion(0, 0, 0, 0);
+        transform.localScale = Vector3.one;
+    }
+    public static void ResetAllChildrenRecursively(this Transform parent)
+    {
+        while(parent.childCount > 0)
+        {
+            parent.GetChild(0).ResetAllChildrenRecursively();
+        }
+
+        parent.SetParent(null);
+        parent.ResetSelf();
+        parent.gameObject.SetActive(false);
+    }
 }
