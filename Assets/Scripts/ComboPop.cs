@@ -44,10 +44,10 @@ public class ComboPop
 
         PopSpriteLeft.transform.localPosition = new Vector3(-0.5f, 0, 0);
 
-        PopSpriteLeft.SetSprite("Tomato-Large");
-        PopSpriteTop.SetSprite("Tomato-Large");
-        PopSpriteRight.SetSprite("Tomato-Large");
-        PopSpriteBot.SetSprite("Tomato-Large");
+        PopSpriteLeft.SetSprite("Effect-Bun");
+        PopSpriteTop.SetSprite("Effect-Bun");
+        PopSpriteRight.SetSprite("Effect-Bun");
+        PopSpriteBot.SetSprite("Effect-Bun");
 
         PopFX.SetAnimator("ComboPopCtrl", true);
         PopFX.StateCallbacks.Add("None", () => { PopHolder.OnDestroy(); });

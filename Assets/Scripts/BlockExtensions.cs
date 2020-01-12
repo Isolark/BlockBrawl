@@ -23,6 +23,8 @@ public static class BlockExtensions
 
     public static void OnEnterBoard(this Block block)
     {
+        if(block.Status == BlockStatus.Null) { return; }
+        
         block.InitStates();
         block.GetComponent<SpriteRenderer>().color = block.Icon.GetComponent<SpriteRenderer>().color = Color.white;
     }
@@ -30,11 +32,11 @@ public static class BlockExtensions
     public static void InitStates(this Block block)
     {
         block.IsMoveable = block.IsComboable = true;
-        block.IsMoving = false;
+        block.IsMoving = block.IsComboing = false;
         block.IsChainable = false;
-        block.IsFalling = false;
+        block.IsFalling = block.IsFallLocked = false;
         block.FallFlag = false;
-        block.FallLockCount = 0;
+        //block.FallLockCount = 0;
         block.IsDestroying = false;
         
         block.Status = BlockStatus.Normal;
@@ -63,6 +65,12 @@ public static class BlockExtensions
     {
         return block.GetInstanceID() != blockToMatch.GetInstanceID() && 
             block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFalling) || ignoreState);
+    }
+
+    public static void StartComboing(this Block block)
+    {
+        block.IsMoveable = false;
+        block.IsComboing = true;
     }
 
     //Destroy and display combo and or chain. Need to create the ComboPops that will 
@@ -94,6 +102,7 @@ public static class BlockExtensions
     public static void StartDestroy(this Block block, Action callback = null)
     {
         block.IsDestroying = true;
+        block.IsComboable = block.IsComboing = false;
 
         var whiteBlockFX = SpriteFXPooler.SP.GetPooledObject("SpriteFX", "BlockLayer", 1, parent: block.transform).GetComponent<SpriteFX>();
         whiteBlockFX.Initialize("Block-White", "BlockCtrl", true);
@@ -118,9 +127,9 @@ public static class BlockExtensions
     {
         if(block.IsDestroying) { return; }
 
-        block.FallLockCount--;
-        if(block.FallLockCount < 0) { block.FallLockCount = 0; }
-
+        // block.FallLockCount--;
+        // if(block.FallLockCount < 0) { block.FallLockCount = 0; }
+        block.IsFallLocked = false;
         block.IsMoveable = !block.IsMoving;
     }
 
@@ -143,7 +152,8 @@ public static class BlockExtensions
         block.IsFalling = true;
         block.IsChainable = isChainable;
         block.IsMoveable = block.IsComboable = false;
-        block.FallLockCount = 0;
+        block.IsFallLocked = false;
+        //block.FallLockCount = 0;
 
         var nextLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
         
@@ -157,7 +167,8 @@ public static class BlockExtensions
 
                 linkedBlock.IsFalling = true;
                 linkedBlock.IsMoveable = linkedBlock.IsComboable = false;
-                linkedBlock.FallLockCount = 0;
+                linkedBlock.IsFallLocked = false;
+                //linkedBlock.FallLockCount = 0;
 
                 var nextLinkedLoc = new Vector3(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1, 0);
                 linkedBlock.NullSwapMove(blockList, nullBlock, nextLinkedLoc);
@@ -249,6 +260,8 @@ public static class BlockExtensions
 
     public static void MoveBoardLoc(this Block block, Vector3 moveVector, bool movePrevBoardLoc = false)
     {
+        if(block.Status == BlockStatus.Null) { return; }
+
         block.BoardLoc += moveVector;
 
         if(movePrevBoardLoc) {

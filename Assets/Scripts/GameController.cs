@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.InputSystem.InputAction;
 
 //Parent controller for gameplay. Passes on inputs to relevant game objects
+//TODO: OnPause(), trigger an "empty" input for all other bindings (stop player's hold timer, etc...)
 public class GameController : BaseController, InputActionHub.IPlayerActions
 {
     public GameBoard PlayerGameBoard;
@@ -14,6 +16,9 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     public float BlockSwitchSpeed; //Speed at which blocks can be switched
     public float RaiseTimeStopComboMultiplier; //RaiseStopTimer Time += (ComboCount * Multiplier)
     public float RaiseTimeStopChainMultiplier; //RaiseStopTimer Time += (ChainCount * Multiplier)
+    public float RaiseTimeStopBaseComboAmount;
+    public Vector2 PrevMoveDir;
+    public float PrevMoveSqrMag;
 
     private InputActionHub InputHub;
 
@@ -54,6 +59,8 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
         InputHub = new InputActionHub();
         InputHub.Player.SetCallbacks(this);
         InputHub.Player.Enable();
+
+        PrevMoveDir = Vector2.zero;
 
         // var x = new InputBinding();
         // x.GenerateId();
@@ -97,33 +104,69 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
         }
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    public void OnMove(CallbackContext context)
     {
-        //Isolate in game layer, not directly to cursor
-        if(!context.performed) return;
+        var moveDir = context.ReadValue<Vector2>();
+
+        if(!context.performed) 
+        {
+            if(moveDir.sqrMagnitude == 0)
+            { 
+                PrevMoveDir = Vector2.zero; 
+                PlayerGameBoard.SendMessage("OnMove", moveDir);
+            }
+            return; 
+        }
+
         if(GS_Current == GameState.Active)
         {
-            PlayerGameBoard.SendMessage("OnMove", context.ReadValue<Vector2>());
+            var moveDirSqrMag = moveDir.sqrMagnitude;
+            var prevMoveDirSqrMag = PrevMoveDir.sqrMagnitude;
+
+            if(moveDirSqrMag == 0) 
+            {
+                PrevMoveDir = Vector2.zero;
+            }
+            else if(PrevMoveDir.sqrMagnitude > 0)
+            {
+                if(moveDirSqrMag == PrevMoveSqrMag) { moveDir -= PrevMoveDir; }
+                else if(moveDirSqrMag < prevMoveDirSqrMag) 
+                {
+                    PrevMoveDir = moveDir;
+                    return;
+                 }
+            }
+
+            var tmpPrevMoveDir = PrevMoveDir;
+
+            PrevMoveDir = moveDir;
+            moveDir -= tmpPrevMoveDir;
+
+            PlayerGameBoard.SendMessage("OnMove", moveDir);
+        }
+        else if(PrevMoveDir.sqrMagnitude > 0)
+        {
+            PrevMoveDir = Vector2.zero;
         }
     }
 
-    public void OnConfirm(InputAction.CallbackContext context)
+    public void OnConfirm(CallbackContext context)
     {
-        if(!context.performed) return;
+        if(!context.performed) { return; }
         if(GS_Current == GameState.Active)
         {
             PlayerGameBoard.SendMessage("OnConfirm");
         }
     }
 
-    public void OnCancel(InputAction.CallbackContext context)
+    public void OnCancel(CallbackContext context)
     {
-        if(!context.performed) return;
+        if(!context.performed) { return; }
     }
 
-    public void OnTrigger(InputAction.CallbackContext context)
+    public void OnTrigger(CallbackContext context)
     {
-        if(!context.performed && !context.canceled) return;
+        if(!context.performed && !context.canceled) { return; }
         if(GS_Current == GameState.Active)
         {
             PlayerGameBoard.SendMessage("OnTrigger", context.performed);

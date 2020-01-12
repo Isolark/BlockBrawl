@@ -105,12 +105,22 @@ public class TimedAction
             MyAction();
 
             if(IsContinuous) {
-                var startingActivationTime = InitialActivationTime + ActivationTime;
-                ActivationTime = startingActivationTime;
+                Reset();
                 return false;
             }
             return true;
         }
         return false;
+    }
+
+    public void SetTime(float activationTime)
+    {
+        InitialActivationTime = ActivationTime = activationTime;
+    }
+
+    public void Reset()
+    {
+        var startingActivationTime = InitialActivationTime + ActivationTime;
+        ActivationTime = startingActivationTime;
     }
 }
