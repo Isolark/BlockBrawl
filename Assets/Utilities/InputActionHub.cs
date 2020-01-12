@@ -55,8 +55,8 @@ public class InputActionHub : IInputActionCollection, IDisposable
                 {
                     ""name"": ""Keys"",
                     ""id"": ""0c1cc05f-8d76-4009-b8d2-45e2f047aa75"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": ""Press"",
+                    ""path"": ""2DVector(normalize=false)"",
+                    ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Move"",
@@ -64,7 +64,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""up"",
+                    ""name"": ""Up"",
                     ""id"": ""307c01d1-3138-47ed-a187-e2124de50798"",
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
@@ -75,7 +75,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""down"",
+                    ""name"": ""Down"",
                     ""id"": ""85f501de-fd3f-4062-aafc-57d52342a3a0"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
@@ -86,7 +86,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""left"",
+                    ""name"": ""Left"",
                     ""id"": ""84b00d1a-758d-4ab9-a70c-90b19f8c5946"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
@@ -97,8 +97,8 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""isPartOfComposite"": true
                 },
                 {
-                    ""name"": ""right"",
-                    ""id"": ""7b03524d-5a00-4ee0-825c-2fa57ff42f84"",
+                    ""name"": ""Right"",
+                    ""id"": ""ec6985e4-97a0-4a91-a96a-0a02a7e792d9"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -111,7 +111,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""name"": ""2D Vector"",
                     ""id"": ""8aaf7e0b-d8f0-4d28-92b7-bf7841ad8487"",
                     ""path"": ""2DVector"",
-                    ""interactions"": """",
+                    ""interactions"": ""Press"",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Move"",
@@ -166,7 +166,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""name"": """",
                     ""id"": ""f7bd21ef-4a6c-4172-8269-c6e6012596c3"",
                     ""path"": ""<Keyboard>/k"",
-                    ""interactions"": ""Press,Hold"",
+                    ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Confirm"",
@@ -176,7 +176,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""0ca54bbe-90e8-4db0-a6ee-df625565eaee"",
-                    ""path"": ""<XboxOneGampadiOS>/buttonSouth"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -187,7 +187,18 @@ public class InputActionHub : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""2677b104-4b15-4aa7-9b5e-7df8291ca1ca"",
-                    ""path"": """",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6d26c57d-2959-4320-80c3-343b24a1c9da"",
+                    ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -210,6 +221,28 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""name"": """",
                     ""id"": ""c376fcee-6cc4-440a-b3e4-255d20925496"",
                     ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Trigger"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f6e94fd7-6b33-4403-9e16-df412e823204"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Trigger"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cabda15a-c4db-4f63-8d19-5909e64d4047"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
