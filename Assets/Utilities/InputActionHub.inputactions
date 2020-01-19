@@ -30,9 +30,17 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Trigger",
+                    "name": "Start",
                     "type": "Button",
                     "id": "8285ebfa-7f19-481e-8c99-d7e2f48ef998",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Trigger",
+                    "type": "Button",
+                    "id": "f0437949-3828-40b6-97d7-8b3dc7fe51d9",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": ""
@@ -234,6 +242,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Trigger",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dd4e77c3-f1ad-4388-b5ff-dd07087d8c1b",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0ae38b7c-4eee-4d70-b774-84175de77336",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Start",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

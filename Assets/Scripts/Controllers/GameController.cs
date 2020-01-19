@@ -10,6 +10,7 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     public GameStatsUI GameStatsMenu;
     public float BlockDist;
     public float TimeScale = 1f;
+    public float GameTime;
     public float BlockFallVelocity;
     public float BlockFallMaxVelocity;
     public float BlockFallAcceleration;
@@ -39,6 +40,8 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     void Start()
     {
         GS_Current = GameState.Active;
+
+        GameTime = 0;
         InitializeBinding();
 
         if(TimeScale != 1) {
@@ -48,10 +51,10 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
 
     public void UpdateGameStatMenu(int currentChain)
     {
-        GameStatsMenu.CurrentChainValue.text = "x" + currentChain.ToString();
+        GameStatsMenu.SetCurrentChain(currentChain);
 
         var maxChain = int.Parse(GameStatsMenu.MaxChainValue.text.Substring(1));
-        if(currentChain > maxChain) { GameStatsMenu.MaxChainValue.text = "x" + currentChain.ToString(); }
+        if(currentChain > maxChain) { GameStatsMenu.SetMaxChain(currentChain); }
     }
 
     void InitializeBinding()
@@ -100,6 +103,9 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
 
         if(GS_Current == GameState.Active)
         {
+            GameTime += Time.deltaTime;
+            GameStatsMenu.SetGameTime(GameTime);
+            
             PlayerGameBoard.OnUpdate();
         }
     }
@@ -162,6 +168,15 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     public void OnCancel(CallbackContext context)
     {
         if(!context.performed) { return; }
+    }
+
+    public void OnStart(CallbackContext context)
+    {
+        if(!context.performed && !context.canceled) { return; }
+        if(GS_Current == GameState.Active)
+        {
+            SendMessage("OnStart", context.performed);
+        }
     }
 
     public void OnTrigger(CallbackContext context)

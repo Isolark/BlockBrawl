@@ -28,7 +28,7 @@ public class GameBoard : MonoBehaviour
 
     public void OnTrigger(bool performed)
     {
-        BlockContainer.OnTrigger(performed);
+        BlockContainer.OnTriggerRaise(performed);
     }
 
     public void OnMove(Vector2 value)

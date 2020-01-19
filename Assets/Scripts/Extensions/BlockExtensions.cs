@@ -24,7 +24,7 @@ public static class BlockExtensions
     public static void OnEnterBoard(this Block block)
     {
         if(block.Status == BlockStatus.Null) { return; }
-        
+
         block.InitStates();
         block.GetComponent<SpriteRenderer>().color = block.Icon.GetComponent<SpriteRenderer>().color = Color.white;
     }
@@ -36,16 +36,10 @@ public static class BlockExtensions
         block.IsChainable = false;
         block.IsFalling = block.IsFallLocked = false;
         block.FallFlag = false;
-        //block.FallLockCount = 0;
         block.IsDestroying = false;
         
         block.Status = BlockStatus.Normal;
     }
-
-    // public static void SetStates(this Block block, bool state)
-    // {
-    //     block.IsComboable = block.IsMoveable = state;
-    // }
 
     public static void IncrementType(this Block block, int maxTypes = 5)
     {

@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-public class InputActionHub : IInputActionCollection, IDisposable
+public class @InputActionHub : IInputActionCollection, IDisposable
 {
     private InputActionAsset asset;
-    public InputActionHub()
+    public @InputActionHub()
     {
         asset = InputActionAsset.FromJson(@"{
     ""name"": ""InputActionHub"",
@@ -43,9 +43,17 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Trigger"",
+                    ""name"": ""Start"",
                     ""type"": ""Button"",
                     ""id"": ""8285ebfa-7f19-481e-8c99-d7e2f48ef998"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Trigger"",
+                    ""type"": ""Button"",
+                    ""id"": ""f0437949-3828-40b6-97d7-8b3dc7fe51d9"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
@@ -249,6 +257,28 @@ public class InputActionHub : IInputActionCollection, IDisposable
                     ""action"": ""Trigger"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dd4e77c3-f1ad-4388-b5ff-dd07087d8c1b"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Start"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0ae38b7c-4eee-4d70-b774-84175de77336"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Start"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -260,6 +290,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_Confirm = m_Player.FindAction("Confirm", throwIfNotFound: true);
         m_Player_Cancel = m_Player.FindAction("Cancel", throwIfNotFound: true);
+        m_Player_Start = m_Player.FindAction("Start", throwIfNotFound: true);
         m_Player_Trigger = m_Player.FindAction("Trigger", throwIfNotFound: true);
     }
 
@@ -313,14 +344,16 @@ public class InputActionHub : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_Confirm;
     private readonly InputAction m_Player_Cancel;
+    private readonly InputAction m_Player_Start;
     private readonly InputAction m_Player_Trigger;
     public struct PlayerActions
     {
-        private InputActionHub m_Wrapper;
-        public PlayerActions(InputActionHub wrapper) { m_Wrapper = wrapper; }
+        private @InputActionHub m_Wrapper;
+        public PlayerActions(@InputActionHub wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Confirm => m_Wrapper.m_Player_Confirm;
         public InputAction @Cancel => m_Wrapper.m_Player_Cancel;
+        public InputAction @Start => m_Wrapper.m_Player_Start;
         public InputAction @Trigger => m_Wrapper.m_Player_Trigger;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -331,34 +364,40 @@ public class InputActionHub : IInputActionCollection, IDisposable
         {
             if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
             {
-                Move.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
-                Move.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
-                Move.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
-                Confirm.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnConfirm;
-                Confirm.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnConfirm;
-                Confirm.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnConfirm;
-                Cancel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
-                Cancel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
-                Cancel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
-                Trigger.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTrigger;
-                Trigger.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTrigger;
-                Trigger.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTrigger;
+                @Move.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
+                @Move.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
+                @Move.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
+                @Confirm.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnConfirm;
+                @Confirm.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnConfirm;
+                @Confirm.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnConfirm;
+                @Cancel.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
+                @Cancel.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
+                @Cancel.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCancel;
+                @Start.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnStart;
+                @Start.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnStart;
+                @Start.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnStart;
+                @Trigger.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTrigger;
+                @Trigger.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTrigger;
+                @Trigger.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnTrigger;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
             {
-                Move.started += instance.OnMove;
-                Move.performed += instance.OnMove;
-                Move.canceled += instance.OnMove;
-                Confirm.started += instance.OnConfirm;
-                Confirm.performed += instance.OnConfirm;
-                Confirm.canceled += instance.OnConfirm;
-                Cancel.started += instance.OnCancel;
-                Cancel.performed += instance.OnCancel;
-                Cancel.canceled += instance.OnCancel;
-                Trigger.started += instance.OnTrigger;
-                Trigger.performed += instance.OnTrigger;
-                Trigger.canceled += instance.OnTrigger;
+                @Move.started += instance.OnMove;
+                @Move.performed += instance.OnMove;
+                @Move.canceled += instance.OnMove;
+                @Confirm.started += instance.OnConfirm;
+                @Confirm.performed += instance.OnConfirm;
+                @Confirm.canceled += instance.OnConfirm;
+                @Cancel.started += instance.OnCancel;
+                @Cancel.performed += instance.OnCancel;
+                @Cancel.canceled += instance.OnCancel;
+                @Start.started += instance.OnStart;
+                @Start.performed += instance.OnStart;
+                @Start.canceled += instance.OnStart;
+                @Trigger.started += instance.OnTrigger;
+                @Trigger.performed += instance.OnTrigger;
+                @Trigger.canceled += instance.OnTrigger;
             }
         }
     }
@@ -368,6 +407,7 @@ public class InputActionHub : IInputActionCollection, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnConfirm(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+        void OnStart(InputAction.CallbackContext context);
         void OnTrigger(InputAction.CallbackContext context);
     }
 }

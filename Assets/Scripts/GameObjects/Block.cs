@@ -26,8 +26,6 @@ public class Block : MonoBehaviour
 
     //If all blocks in a garbage block have a fall flag, it can fall
     public bool FallFlag;
-    //public int FallLockCount;
-    //public bool IsFallLocked => FallLockCount > 0;
     public bool HasIterated;
 
 

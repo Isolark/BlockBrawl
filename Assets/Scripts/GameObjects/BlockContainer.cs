@@ -232,7 +232,7 @@ public class BlockContainer : MonoBehaviour
             //Shift cursor up
             Cursor.MoveBoardLoc(Vector2.up);
             if(!AtTop && Cursor.BoardLoc.y >= BoardSize.y) {
-                Cursor.OnMove(Vector2.down);
+                Cursor.OnMove(Vector2.down, false);
             }
             
             //If was manually moving faster, stop & wait half a second before next check
@@ -241,8 +241,7 @@ public class BlockContainer : MonoBehaviour
             if(IsManuallyRaising) {
                 CanManuallyRaise = false;
                 IsManuallyRaising = false;
-                RaiseSpeed = BaseRaiseSpeed;
-                GameController.GC.AddTimedAction(UnlockTrigger, 0.05f);
+                GameController.GC.AddTimedAction(UnlockManualRaise, 0.05f);
             }
         }
         else
@@ -360,7 +359,7 @@ public class BlockContainer : MonoBehaviour
         if(matchingList.Count >= 3) 
         {
             //Need to add "fresh" to the list (was added on top of existing chain/combo)
-            if(matchingList.Exists(x => x.IsComboable == false))
+            if(matchingList.Exists(x => x.IsComboing == true))
             {
                 ChainedBlockList.RemoveAll(x => matchingList.Contains(x));
                 ComboBlockList.RemoveAll(x => matchingList.Contains(x));
@@ -493,63 +492,6 @@ public class BlockContainer : MonoBehaviour
         LockBlocksAboveLoc(fallLocList, true, isChain);
     }
 
-    // private void LockBlocksAboveLoc(IList<Vector2> boardLocList, bool isChainable = false, bool isFromChain = false)
-    // {
-    //     var dropCount = 0;
-
-    //     for(var i = 0; i < boardLocList.Count; i++)
-    //     {
-    //         if(LockBlocksAboveLoc(boardLocList[i], isChainable)) { dropCount++; }
-    //     }
-
-    //     if(isFromChain)
-    //     {
-    //         FallingChainCounter += dropCount;
-    //         ActiveChainCounter--;
-    //     }
-    // }
-
-    //     private bool LockBlocksAboveLoc(Vector2 boardLoc, bool isChainable = false)
-    // {
-    //     var blockToLockList = GetBlocksAboveLoc(boardLoc, canBeFallLocked: true);
-    //     var nullBlockLocList = new List<Vector2>();
-
-    //     if(blockToLockList.Count == 0) { return false; }
-
-    //     foreach(var blockToLock in blockToLockList) 
-    //     {
-    //         if(!blockToLock.IsDestroying && !blockToLock.IsFalling && !blockToLock.IsMoving) 
-    //         {
-    //             var nextLoc = blockToLock.BoardLoc + Vector3.down;
-
-    //             Block blockBelow;
-    //             var isBlockBelow = BlockList.TryGetValue(nextLoc, out blockBelow);
-
-    //             if(isBlockBelow && blockBelow.IsDestroying) { continue; }
-
-    //             blockToLock.FallLockCount++;
-
-    //             if(!isBlockBelow) 
-    //             { 
-    //                 BlockList[nextLoc] = NullBlock;
-    //                 nullBlockLocList.Add(nextLoc);
-    //             }
-    //         }
-    //     }
-
-    //     GameController.GC.AddTimedAction(() => { 
-    //         foreach(var nullBlockLoc in nullBlockLocList) {
-    //             if(BlockList.ContainsKey(nullBlockLoc) && BlockList[nullBlockLoc].GetInstanceID() == NullBlock.GetInstanceID()) { BlockList.Remove(nullBlockLoc); }
-    //         }
-    //         foreach(var blockToUnlock in blockToLockList) {
-    //             blockToUnlock.RemoveFallLock();
-    //         }
-    //         DropBlocksAboveLoc(boardLoc, isChainable);
-    //     }, BlockFallDelay);
-
-    //     return true;
-    // }
-
     //Individual Falling Blocks version
     private void LockBlocksAboveLoc(IList<Vector2> boardLocList, bool isChainable = false, bool isFromChain = false)
     {
@@ -660,7 +602,7 @@ public class BlockContainer : MonoBehaviour
         {
             BlockList.TryGetValue(new Vector2(boardLoc.x, row), out groundBlock);
 
-            if(groundBlock == null || groundBlock.IsFallLocked || groundBlock.IsFalling || groundBlock.IsMoving) 
+            if(groundBlock == null || groundBlock.IsFallLocked || groundBlock.IsFalling) 
             {
                 return false;
             } 
@@ -668,44 +610,6 @@ public class BlockContainer : MonoBehaviour
 
         return true;
     }
-
-    // private void OnBlockStartFall(List<Block> fallingBlockList, bool isChainable = false)
-    // {
-    //     if(fallingBlockList.Count == 0) { return; }
-
-    //     var leadFallBlock = fallingBlockList.First();
-
-    //     for(;;)
-    //     {
-    //         //Cancel the fall if there is now a block underneath that is not the Placeholder (NullBlock)
-    //         var leadOpenLoc = new Vector2(leadFallBlock.BoardLoc.x, leadFallBlock.BoardLoc.y - 1);
-    //         if(leadFallBlock.IsDestroying || leadFallBlock.IsFalling || 
-    //             (BlockList.ContainsKey(leadOpenLoc) && BlockList[leadOpenLoc] != NullBlock))
-    //         {
-    //             fallingBlockList.Remove(leadFallBlock);
-    //             leadFallBlock = fallingBlockList.FirstOrDefault();
-
-    //             if(leadFallBlock == null) { return; }
-    //         }
-    //         else 
-    //         {
-    //             break;
-    //         }
-    //     }
-
-    //     var linkedBlocks = fallingBlockList.Count > 1 ? fallingBlockList.Skip(1).ToList() : null;
-    //     var removeFlag = false;
-
-    //     foreach(var fallBlock in fallingBlockList) 
-    //     {
-    //         if(fallBlock.IsDestroying || fallBlock.IsFalling) { removeFlag = true; }
-    //         if(removeFlag && linkedBlocks != null && linkedBlocks.Contains(fallBlock)) { 
-    //             linkedBlocks.Remove(fallBlock); 
-    //         }
-    //     }
-
-    //     leadFallBlock.StartFall(isChainable, linkedBlocks, () => { OnBlocksFinishMove(fallingBlockList, true); });
-    // }
 
     //Individual Falling Blocks (Must be in bottom to top order to work)
     private void OnBlockStartFall(List<Block> fallingBlockList, bool isChainable = false)
@@ -776,7 +680,7 @@ public class BlockContainer : MonoBehaviour
     }
 
     //Start or Stop manual speed increase
-    public void OnTrigger(bool performed)
+    public void OnTriggerRaise(bool performed)
     {
         if(performed && !IsHoldingTrigger) {
             IsHoldingTrigger = true;
@@ -785,7 +689,7 @@ public class BlockContainer : MonoBehaviour
         }
     }
 
-    private void UnlockTrigger()
+    private void UnlockManualRaise()
     {
         CanManuallyRaise = true;
     }
