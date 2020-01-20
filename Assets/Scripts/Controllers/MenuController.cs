@@ -37,31 +37,4 @@ public class MenuController : InputController
         {
         }
     }
-
-    // public void OnMove(CallbackContext context)
-    // {
-    // }
-
-    // public void OnConfirm(CallbackContext context)
-    // {
-    //     if(!context.performed) { return; }
-    //     if(GS_Current == GameState.Active)
-    //     {
-    //         SendMessage("OnConfirm");
-    //     }
-    // }
-
-    // public void OnCancel(CallbackContext context)
-    // {
-    //     if(!context.performed) { return; }
-    // }
-
-    // public void OnTrigger(CallbackContext context)
-    // {
-    //     if(!context.performed && !context.canceled) { return; }
-    //     if(GS_Current == GameState.Active)
-    //     {
-    //         SendMessage("OnTrigger", context.performed);
-    //     }
-    // }
 }

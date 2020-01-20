@@ -41,6 +41,31 @@ public class BaseController : MonoBehaviour
         FixedUpdateDelegate();
     }
 
+    // Start is called before the first frame update
+    protected virtual void Start()
+    {
+        if(!PlayerPrefs.HasKey("Version"))
+        {
+            CreateInitialPlayerPrefs();
+        }
+
+        MusicPlayer.volume = PlayerPrefs.GetFloat("MusicVolume");
+        SoundFXPlayer.volume = PlayerPrefs.GetFloat("SoundVolume");
+    }
+
+    private void CreateInitialPlayerPrefs()
+    {
+        PlayerPrefs.SetString("Version", "0.1a");
+        PlayerPrefs.SetFloat("MusicVolume", 0.8f);
+        PlayerPrefs.SetFloat("SoundVolume", 1);
+    }
+
+    public void SaveOptions()
+    {
+        PlayerPrefs.SetFloat("MusicVolume", MusicPlayer.volume);
+        PlayerPrefs.SetFloat("SoundVolume", SoundFXPlayer.volume);
+    }
+
     protected virtual void Update()
     {
         //UpdateDelegate();

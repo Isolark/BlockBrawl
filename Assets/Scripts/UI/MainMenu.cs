@@ -1,25 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum MainMenuState
-{
-    PreMainMenu = 0,
-    OnMainMenu = 1,
-    InSinglePlayerMenu = 2,
-    InMultiPlayerMenu = 3,
-    InOptionsMenu = 4
-}
-
-public class MainMenu : MonoBehaviour
+public class MainMenu : GameMenu
 {
     public MainMenuState CurrentState;
-    public CanvasGroup MenuCanvas;
-    public Sprite MenuCursor;
-
     public TMP_Text StartLabel;
+    public TMP_Text MenuTitle;
+    public SpriteRenderer MenuCursor;
+
+    public TMP_Text MusicVolumeLabel;
+    public Slider MusicSlider;
+    public TMP_Text MusicVolumeValue;
+    private bool OptionChangedFlag;
+    private Action CancelAction;
+
 
     // Start is called before the first frame update
     void Start()
@@ -27,33 +24,135 @@ public class MainMenu : MonoBehaviour
         CurrentState = MainMenuState.PreMainMenu;
     }
 
-    public void OnConfirm()
+    private void Initialize()
     {
-        //if(CurrentState == MainMenuState.)
+        //TODO: Sound FX
+        StartLabel.gameObject.SetActive(false);
+        MenuTitle.gameObject.SetActive(true);
+        CurrentState = MainMenuState.OnMainMenu;
+        
+        MusicSlider.value = MenuController.MC.MusicPlayer.volume;
+        MusicVolumeValue.text = Mathf.RoundToInt(MusicSlider.value * 100f).ToString();
+
+        OptionChangedFlag = false;
+
+        //Darken VolumeSubMenu
+        ChangeVolumeSubMenuColor(Color.black, 0.3f);
+
+        SetMenuList(MenuLists[0]);
     }
 
-    public void OnStart(bool performed)
+    override public void SetMenuList(GameMenuList menuList)
     {
-        if(CurrentState == MainMenuState.PreMainMenu && StartLabel.gameObject.activeSelf) {
-            //TODO: Sound FX
-            StartLabel.gameObject.SetActive(false);
-            MenuCanvas.gameObject.SetActive(true);
-            CurrentState = MainMenuState.OnMainMenu;
+        base.SetMenuList(menuList);
+
+        MenuTitle.text = CurrentMenuList.Title;
+        CurrentMenuList.Initialize(MenuCursor);
+    }
+
+    public void InputStart()
+    {
+        if(CurrentState == MainMenuState.PreMainMenu && StartLabel.gameObject.activeSelf) 
+        {
+            Initialize();
         } 
     }
 
     private void CursorSelect()
     {
+    }
+
+    public void InputCancel()
+    {
+        if(CurrentState == MainMenuState.PreMainMenu) { return; }
+
+        if(CancelAction != null) {
+            CancelAction();
+            return;
+        }
+
+        CurrentMenuList.CancelSelection();
+    }
+
+    public void InputConfirm()
+    {
+        if(CurrentState == MainMenuState.PreMainMenu) { return; }
+
+        CurrentMenuList.ConfirmSelection();
+    }
+
+    public void InputTrigger()
+    {
+    }
+
+
+    //Menu Item Callbacks
+    private void ToMain()
+    {
+        if(OptionChangedFlag) 
+        {
+            MenuController.MC.SaveOptions();
+            OptionChangedFlag = false;
+        }
+        SetMenuList(MenuLists.First(x => x.name == "MainMenuList"));
+    }
+
+    private void ToOptions()
+    {
+        SetMenuList(MenuLists.First(x => x.name == "OptionsMenuList"));
+    }
+
+    private void MusicVolumeSlide()
+    {
+        MenuController.MC.MusicPlayer.volume = MusicSlider.value;
+        MusicVolumeValue.text = Mathf.RoundToInt(MusicSlider.value * 100f).ToString();
+
+        OptionChangedFlag = true;
+    }
+
+    private void ToggleVolumeSubMenu()
+    {
+        var optionsMenu = MenuLists.First(x => x.name == "OptionsMenuList");
+
+        foreach(var menuItem in optionsMenu.MenuItemList)
+        {
+            menuItem.Value.IsSelectable = !menuItem.Value.IsSelectable;
+        }
+
+        if(optionsMenu.CurrentMenuItem.name == "Volume-Label")
+        {
+            optionsMenu.SetCurrentMenuItem(optionsMenu.MenuItemList.First(x => x.Value.name == "MusicVolume-Label").Value);
+            ChangeVolumeSubMenuColor(Color.white, 1);
+
+            CancelAction = ToggleVolumeSubMenu;
+        }
+        else
+        {
+            optionsMenu.SetCurrentMenuItem(optionsMenu.MenuItemList.First(x => x.Value.name == "Volume-Label").Value);
+            ChangeVolumeSubMenuColor(Color.black, 0.3f);
+
+            CancelAction = null;
+        }
+    }
+
+    private void ChangeVolumeSubMenuColor(Color lerpColor, float percentage)
+    {
+        MusicVolumeLabel.color = Color.Lerp(MusicVolumeLabel.color, lerpColor, percentage);
+        MusicVolumeValue.color = Color.Lerp(MusicVolumeValue.color, lerpColor, percentage);
+
+        foreach(var sliderImage in MusicSlider.GetComponentsInChildren<Image>())
+        {
+            sliderImage.color = Color.Lerp(sliderImage.color, lerpColor, percentage);
+        }
+    }
+
+    public void OnSPZenModeSelection()
+    {
 
     }
 
-    public void OnTrigger(bool performed)
+    public void OnSPBlockBattleModeSelection()
     {
-        //BlockContainer.OnTriggerRaise(performed);
-    }
 
-    public void OnMove(Vector2 value)
-    {
-        //Cursor.OnMove(value);
     }
 }

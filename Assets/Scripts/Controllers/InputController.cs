@@ -54,7 +54,7 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
             if(moveDir.sqrMagnitude == 0)
             { 
                 PrevMoveDir = Vector2.zero;
-                SendMessage("OnMove", moveDir);
+                BroadcastMessage("InputMove", moveDir, SendMessageOptions.DontRequireReceiver);
             }
             return; 
         }
@@ -83,7 +83,7 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
             PrevMoveDir = moveDir;
             moveDir -= tmpPrevMoveDir;
 
-            SendMessage("OnMove", moveDir);
+            BroadcastMessage("InputMove", moveDir, SendMessageOptions.DontRequireReceiver);
         }
         else if(PrevMoveDir.sqrMagnitude > 0)
         {
@@ -96,13 +96,17 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
         if(!context.performed) { return; }
         if(GS_Current == GameState.Active)
         {
-            SendMessage("OnConfirm");
+            BroadcastMessage("InputConfirm", SendMessageOptions.DontRequireReceiver);
         }
     }
 
     public void OnCancel(CallbackContext context)
     {
         if(!context.performed) { return; }
+        if(GS_Current == GameState.Active)
+        {
+            BroadcastMessage("InputCancel", SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     public void OnStart(CallbackContext context)
@@ -110,7 +114,7 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
         if(!context.performed && !context.canceled) { return; }
         if(GS_Current == GameState.Active)
         {
-            SendMessage("OnStart", context.performed);
+            BroadcastMessage("InputStart", SendMessageOptions.DontRequireReceiver);
         }
     }
     
@@ -119,7 +123,7 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
         if(!context.performed && !context.canceled) { return; }
         if(GS_Current == GameState.Active)
         {
-            SendMessage("OnTrigger", context.performed);
+            BroadcastMessage("InputTrigger", SendMessageOptions.DontRequireReceiver);
         }
     }
 }
