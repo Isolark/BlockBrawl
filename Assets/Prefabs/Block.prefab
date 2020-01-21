@@ -193,17 +193,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 6472154454156000429}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9545cf251c798154d9c0d7c26ec43aa4, type: 3}
+  m_Script: {fileID: 11500000, guid: 02ff60216b2770942af7f04dd98846f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Icon: {fileID: 4685554534393052652}
   Type: 0
+  Status: 0
   BlockSprite: {fileID: 6472154454156000426}
   BlockIconSprite: {fileID: 3612854647801914140}
   BlockAnimCtrl: {fileID: 6472154454156000427}
   BoardLoc: {x: 0, y: 0, z: 0}
   PrevBoardLoc: {x: 0, y: 0, z: 0}
   IsComboable: 0
+  IsComboing: 0
   IsChainable: 0
   IsMoveable: 0
+  IsMoving: 0
+  IsFalling: 0
+  IsFallLocked: 0
+  IsDestroying: 0
+  FallFlag: 0
   HasIterated: 0

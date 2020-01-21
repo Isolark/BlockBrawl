@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TransformManager : MonoBehaviour 
 {
-    public BaseController BaseController;
+    public MainController MainCtrl;
 
     private IList<TransformItem> TransformItemList;
     private IList<TransformItem> DeletionList;
@@ -19,20 +19,15 @@ public class TransformManager : MonoBehaviour
         Unpause();
     }
 
-    void Destroy()
-    {
-        Pause();
-    }
-
     public void Pause()
     {
-        BaseController.FixedUpdateDelegate -= OnUpdate;
+        MainCtrl.FixedUpdateDelegate -= OnUpdate;
         Paused = true;
     }
 
     public void Unpause()
     {
-        BaseController.FixedUpdateDelegate += OnUpdate;
+        MainCtrl.FixedUpdateDelegate += OnUpdate;
         Paused = false;
     }
 

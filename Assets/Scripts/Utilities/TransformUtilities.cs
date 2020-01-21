@@ -9,9 +9,15 @@ public static class TransformUtilities
     public static void TransBySpriteDimensions(this GameObject target, GameObject reference, Vector3 transPercents)
     {
         SpriteRenderer sprite;
+        RectTransform rect;
+
         if(reference.TryGetComponent<SpriteRenderer>(out sprite))
         {
             target.TransBySpriteDimensions(sprite, transPercents);
+        }
+        else if(reference.TryGetComponent<RectTransform>(out rect))
+        {
+            target.TransByRectDimensions(rect, transPercents);
         }
     }
 
@@ -20,6 +26,12 @@ public static class TransformUtilities
     {
         var size = new Vector3(spriteRef.bounds.size.x, spriteRef.bounds.size.y, 0);
         target.transform.localPosition += Vector3.Scale(size, spritePercents);
+    }
+
+    private static void TransByRectDimensions(this GameObject target, RectTransform rectRef, Vector3 rectPercents)
+    {
+        var size = new Vector3(rectRef.rect.width, rectRef.rect.height, 0);
+        target.transform.localPosition += Vector3.Scale(size, rectPercents);
     }
 
     public static void ResetSelf(this Transform transform)
