@@ -1,40 +1,24 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
-using static UnityEngine.InputSystem.InputAction;
 
-//Parent controller for gameplay. Passes on inputs to relevant game objects
-//TODO: OnPause(), trigger an "empty" input for all other bindings (stop player's hold timer, etc...)
 public class MenuController : InputController
 {
-    public static MenuController MC;
+    public static MenuController MenuCtrl;
 
     void Awake()
     {
         //Singleton pattern
-        if (MC == null) {
-            MC = this;
+        if (MenuCtrl == null) {
+            MenuCtrl = this;
         }
-        else if (MC != this) {
+        else if (MenuCtrl != this) {
             Destroy(gameObject);
         }
-
-        GS_Current = GameState.Loading;
     }
 
     // Start is called before the first frame update
     override protected void Start()
     {
-        GS_Current = GameState.Active;
+        MainController.MC.GS_Current = GameState.Active;
         base.Start();
-    }
-
-    // Update is called once per frame
-    override protected void Update()
-    {
-        base.Update();
-
-        if(GS_Current == GameState.Active)
-        {
-        }
     }
 }

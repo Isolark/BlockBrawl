@@ -7,6 +7,7 @@ public static class BlockExtensions
 {
     public static void Initialize(this Block block, bool isOnBoard = false)
     {
+        block.IsFalling = block.IsFallLocked = block.FallFlag = block.IsMoving = block.IsDestroying = false;
         block.IsMoveable = block.IsComboable = isOnBoard;
         block.StoredAction = null;
 
@@ -58,7 +59,7 @@ public static class BlockExtensions
     public static bool IsMatch(this Block block, Block blockToMatch, bool ignoreState = false)
     {
         return block.GetInstanceID() != blockToMatch.GetInstanceID() && 
-            block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFalling) || ignoreState);
+            block.Type == blockToMatch.Type && ((block.IsComboable && !block.IsDestroying && !block.IsFalling && !block.IsFallLocked) || ignoreState);
     }
 
     public static void StartComboing(this Block block)
@@ -121,8 +122,6 @@ public static class BlockExtensions
     {
         if(block.IsDestroying) { return; }
 
-        // block.FallLockCount--;
-        // if(block.FallLockCount < 0) { block.FallLockCount = 0; }
         block.IsFallLocked = false;
         block.IsMoveable = !block.IsMoving;
     }
@@ -147,7 +146,6 @@ public static class BlockExtensions
         block.IsChainable = isChainable;
         block.IsMoveable = block.IsComboable = false;
         block.IsFallLocked = false;
-        //block.FallLockCount = 0;
 
         var nextLoc = new Vector3(block.BoardLoc.x, block.BoardLoc.y - 1, 0);
         
@@ -162,7 +160,6 @@ public static class BlockExtensions
                 linkedBlock.IsFalling = true;
                 linkedBlock.IsMoveable = linkedBlock.IsComboable = false;
                 linkedBlock.IsFallLocked = false;
-                //linkedBlock.FallLockCount = 0;
 
                 var nextLinkedLoc = new Vector3(linkedBlock.BoardLoc.x, linkedBlock.BoardLoc.y - 1, 0);
                 linkedBlock.NullSwapMove(blockList, nullBlock, nextLinkedLoc);
@@ -176,7 +173,7 @@ public static class BlockExtensions
 
         var linkedObjs = linkedBlocks != null ? linkedBlocks.Select(x => x.gameObject).ToList() : null;
 
-        GameController.GC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, fallVelocity, fallMaxVelocity, fallAccel,
+        MainController.MC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, fallVelocity, fallMaxVelocity, fallAccel,
             () => block.StepFall(linkedBlocks), linkedObjs, callback);
     }
 
@@ -285,9 +282,9 @@ public static class BlockExtensions
         var switchSpeed = GameController.GC.BlockSwitchSpeed;
 
         if(callback != null) {
-            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, switchSpeed, () => { block.OnFinishMove(); callback(); });
+            MainController.MC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, switchSpeed, () => { block.OnFinishMove(); callback(); });
         } else {
-            GameController.GC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, switchSpeed, block.OnFinishMove);
+            MainController.MC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, switchSpeed, block.OnFinishMove);
         }
 
         block.IsMoveable = block.IsComboable = false;

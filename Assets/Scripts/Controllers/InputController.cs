@@ -2,7 +2,7 @@
 using static UnityEngine.InputSystem.InputAction;
 
 //Controller that handles input actions
-public class InputController : BaseController, InputActionHub.IPlayerActions
+public class InputController : MonoBehaviour, InputActionHub.IPlayerActions
 {
     public static Vector2 UnitResolution;
     public static int PPU = 100;
@@ -10,13 +10,8 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
     protected Vector2 PrevMoveDir;
     protected float PrevMoveSqrMag;
 
-
-    protected void Awake() 
-    {
-    }
-
     // Start is called before the first frame update
-    virtual protected void Start()
+    protected virtual void Start()
     {
         InitializeBinding();
     }
@@ -28,21 +23,9 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
         InputHub.Player.Enable();
     }
 
-    // Update is called once per frame
-    // void Update()
-    // {
-    //     //NOTE: Realistically, this should be caught somewhere and bubble up here
-
-    //     if(UnitResolution.x != Screen.currentResolution.width * PPU || UnitResolution.y != Screen.currentResolution.height * PPU)
-    //     {
-    //         SetUnitResolution();
-    //     }
-    // }
-
-    // Set UnitResolution based on current screen size
-    void SetUnitResolution()
+    protected virtual void OnDestroy()
     {
-        UnitResolution = new Vector2(Screen.currentResolution.width / PPU, Screen.currentResolution.height / PPU);
+        if(InputHub != null) { InputHub.Dispose(); }
     }
 
     public void OnMove(CallbackContext context)
@@ -59,7 +42,7 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
             return; 
         }
 
-        if(GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active)
         {
             var moveDirSqrMag = moveDir.sqrMagnitude;
             var prevMoveDirSqrMag = PrevMoveDir.sqrMagnitude;
@@ -94,7 +77,7 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
     public void OnConfirm(CallbackContext context)
     {
         if(!context.performed) { return; }
-        if(GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active)
         {
             BroadcastMessage("InputConfirm", SendMessageOptions.DontRequireReceiver);
         }
@@ -103,7 +86,7 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
     public void OnCancel(CallbackContext context)
     {
         if(!context.performed) { return; }
-        if(GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active)
         {
             BroadcastMessage("InputCancel", SendMessageOptions.DontRequireReceiver);
         }
@@ -112,7 +95,7 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
     public void OnStart(CallbackContext context)
     {
         if(!context.performed && !context.canceled) { return; }
-        if(GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active)
         {
             BroadcastMessage("InputStart", SendMessageOptions.DontRequireReceiver);
         }
@@ -121,7 +104,7 @@ public class InputController : BaseController, InputActionHub.IPlayerActions
     public void OnTrigger(CallbackContext context)
     {
         if(!context.performed && !context.canceled) { return; }
-        if(GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active)
         {
             BroadcastMessage("InputTrigger", SendMessageOptions.DontRequireReceiver);
         }

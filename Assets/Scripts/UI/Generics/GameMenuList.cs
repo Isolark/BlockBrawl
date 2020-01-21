@@ -1,19 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class GameMenuList : MonoBehaviour
+public class GameMenuList : DirectionInputReceiver
 {
     public Dictionary<Vector2, GameMenuItem> MenuItemList;
-    public string Title;
     public GameMenuItem CurrentMenuItem;
-    public GameMenuList ParentMenuList;
-    private SpriteRenderer MenuCursor;
-
+    public string Title;
+    public string CancelMessage;
+    public bool CanHoldX, CanHoldY; //We enabled, can "Hold" direction inputs
+    public bool WillResetPosition;
 
     private int MinLocX, MaxLocX, MinLocY, MaxLocY;
-
-    public bool WillResetPosition;
+    private SpriteRenderer MenuCursor;
+    
     
     void Start()
     {
@@ -40,11 +42,28 @@ public class GameMenuList : MonoBehaviour
 
         if(WillResetPosition || CurrentMenuItem == null) { CurrentMenuItem = MenuItemList[new Vector2(MinLocX, MaxLocY)]; }
 
+        ResetHold();
         SetCurrentMenuItem(CurrentMenuItem);
+    }
+
+    public void Deactivate()
+    {
+        ResetHold();
+        gameObject.SetActive(false); 
+    }
+
+    private void IncrementSlider(Vector2 direction)
+    {
+        var stepValue = CurrentMenuItem.LinkedSlider.GetComponent<EXSlider>().StepValue;
+        CurrentMenuItem.LinkedSlider.value += stepValue * direction.x;
+        if(CurrentMenuItem.LinkedSlider.value < 0) { CurrentMenuItem.LinkedSlider.value = 0; }
+        ConfirmSelection();
     }
 
     public void MoveCursor(Vector2 value)
     {
+        ResetHold();
+
         if(value == Vector2.zero) { return; }
 
         var breakIndex = 200;
@@ -64,11 +83,7 @@ public class GameMenuList : MonoBehaviour
             { 
                 if(CurrentMenuItem.LinkedSlider != null)
                 {
-                    var stepValue = CurrentMenuItem.LinkedSlider.GetComponent<EXSlider>().StepValue;
-                    CurrentMenuItem.LinkedSlider.value -= stepValue;
-                    if(CurrentMenuItem.LinkedSlider.value < 0) { CurrentMenuItem.LinkedSlider.value = 0; }
-                    ConfirmSelection();
-
+                    OnMove(value, IncrementSlider);
                     break;
                 }
                 else if(nextListLoc.x < MinLocX) { nextListLoc.x = MaxLocX; }
@@ -77,11 +92,7 @@ public class GameMenuList : MonoBehaviour
             {
                 if(CurrentMenuItem.LinkedSlider != null)
                 {
-                    var stepValue = CurrentMenuItem.LinkedSlider.GetComponent<EXSlider>().StepValue;
-                    CurrentMenuItem.LinkedSlider.value += stepValue;
-                    if(CurrentMenuItem.LinkedSlider.value > 1) { CurrentMenuItem.LinkedSlider.value = 1; }
-                    ConfirmSelection();
-
+                    OnMove(value, IncrementSlider);
                     break;
                 }
                 else if(nextListLoc.x > MaxLocX) { nextListLoc.x = MinLocX; }
@@ -102,7 +113,10 @@ public class GameMenuList : MonoBehaviour
 
     public void CancelSelection()
     {
-        if(ParentMenuList != null) { SendMessageUpwards("SetMenuList", ParentMenuList, SendMessageOptions.DontRequireReceiver); }
+        if(!string.IsNullOrWhiteSpace(CancelMessage)) 
+        {
+            SendMessageUpwards(CancelMessage, SendMessageOptions.DontRequireReceiver); 
+        }
     }
 
     public void ConfirmSelection()

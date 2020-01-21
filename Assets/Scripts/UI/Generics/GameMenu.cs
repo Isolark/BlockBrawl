@@ -9,7 +9,7 @@ public abstract class GameMenu : MonoBehaviour
 
     public virtual void SetMenuList(GameMenuList menuList)
     {
-        if(CurrentMenuList != null) { CurrentMenuList.gameObject.SetActive(false); }
+        if(CurrentMenuList != null) { CurrentMenuList.Deactivate(); }
         CurrentMenuList = menuList;
         CurrentMenuList.gameObject.SetActive(true);
     }

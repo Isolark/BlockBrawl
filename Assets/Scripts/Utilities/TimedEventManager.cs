@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TimedEventManager : MonoBehaviour 
 {
-    public BaseController BaseController;
+    public MainController MainCtrl;
 
     private IList<TimedAction> ActionList;
     private IList<TimedAction> StagingList;
@@ -20,20 +20,15 @@ public class TimedEventManager : MonoBehaviour
         Unpause();
     }
 
-    void Destroy()
-    {
-        Pause();
-    }
-
     public void Pause()
     {
-        BaseController.FixedUpdateDelegate -= OnUpdate;
+        MainCtrl.FixedUpdateDelegate -= OnUpdate;
         Paused = true;
     }
 
     public void Unpause()
     {
-        BaseController.FixedUpdateDelegate += OnUpdate;
+        MainCtrl.FixedUpdateDelegate += OnUpdate;
         Paused = false;
     }
 

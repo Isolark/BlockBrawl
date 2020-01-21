@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class GameCursor : MonoBehaviour
+public class GameCursor : DirectionInputReceiver
 {
     public Vector2 ZeroPosition;
     public Vector2 Bounds;
@@ -10,21 +10,10 @@ public class GameCursor : MonoBehaviour
     public float BlockDist;
     public bool AtTop; //While true, allows moving to top row
 
-    public float HoldInitialDelay;
-    public float HoldStepDelay;
-    public TimedAction HoldingTA;
-    public bool IsHoldMoving;
-    public Vector2 HoldingDir;
-
     // Start is called before the first frame update
     void Start()
     {
         BlockDist = GameController.GC.BlockDist;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
     }
 
     // Set zero position (assumed set by gameCtrl) & bounds
@@ -36,14 +25,6 @@ public class GameCursor : MonoBehaviour
         BoardLoc = Vector2.up;
 
         OnMove(startingPosition, false);
-    }
-
-    public void OnConfirm(InputValue value)
-    {
-    }
-
-    public void OnCancel(InputValue value)
-    { 
     }
 
     public void OnMove(InputValue value)
@@ -63,26 +44,9 @@ public class GameCursor : MonoBehaviour
 
         if(inputBased)
         {
-            if(value == Vector2.zero)
-            {
-                HoldingDir = value;
-
-                GameController.GC.RemoveTimedAction(HoldingTA);
-                HoldingTA = null;
-            }
-            else if(HoldingTA == null)
-            {
-                HoldingTA = GameController.GC.AddTimedAction(StartHoldMovement, HoldInitialDelay, true);
-            }
-            else
-            {
-                HoldingTA.SetTime(HoldInitialDelay);
-            }
-
-            HoldingDir = value;
+            OnMove(value, MoveCursor);
         }
-
-        MoveCursor(value);
+        else { MoveCursor(value); } 
     }
 
     private void MoveCursor(Vector2 value)
@@ -96,17 +60,6 @@ public class GameCursor : MonoBehaviour
             BoardLoc = nextPosition;
             this.gameObject.transform.localPosition += Vector3.Scale(new Vector3(BlockDist, BlockDist, 0), value);
         }
-    }
-
-    private void StartHoldMovement()
-    {
-        if(!IsHoldMoving)
-        {
-            IsHoldMoving = true;
-            HoldingTA.SetTime(HoldStepDelay);
-        }
-
-        MoveCursor(HoldingDir);
     }
 
     public void SetPosition(Vector2 position)

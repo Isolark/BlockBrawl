@@ -2,6 +2,7 @@
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenu : GameMenu
@@ -14,6 +15,10 @@ public class MainMenu : GameMenu
     public TMP_Text MusicVolumeLabel;
     public Slider MusicSlider;
     public TMP_Text MusicVolumeValue;
+    public TMP_Text SoundVolumeLabel;
+    public Slider SoundSlider;
+    public TMP_Text SoundVolumeValue;
+
     private bool OptionChangedFlag;
     private Action CancelAction;
 
@@ -30,9 +35,12 @@ public class MainMenu : GameMenu
         StartLabel.gameObject.SetActive(false);
         MenuTitle.gameObject.SetActive(true);
         CurrentState = MainMenuState.OnMainMenu;
-        
-        MusicSlider.value = MenuController.MC.MusicPlayer.volume;
+
+        MusicSlider.value = MainController.MC.MusicPlayer.volume;
         MusicVolumeValue.text = Mathf.RoundToInt(MusicSlider.value * 100f).ToString();
+
+        SoundSlider.value = MainController.MC.SoundFXPlayer.volume;
+        SoundVolumeValue.text = Mathf.RoundToInt(SoundSlider.value * 100f).ToString();
 
         OptionChangedFlag = false;
 
@@ -91,7 +99,7 @@ public class MainMenu : GameMenu
     {
         if(OptionChangedFlag) 
         {
-            MenuController.MC.SaveOptions();
+            MainController.MC.SaveOptions();
             OptionChangedFlag = false;
         }
         SetMenuList(MenuLists.First(x => x.name == "MainMenuList"));
@@ -104,8 +112,16 @@ public class MainMenu : GameMenu
 
     private void MusicVolumeSlide()
     {
-        MenuController.MC.MusicPlayer.volume = MusicSlider.value;
+        MainController.MC.MusicPlayer.volume = MusicSlider.value;
         MusicVolumeValue.text = Mathf.RoundToInt(MusicSlider.value * 100f).ToString();
+
+        OptionChangedFlag = true;
+    }
+
+    private void SoundVolumeSlide()
+    {
+        MainController.MC.SoundFXPlayer.volume = SoundSlider.value;
+        SoundVolumeValue.text = Mathf.RoundToInt(SoundSlider.value * 100f).ToString();
 
         OptionChangedFlag = true;
     }
@@ -137,10 +153,10 @@ public class MainMenu : GameMenu
 
     private void ChangeVolumeSubMenuColor(Color lerpColor, float percentage)
     {
-        MusicVolumeLabel.color = Color.Lerp(MusicVolumeLabel.color, lerpColor, percentage);
-        MusicVolumeValue.color = Color.Lerp(MusicVolumeValue.color, lerpColor, percentage);
+        MusicVolumeLabel.color = SoundVolumeLabel.color = Color.Lerp(MusicVolumeLabel.color, lerpColor, percentage);
+        MusicVolumeValue.color = SoundVolumeValue.color = Color.Lerp(MusicVolumeValue.color, lerpColor, percentage);
 
-        foreach(var sliderImage in MusicSlider.GetComponentsInChildren<Image>())
+        foreach(var sliderImage in MusicSlider.GetComponentsInChildren<Image>().Concat(SoundSlider.GetComponentsInChildren<Image>()))
         {
             sliderImage.color = Color.Lerp(sliderImage.color, lerpColor, percentage);
         }
@@ -148,7 +164,7 @@ public class MainMenu : GameMenu
 
     public void OnSPZenModeSelection()
     {
-
+        SceneManager.LoadScene("Main");
     }
 
     public void OnSPBlockBattleModeSelection()

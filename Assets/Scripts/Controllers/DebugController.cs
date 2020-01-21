@@ -37,11 +37,11 @@ public class DebugController : MonoBehaviour
     public void LogNullBlockLocations()
     {
         var blockList = GameController.GC.PlayerGameBoard.BlockContainer.BlockList;
-        var nullBlock = GameController.GC.PlayerGameBoard.BlockContainer.NullBlock;
+        //var nullBlock = GameController.GC.PlayerGameBoard.BlockContainer.NullBlock;
 
-        foreach(var loc in blockList.Where(x => x.Value == nullBlock))
+        foreach(var block in blockList.Where(x => x.Value.IsFallLocked || x.Value.IsFalling || x.Value.IsMoving))
         {
-            Debug.Log("Null Block at: " + loc.Key);
+            block.Value.BlockSprite.color = Color.red;
         }
     }
 }

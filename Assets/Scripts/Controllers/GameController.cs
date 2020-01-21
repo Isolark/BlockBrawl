@@ -4,7 +4,7 @@ using static UnityEngine.InputSystem.InputAction;
 
 //Parent controller for gameplay. Passes on inputs to relevant game objects
 //TODO: OnPause(), trigger an "empty" input for all other bindings (stop player's hold timer, etc...)
-public class GameController : BaseController, InputActionHub.IPlayerActions
+public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
 {
     public GameBoard PlayerGameBoard;
     public GameStatsUI GameStatsMenu;
@@ -39,14 +39,12 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     // Start is called before the first frame update
     void Start()
     {
-        GS_Current = GameState.Active;
+        MainController.MC.GS_Current = GameState.Active;
 
         GameTime = 0;
         InitializeBinding();
 
-        if(TimeScale != 1) {
-            Time.timeScale = TimeScale;
-        }
+        if(TimeScale != 1) { Time.timeScale = TimeScale; }
     }
 
     public void UpdateGameStatMenu(int currentChain)
@@ -87,8 +85,7 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
         Debug.Log(op.selectedControl.device);
         Debug.Log(op.selectedControl.displayName);
         Debug.Log(op.selectedControl.path);
-
-
+    
         var a = new InputAction();
         a.AddBinding("<Keyboard>/n");
 
@@ -97,11 +94,9 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     }
 
     // Update is called once per frame
-    override protected void Update()
+    void Update()
     {
-        base.Update();
-
-        if(GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active)
         {
             GameTime += Time.deltaTime;
             GameStatsMenu.SetGameTime(GameTime);
@@ -124,7 +119,7 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
             return; 
         }
 
-        if(GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active)
         {
             var moveDirSqrMag = moveDir.sqrMagnitude;
             var prevMoveDirSqrMag = PrevMoveDir.sqrMagnitude;
@@ -159,7 +154,7 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     public void OnConfirm(CallbackContext context)
     {
         if(!context.performed) { return; }
-        if(GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active)
         {
             PlayerGameBoard.SendMessage("OnConfirm");
         }
@@ -173,7 +168,7 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     public void OnStart(CallbackContext context)
     {
         if(!context.performed && !context.canceled) { return; }
-        if(GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active)
         {
             SendMessage("OnStart", context.performed);
         }
@@ -182,7 +177,7 @@ public class GameController : BaseController, InputActionHub.IPlayerActions
     public void OnTrigger(CallbackContext context)
     {
         if(!context.performed && !context.canceled) { return; }
-        if(GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active)
         {
             PlayerGameBoard.SendMessage("OnTrigger", context.performed);
         }
