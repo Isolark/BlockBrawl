@@ -7,7 +7,7 @@ public static class BlockExtensions
 {
     public static void Initialize(this Block block, bool isOnBoard = false)
     {
-        block.IsFalling = block.IsFallLocked = block.FallFlag = block.IsMoving = block.IsDestroying = false;
+        block.IsFalling = block.IsFallLocked = block.IsMoving = block.IsDestroying = false;
         block.IsMoveable = block.IsComboable = isOnBoard;
         block.StoredAction = null;
 
@@ -20,6 +20,19 @@ public static class BlockExtensions
         if(!isOnBoard) {
             blockSpr.color = blockIconSpr.color = Color.Lerp(block.BlockSprite.color, Color.black, 0.45f);
         }
+    }
+
+    public static void Reset(this Block block)
+    {
+        block.IsChainable = block.IsComboable = block.IsDestroying = block.IsFalling
+            = block.IsFallLocked = block.IsMoveable = block.IsMoving = false;
+
+        block.BlockSprite.color = block.BlockIconSprite.color = Color.white;
+        block.BlockSprite.sprite = block.BlockIconSprite.sprite = null;
+        block.Type = BlockType.Blue;
+        block.Status = BlockStatus.Normal;
+        block.BoardLoc = block.PrevBoardLoc = Vector3.zero;
+        block.StoredAction = null;
     }
 
     public static void OnEnterBoard(this Block block)
@@ -36,7 +49,6 @@ public static class BlockExtensions
         block.IsMoving = block.IsComboing = false;
         block.IsChainable = false;
         block.IsFalling = block.IsFallLocked = false;
-        block.FallFlag = false;
         block.IsDestroying = false;
         
         block.Status = BlockStatus.Normal;

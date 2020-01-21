@@ -25,7 +25,6 @@ public class Block : MonoBehaviour
     public bool IsDestroying;
 
     //If all blocks in a garbage block have a fall flag, it can fall
-    public bool FallFlag;
     public bool HasIterated;
 
 

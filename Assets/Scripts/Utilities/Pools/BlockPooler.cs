@@ -26,14 +26,14 @@ public class BlockPooler : ObjectPooler
     public GameObject GetPooledObject(Transform parent = null)
     {
         var block = base.GetPooledObject("Block", parent).GetComponent<Block>();
-        CleanObj(ref block);
+        block.Reset();
 
         return block.gameObject;
     }
 
-    private void CleanObj(ref Block block)
+    public void RepoolObject(Block block)
     {
-        block.BlockSprite.color = Color.white;
-        block.StoredAction = null;
+        block.Reset();
+        block.gameObject.SetActive(false);
     }
 }

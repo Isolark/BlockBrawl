@@ -490,7 +490,8 @@ public class BlockContainer : MonoBehaviour
                 }
 
                 prevY = blockToDestroy.BoardLoc.y;
-                blockToDestroy.gameObject.SetActive(false);
+                BlockPooler.BP.RepoolObject(blockToDestroy);
+                //blockToDestroy.gameObject.SetActive(false);
             }
         }
 
@@ -571,8 +572,7 @@ public class BlockContainer : MonoBehaviour
         }
 
         var blockToFallList = GetBlocksAboveLoc(boardLoc);
-
-        //if(isChainable) { FallingChainCounter += blockToFallList.Count; }
+        if(isChainable) { PotentialChainBlockList.AddRange(blockToFallList); }
 
         OnBlockStartFall(blockToFallList, isChainable);
     }
