@@ -26,7 +26,7 @@ public class ComboPop
     {
         Value = value;    
         PopHolder = SpriteFXPooler.SP.GetPooledObject("PopHolder", "SpriteLayer", parent: parentBlock.transform).GetComponent<SpriteFX>();
-        PopFX = SpriteFXPooler.SP.GetPooledObject("ComboPopFX", "SpriteLayer", 0, false, parent: PopHolder.transform).GetComponent<SpriteFX>();
+        PopFX = SpriteFXPooler.SP.GetPooledObject("ComboPopFX", "SpriteLayer", 0, false, parent: parentBlock.transform).GetComponent<SpriteFX>();
 
         PopContainerFX = SpriteFXPooler.SP.GetPooledObject("PopContainerFX", "SpriteLayer", parent: PopFX.transform).GetComponent<SpriteFX>();
         var popContainerSprite = SpriteFXPooler.SP.GetPooledObject("PopSprite", "SpriteLayer", 1, parent: PopContainerFX.transform).GetComponent<SpriteFX>();
@@ -50,7 +50,7 @@ public class ComboPop
         PopSpriteBot.SetSprite("Effect-Bun");
 
         PopFX.SetAnimator("ComboPopCtrl", true);
-        PopFX.StateCallbacks.Add("None", () => { PopHolder.OnDestroy(); });
+        PopFX.StateCallbacks.Add("None", () => { PopFX.OnDestroy(); });
     }
 
     public void Play()

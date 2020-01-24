@@ -13,7 +13,7 @@ public class GameCursor : DirectionInputReceiver
     // Start is called before the first frame update
     void Start()
     {
-        BlockDist = GameController.GC.BlockDist;
+        BlockDist = GameController.GameCtrl.BlockDist;
     }
 
     // Set zero position (assumed set by gameCtrl) & bounds

@@ -21,7 +21,36 @@ public class InputController : MonoBehaviour, InputActionHub.IPlayerActions
         InputHub = new InputActionHub();
         InputHub.Player.SetCallbacks(this);
         InputHub.Player.Enable();
+
+        // var x = new InputBinding();
+        // x.GenerateId();
+        // x.path = "<Keyboard>/m";
+
+        // var a = new InputAction("confirm");
+        // a.AddBinding(x);
+
+        // InputHub.Player.Confirm.ChangeBindingWithId("f7bd21ef-4a6c-4172-8269-c6e6012596c3").To(x);
+
+        // InputHub.Player.SetCallbacks(this);
+        // InputHub.Player.Confirm.Disable();
+        // InputHub.Player.Confirm.PerformInteractiveRebinding()
+        //     .WithControlsExcluding("Mouse")
+        //     .OnComplete(CompleteRebinding)
+        //     .Start();
     }
+
+    // void CompleteRebinding(InputActionRebindingExtensions.RebindingOperation op)
+    // {
+    //     Debug.Log(op.selectedControl.device);
+    //     Debug.Log(op.selectedControl.displayName);
+    //     Debug.Log(op.selectedControl.path);
+    
+    //     var a = new InputAction();
+    //     a.AddBinding("<Keyboard>/n");
+
+    //     InputHub.Player.Confirm.Enable();
+    //     op.Dispose();
+    // }
 
     protected virtual void OnDestroy()
     {

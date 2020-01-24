@@ -61,7 +61,7 @@ public class BlockContainer : MonoBehaviour
         ComboBlockList = new List<Block>();
         ChainedBlockList = new List<Block>();
 
-        BlockDist = GameController.GC.BlockDist;
+        BlockDist = GameController.GameCtrl.BlockDist;
         InitialBlock_Y = -0.5f * BlockDist;
     }
 
@@ -69,7 +69,7 @@ public class BlockContainer : MonoBehaviour
     {
         AtTop = false;
         BoardSize = boardSize;
-        Target_Y = transform.localPosition.y + GameController.GC.BlockDist;
+        Target_Y = transform.localPosition.y + GameController.GameCtrl.BlockDist;
         ComboCount = ChainCount = 1;
         RaiseSpeed = BaseRaiseSpeed;
         RaiseStopTime = 0;
@@ -100,7 +100,7 @@ public class BlockContainer : MonoBehaviour
         //FallingChainCounter = ActiveChainCounter = 0;
         ActiveChainCounter = 0;
         ChainCount = 1;
-        GameController.GC.UpdateGameStatMenu(ChainCount);
+        GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
     }
 
     public void SpawnRows(int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null)
@@ -399,7 +399,7 @@ public class BlockContainer : MonoBehaviour
                         // }
                     }
                 }
-            }, GameController.GC.BlockSwitchSpeed * 0.8f);
+            }, GameController.GameCtrl.BlockSwitchSpeed * 0.8f);
         }
     }
 
@@ -412,13 +412,13 @@ public class BlockContainer : MonoBehaviour
         var comboCount = destroyBlockList.Count();
         BlockDestroyCount += comboCount;
 
-        var totalRaiseTimeStop = GameController.GC.RaiseTimeStopBaseComboAmount + ((comboCount - 3) * GameController.GC.RaiseTimeStopComboMultiplier);
+        var totalRaiseTimeStop = GameController.GameCtrl.RaiseTimeStopBaseComboAmount + ((comboCount - 3) * GameController.GameCtrl.RaiseTimeStopComboMultiplier);
 
         if(isChain)  
         {
             ChainCount += 1;
-            GameController.GC.UpdateGameStatMenu(ChainCount);
-            totalRaiseTimeStop += ChainCount * GameController.GC.RaiseTimeStopChainMultiplier;
+            GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
+            totalRaiseTimeStop += ChainCount * GameController.GameCtrl.RaiseTimeStopChainMultiplier;
         }
 
         IncrementRaiseStopTime(totalRaiseTimeStop);
