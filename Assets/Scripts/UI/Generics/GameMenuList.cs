@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameMenuList : DirectionInputReceiver
 {
@@ -14,10 +12,16 @@ public class GameMenuList : DirectionInputReceiver
     public bool WillResetPosition;
 
     private int MinLocX, MaxLocX, MinLocY, MaxLocY;
-    private SpriteRenderer MenuCursor;
+    private SpriteRenderer LeftMenuCursor;
+    private SpriteRenderer RightMenuCursor;
     
     
-    void Start()
+    // void Start()
+    // {
+
+    // }
+
+    public void Setup()
     {
         MenuItemList = new Dictionary<Vector2, GameMenuItem>();
 
@@ -34,11 +38,18 @@ public class GameMenuList : DirectionInputReceiver
         gameObject.SetActive(false);
     }
 
+    public void Initialize(SpriteRenderer leftMenuCursor, SpriteRenderer rightMenuCursor)
+    {
+        RightMenuCursor = rightMenuCursor;
+        RightMenuCursor.transform.SetParent(MenuItemList.First().Value.transform.parent);
+
+        Initialize(leftMenuCursor);
+    }
+
     public void Initialize(SpriteRenderer menuCursor)
     {
-        MenuCursor = menuCursor;
-        if(!MenuCursor.gameObject.activeSelf) { MenuCursor.gameObject.SetActive(true); }
-        MenuCursor.transform.SetParent(MenuItemList.First().Value.transform.parent);
+        LeftMenuCursor = menuCursor;
+        LeftMenuCursor.transform.SetParent(MenuItemList.First().Value.transform.parent);
 
         if(WillResetPosition || CurrentMenuItem == null) { CurrentMenuItem = MenuItemList[new Vector2(MinLocX, MaxLocY)]; }
 
@@ -134,8 +145,15 @@ public class GameMenuList : DirectionInputReceiver
     public void SetCurrentMenuItem(GameMenuItem menuItem)
     {
         CurrentMenuItem = menuItem;
-        MenuCursor.transform.localPosition = CurrentMenuItem.transform.localPosition;
-        MenuCursor.gameObject.TransBySpriteDimensions(CurrentMenuItem.ItemText.gameObject, new Vector3(-0.5f, 0.28f, 0));
-        MenuCursor.gameObject.TransBySpriteDimensions(new Vector3(-2f * 18, 0, 0));
+        LeftMenuCursor.transform.localPosition = CurrentMenuItem.transform.localPosition;
+        LeftMenuCursor.gameObject.TransBySpriteDimensions(CurrentMenuItem.ItemText.gameObject, new Vector3(-0.5f, 0.12f, 0));
+        LeftMenuCursor.gameObject.TransBySpriteDimensions(new Vector3(-1.35f * LeftMenuCursor.transform.localScale.x, 0, 0));
+
+        if(RightMenuCursor != null)
+        {
+            RightMenuCursor.transform.localPosition = CurrentMenuItem.transform.localPosition;
+            RightMenuCursor.gameObject.TransBySpriteDimensions(CurrentMenuItem.ItemText.gameObject, new Vector3(0.5f, 0.12f, 0));
+            RightMenuCursor.gameObject.TransBySpriteDimensions(new Vector3(1.25f * RightMenuCursor.transform.localScale.x, 0, 0));
+        }
     }
 }

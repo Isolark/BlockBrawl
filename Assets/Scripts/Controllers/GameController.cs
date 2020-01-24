@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
 //Parent controller for gameplay. Passes on inputs to relevant game objects
@@ -8,6 +7,7 @@ public class GameController : InputController
 {
     public GameBoard PlayerGameBoard;
     public GameStatsUI GameStatsMenu;
+    public PauseMenu PauseMenu;
     public float BlockDist;
     public float TimeScale = 1f;
     public float GameTime;
@@ -36,11 +36,13 @@ public class GameController : InputController
     override protected void Start()
     {
         MainController.MC.GS_Current = GameState.Active;
-
         GameTime = 0;
-        //InitializeBinding();
-
         if(TimeScale != 1) { Time.timeScale = TimeScale; }
+
+        PauseMenu.Setup();
+        PauseMenu.gameObject.SetActive(false);
+        
+        base.Start();
     }
 
     public void UpdateGameStatMenu(int currentChain)
@@ -63,81 +65,112 @@ public class GameController : InputController
         }
     }
 
-    public void OnMove(CallbackContext context)
-    {
-        var moveDir = context.ReadValue<Vector2>();
-
-        if(!context.performed) 
-        {
-            if(moveDir.sqrMagnitude == 0)
-            { 
-                PrevMoveDir = Vector2.zero; 
-                PlayerGameBoard.SendMessage("OnMove", moveDir);
-            }
-            return; 
-        }
-
-        if(MainController.MC.GS_Current == GameState.Active)
-        {
-            var moveDirSqrMag = moveDir.sqrMagnitude;
-            var prevMoveDirSqrMag = PrevMoveDir.sqrMagnitude;
-
-            if(moveDirSqrMag == 0) 
-            {
-                PrevMoveDir = Vector2.zero;
-            }
-            else if(PrevMoveDir.sqrMagnitude > 0)
-            {
-                if(moveDirSqrMag == PrevMoveSqrMag) { moveDir -= PrevMoveDir; }
-                else if(moveDirSqrMag < prevMoveDirSqrMag) 
-                {
-                    PrevMoveDir = moveDir;
-                    return;
-                 }
-            }
-
-            var tmpPrevMoveDir = PrevMoveDir;
-
-            PrevMoveDir = moveDir;
-            moveDir -= tmpPrevMoveDir;
-
-            PlayerGameBoard.SendMessage("OnMove", moveDir);
-        }
-        else if(PrevMoveDir.sqrMagnitude > 0)
-        {
-            PrevMoveDir = Vector2.zero;
-        }
-    }
-
-    public void OnConfirm(CallbackContext context)
-    {
-        if(!context.performed) { return; }
-        if(MainController.MC.GS_Current == GameState.Active)
-        {
-            PlayerGameBoard.SendMessage("OnConfirm");
-        }
-    }
-
-    public void OnCancel(CallbackContext context)
-    {
-        if(!context.performed) { return; }
-    }
-
-    public void OnStart(CallbackContext context)
+    override public void OnStart(CallbackContext context)
     {
         if(!context.performed && !context.canceled) { return; }
         if(MainController.MC.GS_Current == GameState.Active)
         {
-            SendMessage("OnStart", context.performed);
+            Pause();
+        }
+        else
+        {
+            BroadcastMessage("InputStart", SendMessageOptions.DontRequireReceiver);
         }
     }
 
-    public void OnTrigger(CallbackContext context)
+    public void Pause()
     {
-        if(!context.performed && !context.canceled) { return; }
-        if(MainController.MC.GS_Current == GameState.Active)
-        {
-            PlayerGameBoard.SendMessage("OnTrigger", context.performed);
-        }
+        //TODO: SFX
+        MainController.MC.Pause();
+        PauseMenu.gameObject.SetActive(true);
+        PauseMenu.OpenMenu(Unpause);
     }
+
+    public void Unpause()
+    {
+        MainController.MC.Unpause();
+        PauseMenu.gameObject.SetActive(false);
+    }
+
+    public void Quit()
+    {
+        MainController.MC.LoadPrevScene();
+    }
+    // public void OnMove(CallbackContext context)
+    // {
+    //     var moveDir = context.ReadValue<Vector2>();
+
+    //     if(!context.performed) 
+    //     {
+    //         if(moveDir.sqrMagnitude == 0)
+    //         { 
+    //             PrevMoveDir = Vector2.zero; 
+    //             PlayerGameBoard.SendMessage("OnMove", moveDir);
+    //         }
+    //         return; 
+    //     }
+
+    //     if(MainController.MC.GS_Current == GameState.Active)
+    //     {
+    //         var moveDirSqrMag = moveDir.sqrMagnitude;
+    //         var prevMoveDirSqrMag = PrevMoveDir.sqrMagnitude;
+
+    //         if(moveDirSqrMag == 0) 
+    //         {
+    //             PrevMoveDir = Vector2.zero;
+    //         }
+    //         else if(PrevMoveDir.sqrMagnitude > 0)
+    //         {
+    //             if(moveDirSqrMag == PrevMoveSqrMag) { moveDir -= PrevMoveDir; }
+    //             else if(moveDirSqrMag < prevMoveDirSqrMag) 
+    //             {
+    //                 PrevMoveDir = moveDir;
+    //                 return;
+    //              }
+    //         }
+
+    //         var tmpPrevMoveDir = PrevMoveDir;
+
+    //         PrevMoveDir = moveDir;
+    //         moveDir -= tmpPrevMoveDir;
+
+    //         PlayerGameBoard.SendMessage("OnMove", moveDir);
+    //     }
+    //     else if(PrevMoveDir.sqrMagnitude > 0)
+    //     {
+    //         PrevMoveDir = Vector2.zero;
+    //     }
+    // }
+
+    // override public void OnConfirm(CallbackContext context)
+    // {
+    //     if(!context.performed) { return; }
+    //     if(MainController.MC.GS_Current == GameState.Active)
+    //     {
+    //         PlayerGameBoard.SendMessage("OnConfirm");
+    //     }
+    // }
+
+    // public void OnCancel(CallbackContext context)
+    // {
+    //     if(!context.performed) { return; }
+    // }
+
+    // public void OnStart(CallbackContext context)
+    // {
+    //     if(!context.performed && !context.canceled) { return; }
+    //     if(MainController.MC.GS_Current == GameState.Active)
+    //     {
+    //         SendMessage("OnStart", context.performed);
+    //     }
+    // }
+
+    // public void OnTrigger(CallbackContext context)
+    // {
+    //     if(!context.performed && !context.canceled) { return; }
+    //     if(MainController.MC.GS_Current == GameState.Active)
+    //     {
+    //         PlayerGameBoard.SendMessage("OnTrigger", context.performed);
+    //     }
+    // }
 }

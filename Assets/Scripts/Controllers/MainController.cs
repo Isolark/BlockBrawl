@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 //Static Controller used for TimedEvent/Transforms/SaveData... Does NOT handle non-generic game logic
 public class MainController : MonoBehaviour
@@ -7,9 +8,14 @@ public class MainController : MonoBehaviour
     public GameState GS_Current; 
     public TimedEventManager TimedEventManager;
     public TransformManager TransformManager;
+    public TimedEventManager BackupTimedEventManager;
+    public TransformManager BackupTransformManager;
     public AudioSource MusicPlayer;
     public AudioSource SoundFXPlayer;
+    public AudioSource BackupSoundFXPlayer; //For use in Menus
     public string Version; //Specifically for data purposes
+
+    public int PrevSceneIndex;
 
     public delegate void OnFixedUpdateDelegate();
     public event OnFixedUpdateDelegate FixedUpdateDelegate;
@@ -33,29 +39,64 @@ public class MainController : MonoBehaviour
             CreateInitialPlayerPrefs();
         }
 
+        BackupTimedEventManager.Pause();
+        BackupTransformManager.Pause();
+
         MusicPlayer.volume = PlayerPrefs.GetFloat("MusicVolume");
-        SoundFXPlayer.volume = PlayerPrefs.GetFloat("SoundVolume");
+        SoundFXPlayer.volume = BackupSoundFXPlayer.volume = PlayerPrefs.GetFloat("SoundVolume");
     }
 
     public TimedAction AddTimedAction(Action action, float activationTime, bool isContinuous = false)
     {
-        return TimedEventManager.AddTimedAction(action, activationTime, isContinuous);
+        if(GS_Current == GameState.Active) { return TimedEventManager.AddTimedAction(action, activationTime, isContinuous); }
+        else { return BackupTimedEventManager.AddTimedAction(action, activationTime, isContinuous); }
     }
 
     public void RemoveTimedAction(TimedAction timedAction)
     {
-        TimedEventManager.RemoveTimedAction(timedAction);
+        if(GS_Current == GameState.Active) { TimedEventManager.RemoveTimedAction(timedAction); }
+        else { BackupTimedEventManager.RemoveTimedAction(timedAction); }
     }
 
     public void PlaySound(string soundName)
     {
-        SoundFXPlayer.PlayOneShot(AudioLibrary.AL.GetAudioClipByName(soundName));
+        if(GS_Current == GameState.Active) { SoundFXPlayer.PlayOneShot(AudioLibrary.AL.GetAudioClipByName(soundName)); }
+        else { BackupSoundFXPlayer.PlayOneShot(AudioLibrary.AL.GetAudioClipByName(soundName)); }
     }
 
     public void PlayMusic(string musicName)
     {
         MusicPlayer.clip = AudioLibrary.AL.GetAudioClipByName(musicName);
         MusicPlayer.Play();
+    }
+
+    public void Pause()
+    {
+        MusicPlayer.Pause();
+        SoundFXPlayer.Pause();
+        TimedEventManager.Pause();
+        TransformManager.Pause();
+        BackupTimedEventManager.Unpause();
+        BackupTransformManager.Unpause();
+
+        GS_Current = GameState.MenuOpen;
+    }
+
+    public void Unpause()
+    {
+        MusicPlayer.Play();
+        SoundFXPlayer.Play();
+        TimedEventManager.Unpause();
+        TransformManager.Unpause();
+        BackupTimedEventManager.Pause();
+        BackupTransformManager.Pause();
+
+        GS_Current = GameState.Active;
+    }
+
+    public void LoadPrevScene()
+    {
+        SceneManager.LoadScene(PrevSceneIndex);
     }
 
     protected virtual void FixedUpdate()

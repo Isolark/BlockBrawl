@@ -3,6 +3,7 @@
 public class MenuController : InputController
 {
     public static MenuController MenuCtrl;
+    public MainMenu MainMenu;
 
     void Awake()
     {
@@ -20,5 +21,10 @@ public class MenuController : InputController
     {
         MainController.MC.GS_Current = GameState.Active;
         base.Start();
+
+        MainMenu.Setup();
+        MainMenu.Preinitialize();
+
+        MainController.MC.PlayMusic("Title");
     }
 }

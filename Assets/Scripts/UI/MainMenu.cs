@@ -5,12 +5,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+//TODO: Link this up to the actual MenuController for logic and proper resetting?
 public class MainMenu : GameMenu
 {
     public MainMenuState CurrentState;
     public TMP_Text StartLabel;
     public TMP_Text MenuTitle;
-    public SpriteRenderer MenuCursor;
 
     public TMP_Text MusicVolumeLabel;
     public Slider MusicSlider;
@@ -22,18 +22,19 @@ public class MainMenu : GameMenu
     private bool OptionChangedFlag;
     private Action CancelAction;
 
-
-    // Start is called before the first frame update
-    void Start()
+    public void Preinitialize()
     {
+        StartLabel.gameObject.SetActive(true);
         CurrentState = MainMenuState.PreMainMenu;
     }
 
-    private void Initialize()
+    override protected void Initialize()
     {
+        base.Initialize(); 
+
         //TODO: Sound FX
         StartLabel.gameObject.SetActive(false);
-        MenuTitle.gameObject.SetActive(true);
+        //MenuTitle.gameObject.SetActive(true);
         CurrentState = MainMenuState.OnMainMenu;
 
         MusicSlider.value = MainController.MC.MusicPlayer.volume;
@@ -53,9 +54,7 @@ public class MainMenu : GameMenu
     override public void SetMenuList(GameMenuList menuList)
     {
         base.SetMenuList(menuList);
-
-        MenuTitle.text = CurrentMenuList.Title;
-        CurrentMenuList.Initialize(MenuCursor);
+        //MenuTitle.text = CurrentMenuList.Title;
     }
 
     public void InputStart()
@@ -92,7 +91,6 @@ public class MainMenu : GameMenu
     public void InputTrigger()
     {
     }
-
 
     //Menu Item Callbacks
     private void ToMain()
@@ -162,9 +160,10 @@ public class MainMenu : GameMenu
         }
     }
 
-    public void OnSPZenModeSelection()
+    public void OnSPScoreModeSelection()
     {
-        SceneManager.LoadScene("Main");
+        MainController.MC.PrevSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene("SP_ScoreMode");
     }
 
     public void OnSPBlockBattleModeSelection()
