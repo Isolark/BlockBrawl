@@ -2,6 +2,7 @@
 using static UnityEngine.InputSystem.InputAction;
 
 //Controller that handles input actions
+//Override if need additional conditions met before broadcasting input
 public class InputController : MonoBehaviour, InputActionHub.IPlayerActions
 {
     public static Vector2 UnitResolution;
@@ -57,7 +58,7 @@ public class InputController : MonoBehaviour, InputActionHub.IPlayerActions
         if(InputHub != null) { InputHub.Dispose(); }
     }
 
-    public void OnMove(CallbackContext context)
+    public virtual void OnMove(CallbackContext context)
     {
         var moveDir = context.ReadValue<Vector2>();
 
@@ -103,7 +104,7 @@ public class InputController : MonoBehaviour, InputActionHub.IPlayerActions
         }
     }
 
-    public void OnConfirm(CallbackContext context)
+    public virtual void OnConfirm(CallbackContext context)
     {
         if(!context.performed) { return; }
         if(MainController.MC.GS_Current == GameState.Active)
@@ -112,7 +113,7 @@ public class InputController : MonoBehaviour, InputActionHub.IPlayerActions
         }
     }
 
-    public void OnCancel(CallbackContext context)
+    public virtual void OnCancel(CallbackContext context)
     {
         if(!context.performed) { return; }
         if(MainController.MC.GS_Current == GameState.Active)
@@ -121,7 +122,7 @@ public class InputController : MonoBehaviour, InputActionHub.IPlayerActions
         }
     }
 
-    public void OnStart(CallbackContext context)
+    public virtual void OnStart(CallbackContext context)
     {
         if(!context.performed && !context.canceled) { return; }
         if(MainController.MC.GS_Current == GameState.Active)
@@ -130,12 +131,12 @@ public class InputController : MonoBehaviour, InputActionHub.IPlayerActions
         }
     }
     
-    public void OnTrigger(CallbackContext context)
+    public virtual void OnTrigger(CallbackContext context)
     {
         if(!context.performed && !context.canceled) { return; }
         if(MainController.MC.GS_Current == GameState.Active)
         {
-            BroadcastMessage("InputTrigger", SendMessageOptions.DontRequireReceiver);
+            BroadcastMessage("InputTrigger", context.performed, SendMessageOptions.DontRequireReceiver);
         }
     }
 }

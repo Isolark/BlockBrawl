@@ -100,7 +100,7 @@ public class BlockContainer : MonoBehaviour
         //FallingChainCounter = ActiveChainCounter = 0;
         ActiveChainCounter = 0;
         ChainCount = 1;
-        GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
+        //GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
     }
 
     public void SpawnRows(int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null)
@@ -417,7 +417,7 @@ public class BlockContainer : MonoBehaviour
         if(isChain)  
         {
             ChainCount += 1;
-            GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
+            //GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
             totalRaiseTimeStop += ChainCount * GameController.GameCtrl.RaiseTimeStopChainMultiplier;
         }
 
@@ -692,7 +692,7 @@ public class BlockContainer : MonoBehaviour
     }
 
     //Start or Stop manual speed increase
-    public void OnTriggerRaise(bool performed)
+    public void OnInputTrigger(bool performed)
     {
         if(performed && !IsHoldingTrigger) {
             IsHoldingTrigger = true;

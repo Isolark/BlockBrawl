@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using static UnityEngine.InputSystem.InputAction;
 
 public class GameBoard : MonoBehaviour
 {
@@ -21,17 +20,17 @@ public class GameBoard : MonoBehaviour
         BlockContainer.OnUpdate();
     }
 
-    public void OnConfirm()
+    public void InputConfirm()
     {
         BlockContainer.OnCursorConfirm(Cursor.BoardLoc);
     }
 
-    public void OnTrigger(bool performed)
+    public void InputTrigger(bool performed)
     {
-        BlockContainer.OnTriggerRaise(performed);
+        BlockContainer.OnInputTrigger(performed);
     }
 
-    public void OnMove(Vector2 value)
+    public void InputMove(Vector2 value)
     {
         Cursor.OnMove(value);
     }

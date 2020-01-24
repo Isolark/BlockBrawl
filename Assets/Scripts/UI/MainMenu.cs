@@ -5,12 +5,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+//TODO: Link this up to the actual MenuController for logic and proper resetting?
 public class MainMenu : GameMenu
 {
     public MainMenuState CurrentState;
     public TMP_Text StartLabel;
     public TMP_Text MenuTitle;
-    public SpriteRenderer MenuCursor;
 
     public TMP_Text MusicVolumeLabel;
     public Slider MusicSlider;
@@ -53,9 +53,7 @@ public class MainMenu : GameMenu
     override public void SetMenuList(GameMenuList menuList)
     {
         base.SetMenuList(menuList);
-
         MenuTitle.text = CurrentMenuList.Title;
-        CurrentMenuList.Initialize(MenuCursor);
     }
 
     public void InputStart()
@@ -162,9 +160,10 @@ public class MainMenu : GameMenu
         }
     }
 
-    public void OnSPZenModeSelection()
+    public void OnSPScoreModeSelection()
     {
-        SceneManager.LoadScene("Main");
+        MainController.MC.PrevSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene("SP_ScoreMode");
     }
 
     public void OnSPBlockBattleModeSelection()
