@@ -178,10 +178,10 @@ public static class BlockExtensions
             }
         }
 
-        var fallDelta = new Vector2(0, -GameController.GC.BlockDist);
-        var fallAccel = new Vector2(0, -GameController.GC.BlockFallAcceleration);
-        var fallVelocity = new Vector2(0, -GameController.GC.BlockFallVelocity);
-        var fallMaxVelocity = new Vector2(0, -GameController.GC.BlockFallMaxVelocity);
+        var fallDelta = new Vector2(0, -GameController.GameCtrl.BlockDist);
+        var fallAccel = new Vector2(0, -GameController.GameCtrl.BlockFallAcceleration);
+        var fallVelocity = new Vector2(0, -GameController.GameCtrl.BlockFallVelocity);
+        var fallMaxVelocity = new Vector2(0, -GameController.GameCtrl.BlockFallMaxVelocity);
 
         var linkedObjs = linkedBlocks != null ? linkedBlocks.Select(x => x.gameObject).ToList() : null;
 
@@ -276,7 +276,7 @@ public static class BlockExtensions
     {
         block.MoveBoardLoc(moveVector);
 
-        moveVector.Scale(new Vector3(GameController.GC.BlockDist, GameController.GC.BlockDist, 0));
+        moveVector.Scale(new Vector3(GameController.GameCtrl.BlockDist, GameController.GameCtrl.BlockDist, 0));
         block.transform.localPosition += moveVector;
 
         //Need to be able to handle if raising at the same time 
@@ -289,9 +289,9 @@ public static class BlockExtensions
         block.MoveBoardLoc(moveVector);
 
         //Calculate movement
-        moveVector.Scale(new Vector3(GameController.GC.BlockDist, GameController.GC.BlockDist, 0));
+        moveVector.Scale(new Vector3(GameController.GameCtrl.BlockDist, GameController.GameCtrl.BlockDist, 0));
         var targetPosition = block.transform.localPosition + moveVector;
-        var switchSpeed = GameController.GC.BlockSwitchSpeed;
+        var switchSpeed = GameController.GameCtrl.BlockSwitchSpeed;
 
         if(callback != null) {
             MainController.MC.TransformManager.Add_LinearTimePos_Transform(block.gameObject, targetPosition, switchSpeed, () => { block.OnFinishMove(); callback(); });

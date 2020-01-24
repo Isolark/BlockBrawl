@@ -13,7 +13,7 @@ public class DebugUI : MonoBehaviour
     void Start()
     {
         LocateBlockBtn.onClick.AddListener(LocateBlock);
-        NullLogBtn.onClick.AddListener(LogNullBlockLocations);
+        NullLogBtn.onClick.AddListener(LogMovingBlockLocs);
     }
 
     // Update is called once per frame
@@ -33,8 +33,8 @@ public class DebugUI : MonoBehaviour
         DebugController.DC.LocateBlock(blockLoc);
     }
 
-    void LogNullBlockLocations()
+    void LogMovingBlockLocs()
     {
-        DebugController.DC.LogNullBlockLocations();
+        DebugController.DC.LogMovingBlockLocs();
     }
 }

@@ -24,7 +24,7 @@ public class DebugController : MonoBehaviour
 
     public void LocateBlock(Vector2 blockLoc)
     {
-        var blockContainer = GameController.GC.PlayerGameBoard.BlockContainer;
+        var blockContainer = GameController.GameCtrl.PlayerGameBoard.BlockContainer;
 
         if(blockContainer.BlockList.ContainsKey(blockLoc))
         {
@@ -34,10 +34,9 @@ public class DebugController : MonoBehaviour
         }
     }
 
-    public void LogNullBlockLocations()
+    public void LogMovingBlockLocs()
     {
-        var blockList = GameController.GC.PlayerGameBoard.BlockContainer.BlockList;
-        //var nullBlock = GameController.GC.PlayerGameBoard.BlockContainer.NullBlock;
+        var blockList = GameController.GameCtrl.PlayerGameBoard.BlockContainer.BlockList;
 
         foreach(var block in blockList.Where(x => x.Value.IsFallLocked || x.Value.IsFalling || x.Value.IsMoving))
         {

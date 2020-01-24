@@ -4,7 +4,7 @@ using static UnityEngine.InputSystem.InputAction;
 
 //Parent controller for gameplay. Passes on inputs to relevant game objects
 //TODO: OnPause(), trigger an "empty" input for all other bindings (stop player's hold timer, etc...)
-public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
+public class GameController : InputController
 {
     public GameBoard PlayerGameBoard;
     public GameStatsUI GameStatsMenu;
@@ -18,31 +18,27 @@ public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
     public float RaiseTimeStopComboMultiplier; //RaiseStopTimer Time += (ComboCount * Multiplier)
     public float RaiseTimeStopChainMultiplier; //RaiseStopTimer Time += (ChainCount * Multiplier)
     public float RaiseTimeStopBaseComboAmount;
-    public Vector2 PrevMoveDir;
-    public float PrevMoveSqrMag;
 
-    private InputActionHub InputHub;
-
-    public static GameController GC;
+    public static GameController GameCtrl;
 
     void Awake()
     {
         //Singleton pattern
-        if (GC == null) {
-            GC = this;
+        if (GameCtrl == null) {
+            GameCtrl = this;
         }
-        else if (GC != this) {
+        else if (GameCtrl != this) {
             Destroy(gameObject);
         }     
     }
 
     // Start is called before the first frame update
-    void Start()
+    override protected void Start()
     {
         MainController.MC.GS_Current = GameState.Active;
 
         GameTime = 0;
-        InitializeBinding();
+        //InitializeBinding();
 
         if(TimeScale != 1) { Time.timeScale = TimeScale; }
     }
@@ -53,44 +49,6 @@ public class GameController : MonoBehaviour, InputActionHub.IPlayerActions
 
         var maxChain = int.Parse(GameStatsMenu.MaxChainValue.text.Substring(1));
         if(currentChain > maxChain) { GameStatsMenu.SetMaxChain(currentChain); }
-    }
-
-    void InitializeBinding()
-    {
-        InputHub = new InputActionHub();
-        InputHub.Player.SetCallbacks(this);
-        InputHub.Player.Enable();
-
-        PrevMoveDir = Vector2.zero;
-
-        // var x = new InputBinding();
-        // x.GenerateId();
-        // x.path = "<Keyboard>/m";
-
-        // var a = new InputAction("confirm");
-        // a.AddBinding(x);
-
-        // InputHub.Player.Confirm.ChangeBindingWithId("f7bd21ef-4a6c-4172-8269-c6e6012596c3").To(x);
-
-        // InputHub.Player.SetCallbacks(this);
-        // InputHub.Player.Confirm.Disable();
-        // InputHub.Player.Confirm.PerformInteractiveRebinding()
-        //     .WithControlsExcluding("Mouse")
-        //     .OnComplete(CompleteRebinding)
-        //     .Start();
-    }
-
-    void CompleteRebinding(InputActionRebindingExtensions.RebindingOperation op)
-    {
-        Debug.Log(op.selectedControl.device);
-        Debug.Log(op.selectedControl.displayName);
-        Debug.Log(op.selectedControl.path);
-    
-        var a = new InputAction();
-        a.AddBinding("<Keyboard>/n");
-
-        InputHub.Player.Confirm.Enable();
-        op.Dispose();
     }
 
     // Update is called once per frame
