@@ -40,6 +40,8 @@ public class PauseMenu : GameMenu
 
     public void CloseMenu()
     {
+        IsOpen = false;
+        
         AnimCtrl.SetBool("FadeOut", true);
         AnimCtrl.SetTrigger("Play");
     }
@@ -63,11 +65,9 @@ public class PauseMenu : GameMenu
 
     public void InputStart()
     {
-        //Return to Game
-        // if(CurrentState == PauseMenuState.PrePauseMenu && StartLabel.gameObject.activeSelf) 
-        // {
-        //     Initialize();
-        // } 
+        if(IsOpen) {
+            CloseMenu();
+        }
     }
 
     private void CursorSelect()
