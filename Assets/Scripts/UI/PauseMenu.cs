@@ -17,22 +17,22 @@ public class PauseMenu : GameMenu
     public Animator AnimCtrl;
 
     public bool IsOpen;
+    public bool IsAnimating;
 
     private Action ResumeAction;
 
-    // Start is called before the first frame update
-    void Start()
+    override protected void Initialize()
     {
-    }
-
-    private void Initialize()
-    {
+        base.Initialize(); 
         SetMenuList(MenuLists[0]);
     }
 
     public void OpenMenu(Action resumeAction)
     {
         ResumeAction = resumeAction;
+
+        IsOpen = false;
+        IsAnimating = true;
 
         AnimCtrl.SetBool("FadeOut", false);
         AnimCtrl.SetTrigger("Play");
@@ -41,72 +41,58 @@ public class PauseMenu : GameMenu
     public void CloseMenu()
     {
         IsOpen = false;
-        
+        IsAnimating = true;
+
         AnimCtrl.SetBool("FadeOut", true);
         AnimCtrl.SetTrigger("Play");
     }
 
     public void OnFinishAnimation(string clipName)
     {
-        if(!IsOpen) {
+        if(!IsOpen) 
+        {
             IsOpen = true;
-            MenuCursor.gameObject.SetActive(true);
-        } else {
-            MenuCursor.gameObject.SetActive(false);
+            Initialize();
+        } 
+        else 
+        {
+            IsOpen = false;
+            Deinitialize();
+            ResumeAction(); //TODO: Allow for this to be a passed in Action (if need more than just Resume after fade out)
         }
+
+        IsAnimating = false;
     }
-
-    // override public void SetMenuList(GameMenuList menuList)
-    // {
-    //     base.SetMenuList(menuList);
-
-    //     MenuTitle.text = CurrentMenuList.Title;
-    // }
 
     public void InputStart()
     {
-        if(IsOpen) {
-            CloseMenu();
-        }
-    }
-
-    private void CursorSelect()
-    {
+        if(IsOpen && !IsAnimating) { CloseMenu(); }
     }
 
     public void InputCancel()
     {
-        //Automatically selects Resume OR just Return to Game
-        //if(CurrentState == PauseMenuState.PrePauseMenu) { return; }
-
-        // if(CancelAction != null) {
-        //     CancelAction();
-        //     return;
-        // }
-
-        CurrentMenuList.CancelSelection();
+        if(IsOpen && !IsAnimating) { CurrentMenuList.SetCurrentMenuItem(CurrentMenuList.MenuItemList.First().Value); }
     }
 
     public void InputConfirm()
     {
-        //if(CurrentState == PauseMenuState.PrePauseMenu) { return; }
-
-        CurrentMenuList.ConfirmSelection();
-    }
-
-    public void InputTrigger()
-    {
+        if(IsOpen && !IsAnimating) { CurrentMenuList.ConfirmSelection(); }
     }
 
 
     //Menu Item Callbacks
-    private void ToMain()
+    private void SelectResume()
     {
-        // if(OptionChangedFlag) 
-        // {
-        //     MainController.MC.SaveOptions();
-        //     OptionChangedFlag = false;
-        // }
-        SetMenuList(MenuLists.First(x => x.name == "PauseMenuList"));
+        if(IsOpen && !IsAnimating) { ResumeAction(); }
+    }
+
+    private void SelectRestart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void SelectQuit()
+    {
+        MainController.MC.LoadPrevScene();
     }
 }

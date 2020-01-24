@@ -38,6 +38,9 @@ public class GameController : InputController
         MainController.MC.GS_Current = GameState.Active;
         GameTime = 0;
         if(TimeScale != 1) { Time.timeScale = TimeScale; }
+
+        PauseMenu.Setup();
+        PauseMenu.gameObject.SetActive(false);
         
         base.Start();
     }
@@ -79,12 +82,14 @@ public class GameController : InputController
     {
         //TODO: SFX
         MainController.MC.Pause();
+        PauseMenu.gameObject.SetActive(true);
         PauseMenu.OpenMenu(Unpause);
     }
 
     public void Unpause()
     {
         MainController.MC.Unpause();
+        PauseMenu.gameObject.SetActive(false);
     }
 
     public void Quit()
