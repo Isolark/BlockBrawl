@@ -28,19 +28,19 @@ public class ComboPop
         PopHolder = SpriteFXPooler.SP.GetPooledObject("PopHolder", "SpriteLayer", parent: parentBlock.transform).GetComponent<SpriteFX>();
         PopFX = SpriteFXPooler.SP.GetPooledObject("ComboPopFX", "SpriteLayer", 0, false, parent: PopHolder.transform).GetComponent<SpriteFX>();
 
-        PopContainerFX = SpriteFXPooler.SP.GetPooledObject("PopContainerFX", "SpriteLayer", parent: PopFX.transform).GetComponent<SpriteFX>();
-        var popContainerSprite = SpriteFXPooler.SP.GetPooledObject("PopSprite", "SpriteLayer", 1, parent: PopContainerFX.transform).GetComponent<SpriteFX>();
+        PopContainerFX = SpriteFXPooler.SP.GetPooledObject("PopContainerFX", "SpriteLayer", 0, false, parent: PopFX.transform).GetComponent<SpriteFX>();
+        var popContainerSprite = SpriteFXPooler.SP.GetPooledObject("PopSprite", "SpriteLayer", 1, false, parent: PopContainerFX.transform).GetComponent<SpriteFX>();
         popContainerSprite.SetSprite((isChain ? "PopBlue" : "PopRed"));
 
         var popContainerText = TextMeshPooler.TMP.GetPooledObject("ComboPop-TxtConfig", "SpriteLayer", 2, "PopText", parent: PopContainerFX.transform).GetComponent<TMP_Text>();
         popContainerText.alignment = TextAlignmentOptions.Center;
         popContainerText.text = isChain ? "x" + Value.ToString() : Value.ToString();
 
-        PopTwirlFX = SpriteFXPooler.SP.GetPooledObject("PopTwirlFX", "SpriteLayer", parent: PopFX.transform).GetComponent<SpriteFX>();
-        var PopSpriteLeft = SpriteFXPooler.SP.GetPooledObject("PopTwirlSpriteLeft", "SpriteLayer", 0, parent: PopTwirlFX.transform).GetComponent<SpriteFX>();
-        var PopSpriteTop = SpriteFXPooler.SP.GetPooledObject("PopTwirlSpriteTop", "SpriteLayer", 0, parent: PopTwirlFX.transform).GetComponent<SpriteFX>();
-        var PopSpriteRight = SpriteFXPooler.SP.GetPooledObject("PopTwirlSpriteRight", "SpriteLayer", 0, parent: PopTwirlFX.transform).GetComponent<SpriteFX>();
-        var PopSpriteBot = SpriteFXPooler.SP.GetPooledObject("PopTwirlSpriteBot", "SpriteLayer", 0, parent: PopTwirlFX.transform).GetComponent<SpriteFX>();
+        PopTwirlFX = SpriteFXPooler.SP.GetPooledObject("PopTwirlFX", "SpriteLayer", 0, false, parent: PopFX.transform).GetComponent<SpriteFX>();
+        var PopSpriteLeft = SpriteFXPooler.SP.GetPooledObject("PopTwirlSpriteLeft", "SpriteLayer", 0, false, parent: PopTwirlFX.transform).GetComponent<SpriteFX>();
+        var PopSpriteTop = SpriteFXPooler.SP.GetPooledObject("PopTwirlSpriteTop", "SpriteLayer", 0, false, parent: PopTwirlFX.transform).GetComponent<SpriteFX>();
+        var PopSpriteRight = SpriteFXPooler.SP.GetPooledObject("PopTwirlSpriteRight", "SpriteLayer", 0, false, parent: PopTwirlFX.transform).GetComponent<SpriteFX>();
+        var PopSpriteBot = SpriteFXPooler.SP.GetPooledObject("PopTwirlSpriteBot", "SpriteLayer", 0, false, parent: PopTwirlFX.transform).GetComponent<SpriteFX>();
 
         PopSpriteLeft.transform.localPosition = new Vector3(-0.5f, 0, 0);
 

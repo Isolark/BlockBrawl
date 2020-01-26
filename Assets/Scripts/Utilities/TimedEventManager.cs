@@ -12,7 +12,7 @@ public class TimedEventManager : MonoBehaviour
     private bool Paused;
     private float PrevTime;
 
-    void Start()
+    void Awake()
     {
         ActionList = new List<TimedAction>();
         StagingList = new List<TimedAction>();
@@ -30,6 +30,13 @@ public class TimedEventManager : MonoBehaviour
     {
         MainCtrl.FixedUpdateDelegate += OnUpdate;
         Paused = false;
+    }
+
+    public void Reset()
+    {
+        ActionList.Clear();
+        StagingList.Clear();
+        DeletionList.Clear();
     }
 
     public TimedAction AddTimedAction(Action action, float activationTime, bool isContinuous = false)

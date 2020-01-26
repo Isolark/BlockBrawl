@@ -100,7 +100,7 @@ public class BlockContainer : MonoBehaviour
         //FallingChainCounter = ActiveChainCounter = 0;
         ActiveChainCounter = 0;
         ChainCount = 1;
-        //GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
+        GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
     }
 
     public void SpawnRows(int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null)
@@ -154,6 +154,7 @@ public class BlockContainer : MonoBehaviour
         if(ChainedBlockList.Count > 0) 
         {
             ActiveChainCounter++;
+            GameController.GameCtrl.GameStatsMenu.SetActiveCounter(ActiveChainCounter);
             OnBlocksStartDestroy(ChainedBlockList.Distinct(), true);
             ChainedBlockList.Clear();
         }
@@ -164,9 +165,11 @@ public class BlockContainer : MonoBehaviour
         }
         if(PotentialChainBlockList.Count > 0)
         {
-            PotentialChainBlockList.RemoveAll(x => !x.IsFallLocked && !x.IsChainable);
+            PotentialChainBlockList.RemoveAll(x => !x.IsFallLocked && !x.IsFalling && !x.IsChainable);
+            GameController.GameCtrl.GameStatsMenu.SetPotentialListSize(PotentialChainBlockList.Count);
         }
-        if(ChainCount > 1 && ActiveChainCounter <= 0 && PotentialChainBlockList.Count == 0) {
+        if(ChainCount > 1 && ActiveChainCounter <= 0 && PotentialChainBlockList.Count == 0) 
+        {
             ResetChain();
         }
 
@@ -394,12 +397,9 @@ public class BlockContainer : MonoBehaviour
                     if(chainRemovalBlock.IsChainable)
                     {
                         chainRemovalBlock.IsChainable = false;
-                        // if(FallingChainCounter > 0) { 
-                        //     FallingChainCounter--; 
-                        // }
                     }
                 }
-            }, GameController.GameCtrl.BlockSwitchSpeed * 0.8f);
+            }, GameController.GameCtrl.BlockSwitchSpeed * 0.25f);
         }
     }
 
@@ -417,7 +417,7 @@ public class BlockContainer : MonoBehaviour
         if(isChain)  
         {
             ChainCount += 1;
-            //GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
+            GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
             totalRaiseTimeStop += ChainCount * GameController.GameCtrl.RaiseTimeStopChainMultiplier;
         }
 
@@ -490,8 +490,7 @@ public class BlockContainer : MonoBehaviour
                 }
 
                 prevY = blockToDestroy.BoardLoc.y;
-                BlockPooler.BP.RepoolObject(blockToDestroy);
-                //blockToDestroy.gameObject.SetActive(false);
+                BlockPooler.BP.RepoolBlock(blockToDestroy);
             }
         }
 
@@ -515,7 +514,9 @@ public class BlockContainer : MonoBehaviour
         if(isFromChain)
         {
             ActiveChainCounter--;
+            GameController.GameCtrl.GameStatsMenu.SetActiveCounter(ActiveChainCounter);
             PotentialChainBlockList.AddRange(blockLockList);
+            GameController.GameCtrl.GameStatsMenu.SetPotentialListSize(PotentialChainBlockList.Count);
         }
     }
 
@@ -558,7 +559,6 @@ public class BlockContainer : MonoBehaviour
                 blockToUnlock.RemoveFallLock();
             }
             DropBlocksAboveLoc(boardLoc, prevTargetY, isChainable);
-            //FallingChainCounter -= blockToLockList.Count;
         }, BlockFallDelay);
 
         return blockToLockList;
@@ -698,6 +698,12 @@ public class BlockContainer : MonoBehaviour
             IsHoldingTrigger = true;
         } else if(!performed && IsHoldingTrigger) {
             IsHoldingTrigger = false;
+
+            if(IsManuallyRaising && RaiseStopTime > 0) {
+                IsManuallyRaising = false;
+                CanManuallyRaise = true;
+                RaiseSpeed = BaseRaiseSpeed;
+            }
         }
     }
 

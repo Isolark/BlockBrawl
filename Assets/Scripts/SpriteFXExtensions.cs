@@ -20,8 +20,20 @@ public static class SpriteFXExtensions
         spriteFX.FXAnimCtrl.enabled = isEnabled;
     }
 
+    public static void Reset(this SpriteFX spriteFX)
+    {
+        spriteFX.StateCallbacks.Clear();
+        spriteFX.FXAnimCtrl.runtimeAnimatorController = null;
+        spriteFX.FXAnimCtrl.enabled = false;
+        spriteFX.FXSprite.color = Color.white;
+        spriteFX.FXSprite.sprite = null;
+
+        spriteFX.transform.ResetTransform(true);
+    }
+
     public static void OnDestroy(this SpriteFX spriteFX) 
-    {        
-        spriteFX.transform.ResetAllChildrenRecursively();
+    {     
+        if(spriteFX.gameObject.activeSelf) { SpriteFXPooler.SP.RepoolSpriteFX(spriteFX); } 
+        //spriteFX.transform.ResetAllChildrenRecursively();
     }
 }

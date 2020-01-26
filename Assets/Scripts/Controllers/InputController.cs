@@ -62,46 +62,51 @@ public class InputController : MonoBehaviour, InputActionHub.IPlayerActions
     {
         var moveDir = context.ReadValue<Vector2>();
 
-        if(!context.performed) 
-        {
-            if(moveDir.sqrMagnitude == 0)
-            { 
-                PrevMoveDir = Vector2.zero;
-                BroadcastMessage("InputMove", moveDir, SendMessageOptions.DontRequireReceiver);
-            }
-            return; 
-        }
-
         if(MainController.MC.GS_Current == GameState.Active)
         {
-            var moveDirSqrMag = moveDir.sqrMagnitude;
-            var prevMoveDirSqrMag = PrevMoveDir.sqrMagnitude;
-
-            if(moveDirSqrMag == 0) 
-            {
-                PrevMoveDir = Vector2.zero;
+            if(!context.performed) 
+            { 
+                if(moveDir.sqrMagnitude == 0)
+                { 
+                    PrevMoveDir = Vector2.zero;
+                }
+                else { return; }
             }
-            else if(PrevMoveDir.sqrMagnitude > 0)
-            {
-                if(moveDirSqrMag == PrevMoveSqrMag) { moveDir -= PrevMoveDir; }
-                else if(moveDirSqrMag < prevMoveDirSqrMag) 
-                {
-                    PrevMoveDir = moveDir;
-                    return;
-                 }
-            }
-
-            var tmpPrevMoveDir = PrevMoveDir;
-
-            PrevMoveDir = moveDir;
-            moveDir -= tmpPrevMoveDir;
+            else if(!CalculateMoveDir(ref moveDir)) { return; }
 
             BroadcastMessage("InputMove", moveDir, SendMessageOptions.DontRequireReceiver);
         }
-        else if(PrevMoveDir.sqrMagnitude > 0)
+        // else if(PrevMoveDir.sqrMagnitude > 0)
+        // {
+        //     PrevMoveDir = Vector2.zero;
+        // }
+    }
+
+    protected bool CalculateMoveDir(ref Vector2 moveDir)
+    {
+        var moveDirSqrMag = moveDir.sqrMagnitude;
+        var prevMoveDirSqrMag = PrevMoveDir.sqrMagnitude;
+
+        if(moveDirSqrMag == 0) 
         {
             PrevMoveDir = Vector2.zero;
         }
+        else if(PrevMoveDir.sqrMagnitude > 0)
+        {
+            if(moveDirSqrMag == PrevMoveSqrMag) { moveDir -= PrevMoveDir; }
+            else if(moveDirSqrMag < prevMoveDirSqrMag) 
+            {
+                PrevMoveDir = moveDir;
+                return false;
+            }
+        }
+
+        var tmpPrevMoveDir = PrevMoveDir;
+
+        PrevMoveDir = moveDir;
+        moveDir -= tmpPrevMoveDir;
+
+        return true;
     }
 
     public virtual void OnConfirm(CallbackContext context)
@@ -124,7 +129,7 @@ public class InputController : MonoBehaviour, InputActionHub.IPlayerActions
 
     public virtual void OnStart(CallbackContext context)
     {
-        if(!context.performed && !context.canceled) { return; }
+        if(!context.performed) { return; }
         if(MainController.MC.GS_Current == GameState.Active)
         {
             BroadcastMessage("InputStart", SendMessageOptions.DontRequireReceiver);
