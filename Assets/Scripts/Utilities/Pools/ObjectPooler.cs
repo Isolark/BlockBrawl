@@ -54,4 +54,18 @@ public abstract class ObjectPooler : MonoBehaviour
 
         return obj;
     }
+
+    public virtual void RepoolObject(GameObject obj)
+    {
+    }
+
+    public void RepoolAllObjects()
+    {
+        foreach(var obj in pool)
+        {
+            RepoolObject(obj);
+            obj.transform.SetParent(gameObject.transform);
+            obj.SetActive(false);
+        }
+    }
 }

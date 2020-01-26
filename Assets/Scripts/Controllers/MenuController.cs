@@ -23,7 +23,16 @@ public class MenuController : InputController
         base.Start();
 
         MainMenu.Setup();
-        MainMenu.Preinitialize();
+
+        if(MainController.MC.IsInitialStart)
+        {
+            MainMenu.Preinitialize();
+            MainController.MC.IsInitialStart = false;
+        }
+        else
+        {
+            MainMenu.Initialize();
+        }
 
         MainController.MC.PlayMusic("Title");
     }

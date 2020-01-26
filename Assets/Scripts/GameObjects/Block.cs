@@ -24,6 +24,9 @@ public class Block : MonoBehaviour
     public bool IsFallLocked;
     public bool IsDestroying;
 
+    //public int ChainableCount;
+
+
     //If all blocks in a garbage block have a fall flag, it can fall
     public bool HasIterated;
 

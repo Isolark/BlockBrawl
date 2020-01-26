@@ -31,7 +31,13 @@ public class BlockPooler : ObjectPooler
         return block.gameObject;
     }
 
-    public void RepoolObject(Block block)
+    override public void RepoolObject(GameObject obj)
+    {
+        var block = obj.GetComponent<Block>();
+        RepoolBlock(block);
+    }
+
+    public void RepoolBlock(Block block)
     {
         block.Reset();
         block.gameObject.SetActive(false);

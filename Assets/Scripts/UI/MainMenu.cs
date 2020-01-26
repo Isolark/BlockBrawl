@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class MainMenu : GameMenu
 {
     public MainMenuState CurrentState;
-    public TMP_Text StartLabel;
+    public FlashingText StartLabel;
     public TMP_Text MenuTitle;
 
     public TMP_Text MusicVolumeLabel;
@@ -25,15 +25,18 @@ public class MainMenu : GameMenu
     public void Preinitialize()
     {
         StartLabel.gameObject.SetActive(true);
+        StartLabel.Initialize();
+
         CurrentState = MainMenuState.PreMainMenu;
     }
 
-    override protected void Initialize()
+    override public void Initialize()
     {
         base.Initialize(); 
 
         //TODO: Sound FX
-        StartLabel.gameObject.SetActive(false);
+        StartLabel.Deinitialize();
+
         //MenuTitle.gameObject.SetActive(true);
         CurrentState = MainMenuState.OnMainMenu;
 

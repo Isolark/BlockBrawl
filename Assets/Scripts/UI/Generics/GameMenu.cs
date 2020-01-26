@@ -16,12 +16,12 @@ public abstract class GameMenu : MonoBehaviour
             menuList.Setup();
         }
     }
-    protected virtual void Initialize()
+    public virtual void Initialize()
     {
         if(LeftMenuCursor != null && !LeftMenuCursor.gameObject.activeSelf) { LeftMenuCursor.gameObject.SetActive(true); }
         if(RightMenuCursor != null && !RightMenuCursor.gameObject.activeSelf) { RightMenuCursor.gameObject.SetActive(true); }
     }
-    protected virtual void Deinitialize()
+    public virtual void Deinitialize()
     {
         if(LeftMenuCursor != null && LeftMenuCursor.gameObject.activeSelf) { LeftMenuCursor.gameObject.SetActive(false); }
         if(RightMenuCursor != null && RightMenuCursor.gameObject.activeSelf) { RightMenuCursor.gameObject.SetActive(false); }

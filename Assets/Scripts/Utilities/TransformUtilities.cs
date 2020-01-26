@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public static class TransformUtilities
 {
@@ -34,8 +35,10 @@ public static class TransformUtilities
         target.transform.localPosition += Vector3.Scale(size, rectPercents);
     }
 
-    public static void ResetSelf(this Transform transform)
+    public static void ResetTransform(this Transform transform, bool resetParent = false)
     {
+        if(resetParent) { transform.SetParent(null); }
+
         transform.localPosition = transform.position = Vector3.zero;
         transform.rotation = transform.localRotation = new Quaternion(0, 0, 0, 0);
         transform.localScale = Vector3.one;
@@ -48,7 +51,16 @@ public static class TransformUtilities
         }
 
         parent.SetParent(null);
-        parent.ResetSelf();
+        parent.ResetTransform();
         parent.gameObject.SetActive(false);
+    }
+
+    public static void GetAllChildrenRecursively(this Transform parent, ref List<Transform> objList)
+    {
+        for(var i = 0; i < parent.childCount; i++)
+        {
+            parent.GetChild(i).GetAllChildrenRecursively(ref objList);
+        }
+        objList.Add(parent);
     }
 }

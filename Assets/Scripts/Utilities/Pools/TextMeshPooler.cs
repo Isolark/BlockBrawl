@@ -47,4 +47,16 @@ public class TextMeshPooler : ObjectPooler
     {
         return StoredTexts.Find(x => x.name == storedTextName);
     } 
+
+    override public void RepoolObject(GameObject obj)
+    {
+        var textMeshText = obj.GetComponent<TMP_Text>();
+        RepoolTextMeshText(textMeshText);
+    }
+
+    public void RepoolTextMeshText(TMP_Text textMeshText)
+    {
+        textMeshText.gameObject.transform.ResetTransform(true);
+        textMeshText.gameObject.SetActive(false);
+    }
 }

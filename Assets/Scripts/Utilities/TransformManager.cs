@@ -12,7 +12,7 @@ public class TransformManager : MonoBehaviour
     private bool Paused;
     private float PrevTime;
 
-    void Start()
+    void Awake()
     {
         TransformItemList = new List<TransformItem>();
         DeletionList = new List<TransformItem>();
@@ -29,6 +29,12 @@ public class TransformManager : MonoBehaviour
     {
         MainCtrl.FixedUpdateDelegate += OnUpdate;
         Paused = false;
+    }
+
+    public void Reset()
+    {
+        TransformItemList.Clear();
+        DeletionList.Clear();
     }
 
     public void Add_LinearTimePos_Transform(GameObject target, Vector2 pFinal, float timeDelta, Action callback = null)

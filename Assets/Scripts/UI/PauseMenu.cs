@@ -14,6 +14,7 @@ public class PauseMenu : GameMenu
     public TMP_Text RestartLabel;
     public TMP_Text QuitLabel;
 
+    public CanvasGroup AlphaCanvas;
     public Animator AnimCtrl;
 
     public bool IsOpen;
@@ -21,7 +22,7 @@ public class PauseMenu : GameMenu
 
     private Action ResumeAction;
 
-    override protected void Initialize()
+    override public void Initialize()
     {
         base.Initialize(); 
         SetMenuList(MenuLists[0]);
@@ -30,19 +31,24 @@ public class PauseMenu : GameMenu
     public void OpenMenu(Action resumeAction)
     {
         ResumeAction = resumeAction;
+        MenuLists[0].gameObject.SetActive(true);
 
         IsOpen = false;
         IsAnimating = true;
 
+        AnimCtrl.speed = 3;
         AnimCtrl.SetBool("FadeOut", false);
         AnimCtrl.SetTrigger("Play");
     }
 
     public void CloseMenu()
     {
-        IsOpen = false;
+        IsOpen = true;
         IsAnimating = true;
 
+        Deinitialize();
+
+        AnimCtrl.speed = 3;
         AnimCtrl.SetBool("FadeOut", true);
         AnimCtrl.SetTrigger("Play");
     }
@@ -56,11 +62,12 @@ public class PauseMenu : GameMenu
         } 
         else 
         {
+            
             IsOpen = false;
-            Deinitialize();
-            ResumeAction(); //TODO: Allow for this to be a passed in Action (if need more than just Resume after fade out)
+            ResumeAction();
         }
 
+        AlphaCanvas.alpha = 1;
         IsAnimating = false;
     }
 
@@ -83,16 +90,16 @@ public class PauseMenu : GameMenu
     //Menu Item Callbacks
     private void SelectResume()
     {
-        if(IsOpen && !IsAnimating) { ResumeAction(); }
+        if(IsOpen && !IsAnimating) { CloseMenu(); }
     }
 
     private void SelectRestart()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        GameController.GameCtrl.Restart();
     }
 
     private void SelectQuit()
     {
-        MainController.MC.LoadPrevScene();
+        GameController.GameCtrl.Quit();
     }
 }

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using static UnityEngine.InputSystem.InputAction;
 
 //Parent controller for gameplay. Passes on inputs to relevant game objects
@@ -65,112 +67,99 @@ public class GameController : InputController
         }
     }
 
+    override public void OnMove(CallbackContext context)
+    {
+        var moveDir = context.ReadValue<Vector2>();
+
+        if(!context.performed) 
+        {
+            if(moveDir.sqrMagnitude == 0)
+            { 
+                PrevMoveDir = Vector2.zero;
+            }
+            else { return; }
+        }
+        else if(!CalculateMoveDir(ref moveDir)) { return; }
+
+        if(MainController.MC.GS_Current == GameState.Active)
+        {
+            PlayerGameBoard.InputMove(moveDir);
+        }
+        else if(MainController.MC.GS_Current == GameState.MenuOpen)
+        {
+            PauseMenu.InputMove(moveDir);
+        }
+    }
     override public void OnStart(CallbackContext context)
     {
-        if(!context.performed && !context.canceled) { return; }
+        if(!context.performed) { return; }
         if(MainController.MC.GS_Current == GameState.Active)
         {
             Pause();
         }
         else
         {
-            BroadcastMessage("InputStart", SendMessageOptions.DontRequireReceiver);
+            PauseMenu.InputStart();
+        }
+    }
+
+    override public void OnConfirm(CallbackContext context)
+    {
+        if(!context.performed) { return; }
+        if(MainController.MC.GS_Current == GameState.Active)
+        {
+            PlayerGameBoard.InputConfirm();
+        }
+        else if(MainController.MC.GS_Current == GameState.MenuOpen)
+        {
+            PauseMenu.InputConfirm();
+        }
+    }
+
+    override public void OnCancel(CallbackContext context)
+    {
+        if(!context.performed) { return; }
+        if(MainController.MC.GS_Current == GameState.Active)
+        {
+            //PlayerGameBoard.In();
+        }
+        else if(MainController.MC.GS_Current == GameState.MenuOpen)
+        {
+            PauseMenu.InputCancel();
         }
     }
 
     public void Pause()
     {
         //TODO: SFX
+        //Clears "Hold" on input receivers
+        PlayerGameBoard.InputMove(Vector2.zero);
+        PlayerGameBoard.Pause();
+
         MainController.MC.Pause();
+
         PauseMenu.gameObject.SetActive(true);
         PauseMenu.OpenMenu(Unpause);
     }
 
     public void Unpause()
     {
+        //Clears "Hold" on input receivers
+        PlayerGameBoard.Unpause();
+        PauseMenu.InputMove(Vector2.zero);
+
         MainController.MC.Unpause();
         PauseMenu.gameObject.SetActive(false);
+    }
+
+    public void Restart()
+    {
+        PlayerGameBoard.Reset();
+        MainController.MC.GoToScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void Quit()
     {
         MainController.MC.LoadPrevScene();
     }
-    // public void OnMove(CallbackContext context)
-    // {
-    //     var moveDir = context.ReadValue<Vector2>();
-
-    //     if(!context.performed) 
-    //     {
-    //         if(moveDir.sqrMagnitude == 0)
-    //         { 
-    //             PrevMoveDir = Vector2.zero; 
-    //             PlayerGameBoard.SendMessage("OnMove", moveDir);
-    //         }
-    //         return; 
-    //     }
-
-    //     if(MainController.MC.GS_Current == GameState.Active)
-    //     {
-    //         var moveDirSqrMag = moveDir.sqrMagnitude;
-    //         var prevMoveDirSqrMag = PrevMoveDir.sqrMagnitude;
-
-    //         if(moveDirSqrMag == 0) 
-    //         {
-    //             PrevMoveDir = Vector2.zero;
-    //         }
-    //         else if(PrevMoveDir.sqrMagnitude > 0)
-    //         {
-    //             if(moveDirSqrMag == PrevMoveSqrMag) { moveDir -= PrevMoveDir; }
-    //             else if(moveDirSqrMag < prevMoveDirSqrMag) 
-    //             {
-    //                 PrevMoveDir = moveDir;
-    //                 return;
-    //              }
-    //         }
-
-    //         var tmpPrevMoveDir = PrevMoveDir;
-
-    //         PrevMoveDir = moveDir;
-    //         moveDir -= tmpPrevMoveDir;
-
-    //         PlayerGameBoard.SendMessage("OnMove", moveDir);
-    //     }
-    //     else if(PrevMoveDir.sqrMagnitude > 0)
-    //     {
-    //         PrevMoveDir = Vector2.zero;
-    //     }
-    // }
-
-    // override public void OnConfirm(CallbackContext context)
-    // {
-    //     if(!context.performed) { return; }
-    //     if(MainController.MC.GS_Current == GameState.Active)
-    //     {
-    //         PlayerGameBoard.SendMessage("OnConfirm");
-    //     }
-    // }
-
-    // public void OnCancel(CallbackContext context)
-    // {
-    //     if(!context.performed) { return; }
-    // }
-
-    // public void OnStart(CallbackContext context)
-    // {
-    //     if(!context.performed && !context.canceled) { return; }
-    //     if(MainController.MC.GS_Current == GameState.Active)
-    //     {
-    //         SendMessage("OnStart", context.performed);
-    //     }
-    // }
-
-    // public void OnTrigger(CallbackContext context)
-    // {
-    //     if(!context.performed && !context.canceled) { return; }
-    //     if(MainController.MC.GS_Current == GameState.Active)
-    //     {
-    //         PlayerGameBoard.SendMessage("OnTrigger", context.performed);
-    //     }
-    // }
 }

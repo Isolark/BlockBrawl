@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,6 +17,7 @@ public class MainController : MonoBehaviour
     public string Version; //Specifically for data purposes
 
     public int PrevSceneIndex;
+    public bool IsInitialStart;
 
     public delegate void OnFixedUpdateDelegate();
     public event OnFixedUpdateDelegate FixedUpdateDelegate;
@@ -66,6 +68,7 @@ public class MainController : MonoBehaviour
 
     public void PlayMusic(string musicName)
     {
+        MusicPlayer.Stop();
         MusicPlayer.clip = AudioLibrary.AL.GetAudioClipByName(musicName);
         MusicPlayer.Play();
     }
@@ -94,9 +97,44 @@ public class MainController : MonoBehaviour
         GS_Current = GameState.Active;
     }
 
+    public void GoToScene(int sceneIndex)
+    {
+        MainController.MC.GS_Current = GameState.Loading;
+        StartCoroutine(SceneLoadCoroutine(sceneIndex));
+    }
+
     public void LoadPrevScene()
     {
-        SceneManager.LoadScene(PrevSceneIndex);
+        GoToScene(PrevSceneIndex);
+    }
+
+    private IEnumerator SceneLoadCoroutine(int sceneIndex)
+    {
+        var sceneLoader = SceneManager.LoadSceneAsync(sceneIndex);
+        sceneLoader.allowSceneActivation = false;
+
+        while(sceneLoader.progress < 0.9f)
+        {
+            yield return null;
+        }
+
+        foreach(var objPooler in FindObjectsOfType<ObjectPooler>())
+        {
+            objPooler.RepoolAllObjects();
+        }
+        TransformManager.Reset();
+        TimedEventManager.Reset();
+        BackupTransformManager.Reset();
+        BackupTimedEventManager.Reset();
+
+        sceneLoader.allowSceneActivation = true;
+
+        while(!sceneLoader.isDone)
+        {
+            yield return null;
+        }
+
+        Unpause();
     }
 
     protected virtual void FixedUpdate()

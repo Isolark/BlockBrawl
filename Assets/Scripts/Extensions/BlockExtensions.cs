@@ -24,15 +24,23 @@ public static class BlockExtensions
 
     public static void Reset(this Block block)
     {
-        block.IsChainable = block.IsComboable = block.IsDestroying = block.IsFalling
-            = block.IsFallLocked = block.IsMoveable = block.IsMoving = false;
+        if(block.gameObject.activeSelf) 
+        {
+            block.IsChainable = block.IsComboable = block.IsDestroying = block.IsFalling
+                = block.IsFallLocked = block.IsMoveable = block.IsMoving = false;
 
-        block.BlockSprite.color = block.BlockIconSprite.color = Color.white;
-        block.BlockSprite.sprite = block.BlockIconSprite.sprite = null;
-        block.Type = BlockType.Blue;
-        block.Status = BlockStatus.Normal;
-        block.BoardLoc = block.PrevBoardLoc = Vector3.zero;
-        block.StoredAction = null;
+            block.BlockSprite.color = block.BlockIconSprite.color = Color.white;
+            block.BlockSprite.sprite = block.BlockIconSprite.sprite = null;
+
+            block.BlockAnimCtrl.ResetTrigger("Play");
+            block.BlockAnimCtrl.Play("Ready");
+            block.BlockAnimCtrl.enabled = false;
+
+            block.Type = BlockType.Blue;
+            block.Status = BlockStatus.Normal;
+            block.BoardLoc = block.PrevBoardLoc = Vector3.zero;
+            block.StoredAction = null;
+        }
     }
 
     public static void OnEnterBoard(this Block block)
