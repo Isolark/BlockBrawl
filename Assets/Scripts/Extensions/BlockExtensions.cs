@@ -187,13 +187,11 @@ public static class BlockExtensions
         }
 
         var fallDelta = new Vector2(0, -GameController.GameCtrl.BlockDist);
-        var fallAccel = new Vector2(0, -GameController.GameCtrl.BlockFallAcceleration);
         var fallVelocity = new Vector2(0, -GameController.GameCtrl.BlockFallVelocity);
-        var fallMaxVelocity = new Vector2(0, -GameController.GameCtrl.BlockFallMaxVelocity);
 
         var linkedObjs = linkedBlocks != null ? linkedBlocks.Select(x => x.gameObject).ToList() : null;
 
-        MainController.MC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, fallVelocity, fallMaxVelocity, fallAccel,
+        MainController.MC.TransformManager.Add_ManualDeltaPos_Transform(block.gameObject, fallDelta, fallVelocity, fallVelocity, Vector2.zero,
             () => block.StepFall(linkedBlocks), linkedObjs, callback);
     }
 

@@ -87,7 +87,7 @@ public class BlockContainer : MonoBehaviour
 
         CanManuallyRaise = true;
 
-        MainController.MC.PlayMusic("Enjoy It");
+        MainController.MC.PlayMusic("ScoreAttack");
     }
 
     public void IncrementRaiseStopTime(float raiseStopTime)
@@ -154,7 +154,6 @@ public class BlockContainer : MonoBehaviour
         if(ChainedBlockList.Count > 0) 
         {
             ActiveChainCounter++;
-            GameController.GameCtrl.GameStatsMenu.SetActiveCounter(ActiveChainCounter);
             OnBlocksStartDestroy(ChainedBlockList.Distinct(), true);
             ChainedBlockList.Clear();
         }
@@ -166,7 +165,6 @@ public class BlockContainer : MonoBehaviour
         if(PotentialChainBlockList.Count > 0)
         {
             PotentialChainBlockList.RemoveAll(x => !x.IsFallLocked && !x.IsFalling && !x.IsChainable);
-            GameController.GameCtrl.GameStatsMenu.SetPotentialListSize(PotentialChainBlockList.Count);
         }
         if(ChainCount > 1 && ActiveChainCounter <= 0 && PotentialChainBlockList.Count == 0) 
         {
@@ -513,11 +511,8 @@ public class BlockContainer : MonoBehaviour
 
         if(isFromChain)
         {
-            GameController.GameCtrl.GameStatsMenu.SetLockedListSize(blockLockList.Count);
             ActiveChainCounter--;
-            GameController.GameCtrl.GameStatsMenu.SetActiveCounter(ActiveChainCounter);
             PotentialChainBlockList.AddRange(blockLockList);
-            GameController.GameCtrl.GameStatsMenu.SetPotentialListSize(PotentialChainBlockList.Count);
         }
     }
 

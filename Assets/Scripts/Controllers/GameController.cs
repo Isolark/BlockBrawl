@@ -8,14 +8,12 @@ using static UnityEngine.InputSystem.InputAction;
 public class GameController : InputController
 {
     public GameBoard PlayerGameBoard;
-    public GameStatsUI GameStatsMenu;
+    public ScoreModeMenu ScoreModeMenu;
     public PauseMenu PauseMenu;
     public float BlockDist;
     public float TimeScale = 1f;
     public float GameTime;
     public float BlockFallVelocity;
-    public float BlockFallMaxVelocity;
-    public float BlockFallAcceleration;
     public float BlockSwitchSpeed; //Speed at which blocks can be switched
     public float RaiseTimeStopComboMultiplier; //RaiseStopTimer Time += (ComboCount * Multiplier)
     public float RaiseTimeStopChainMultiplier; //RaiseStopTimer Time += (ChainCount * Multiplier)
@@ -49,10 +47,10 @@ public class GameController : InputController
 
     public void UpdateGameStatMenu(int currentChain)
     {
-        GameStatsMenu.SetCurrentChain(currentChain);
+        // GameStatsMenu.SetCurrentChain(currentChain);
 
-        var maxChain = int.Parse(GameStatsMenu.MaxChainValue.text.Substring(1));
-        if(currentChain > maxChain) { GameStatsMenu.SetMaxChain(currentChain); }
+        // var maxChain = int.Parse(GameStatsMenu.MaxChainValue.text.Substring(1));
+        // if(currentChain > maxChain) { GameStatsMenu.SetMaxChain(currentChain); }
     }
 
     // Update is called once per frame
@@ -61,7 +59,7 @@ public class GameController : InputController
         if(MainController.MC.GS_Current == GameState.Active)
         {
             GameTime += Time.deltaTime;
-            GameStatsMenu.SetGameTime(GameTime);
+            ScoreModeMenu.SetGameTime(GameTime);
             
             PlayerGameBoard.OnUpdate();
         }
