@@ -5,7 +5,7 @@ using UnityEngine;
 public class BlockBattleOpp : ScriptableObject
 {
     public string OpponentName; //Redundant Path to the name used in loading
-    public string DisplayName; //"Pretty" name
+    public string DisplayName;
     public int HP;
     public List<List<int>> AttackList; //Attack List (Format detailed below)
 }

@@ -58,6 +58,12 @@ public class TransformManager : MonoBehaviour
         TransformItemList.Add(transItem);
     }
 
+    public void Add_AccelToPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, float pMarginFinal, Action callback = null)
+    {
+        var transItem = new AccelToPosTransItem(target, pFinal, pVelocity, pAcceleration, pMarginFinal, callback);
+        TransformItemList.Add(transItem);
+    }
+
     private void OnUpdate()
     {
         if(Paused) return;
@@ -78,7 +84,25 @@ public class TransformManager : MonoBehaviour
     }
 }
 
+public class AccelToPosTransItem: ManualTransItem
+{
+    public AccelToPosTransItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, float pMarginFinal, Action callback = null)
+        : base(target, pFinal, pVelocity, pAcceleration, callback)
+    {
+        SetPosMargin(pMarginFinal, false);
+    }
 
+    override public bool OnMove()
+    {
+        var t = Time.deltaTime;
+        var xAccel = Mathf.Lerp(Target.transform.localPosition.x, P_Final.x, t) * P_Acceleration.x;
+        var yAccel = Mathf.Lerp(Target.transform.localPosition.y, P_Final.y, t) * P_Acceleration.y;
+
+        P_Velocity += new Vector2(xAccel, yAccel);
+
+        return OnMove(P_Velocity * t, Vector2.zero);
+    }
+} 
 
 public class ManualDeltaTransItem : ManualTransItem
 {
@@ -131,11 +155,16 @@ public class ManualTransItem : TransformItem
     protected Vector2 P_MaxVelocity;
     protected Vector2 P_Acceleration;
 
+    protected float P_MarginFinal;
+    protected bool IsForcedMargin;
+
     public ManualTransItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Action callback = null)
         : base(target, pFinal, callback)
     {
         P_Velocity = pVelocity;
         P_Acceleration = pAcceleration;
+        P_MarginFinal = 0;
+        IsForcedMargin = false;
     }
 
     public ManualTransItem(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Vector2 pMaxVelocity, Action callback = null)
@@ -144,27 +173,42 @@ public class ManualTransItem : TransformItem
         P_Velocity = pVelocity;
         P_MaxVelocity = pMaxVelocity;
         P_Acceleration = pAcceleration;
+        P_MarginFinal = 0;
+        IsForcedMargin = false;
+    }
+
+    public void SetPosMargin(float pMarginFinal, bool isForcedMargin = false)
+    {
+        P_MarginFinal = pMarginFinal;
+        IsForcedMargin = isForcedMargin;
     }
 
     protected bool OnMove(Vector3 deltaVector, Vector2 deltaAcceleration)
     {
         var nextVector = Target.transform.localPosition + deltaVector;
 
-        if(P_Velocity.x > 0 && nextVector.x >= P_Final.x || 
+        if(P_MarginFinal != 0 && Mathf.Abs(Vector2.Distance(nextVector, P_Final)) <= P_MarginFinal)
+        {
+            if(FinalMove(deltaVector)) { return true; }
+        }
+        else if(!IsForcedMargin && 
+            P_Velocity.x > 0 && nextVector.x >= P_Final.x || 
             P_Velocity.x < 0 && nextVector.x <= P_Final.x ||
             P_Velocity.y > 0 && nextVector.y >= P_Final.y ||
             P_Velocity.y < 0 && nextVector.y <= P_Final.y) 
         {
-            if(OnCheck())
-            {
-                deltaVector = P_Final - new Vector2(Target.transform.localPosition.x, Target.transform.localPosition.y);
-                IncPosition(deltaVector);
+            if(FinalMove(deltaVector)) { return true; }
+            // if(OnCheck())
+            // {
+            //     FinalMove(ref deltaVector);
+            //     deltaVector = P_Final - new Vector2(Target.transform.localPosition.x, Target.transform.localPosition.y);
+            //     IncPosition(deltaVector);
 
-                if(Callback != null) {
-                    Callback();
-                }
-                return true;
-            }
+            //     if(Callback != null) {
+            //         Callback();
+            //     }
+            //     return true;
+            // }
         }
 
         IncPosition(deltaVector);
@@ -177,6 +221,21 @@ public class ManualTransItem : TransformItem
             P_Acceleration = Vector2.zero;
         }
 
+        return false;
+    }
+
+    protected bool FinalMove(Vector3 deltaVector)
+    {
+        if(OnCheck())
+        {
+            deltaVector = P_Final - new Vector2(Target.transform.localPosition.x, Target.transform.localPosition.y);
+            IncPosition(deltaVector);
+
+            if(Callback != null) {
+                Callback();
+            }
+            return true;
+        }
         return false;
     }
 
