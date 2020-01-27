@@ -106,6 +106,11 @@ public class MainMenu : GameMenu
         SetMenuList(MenuLists.First(x => x.name == "MainMenuList"));
     }
 
+    private void ToSinglePlayerMode()
+    {
+        SetMenuList(MenuLists.First(x => x.name == "1PlayerMenuList"));
+    }
+
     private void ToOptions()
     {
         SetMenuList(MenuLists.First(x => x.name == "OptionsMenuList"));
