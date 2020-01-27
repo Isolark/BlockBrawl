@@ -399,7 +399,7 @@ public class BlockContainer : MonoBehaviour
                         chainRemovalBlock.IsChainable = false;
                     }
                 }
-            }, GameController.GameCtrl.BlockSwitchSpeed * 0.25f);
+            }, GameController.GameCtrl.BlockSwitchSpeed * 0.8f);
         }
     }
 
@@ -504,15 +504,16 @@ public class BlockContainer : MonoBehaviour
     //Individual Falling Blocks version
     private void LockBlocksAboveLoc(IList<Vector2> boardLocList, bool isChainable = false, bool isFromChain = false)
     {
-        List<Block> blockLockList = null;
+        List<Block> blockLockList = new List<Block>();
 
         for(var i = 0; i < boardLocList.Count; i++)
         {
-            blockLockList = LockBlocksAboveLoc(boardLocList[i], isChainable);
+            blockLockList.AddRange(LockBlocksAboveLoc(boardLocList[i], isChainable));
         }
 
         if(isFromChain)
         {
+            GameController.GameCtrl.GameStatsMenu.SetLockedListSize(blockLockList.Count);
             ActiveChainCounter--;
             GameController.GameCtrl.GameStatsMenu.SetActiveCounter(ActiveChainCounter);
             PotentialChainBlockList.AddRange(blockLockList);
@@ -596,7 +597,7 @@ public class BlockContainer : MonoBehaviour
                     break;
                 }
 
-                if(!blockAboveList.Contains(block) && !block.IsFalling && (!block.IsFallLocked || canBeFallLocked)) 
+                if(!blockAboveList.Exists(x => x.GetInstanceID() == block.GetInstanceID()) && !block.IsFalling && (!block.IsFallLocked || canBeFallLocked)) 
                 {
                     blockAboveList.Add(BlockList[boardLoc]);
                 }

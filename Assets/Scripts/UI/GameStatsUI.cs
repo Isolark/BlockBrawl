@@ -12,6 +12,7 @@ public class GameStatsUI : MonoBehaviour
     public TMP_Text MaxChainValue;
     public TMP_Text ActiveCounterValue;
     public TMP_Text PotentialListSizeValue;
+    public TMP_Text LockedListSizeValue;
 
     // Start is called before the first frame update
     void Start()
@@ -37,11 +38,16 @@ public class GameStatsUI : MonoBehaviour
 
     public void SetActiveCounter(int activeCounter)
     {
-        ActiveCounterValue.text = activeCounter.ToString();
+        ActiveCounterValue.text = "A: " + activeCounter.ToString();
     }
 
     public void SetPotentialListSize(int potentialListSize)
     {
-        PotentialListSizeValue.text = potentialListSize.ToString();
+        PotentialListSizeValue.text = "P: " + potentialListSize.ToString();
+    }
+
+    public void SetLockedListSize(int lockedListSize)
+    {
+        LockedListSizeValue.text = "L: " + lockedListSize.ToString();
     }
 }
