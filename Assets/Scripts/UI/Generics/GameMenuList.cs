@@ -151,9 +151,15 @@ public class GameMenuList : DirectionInputReceiver
 
         if(RightMenuCursor != null)
         {
-            RightMenuCursor.transform.localPosition = CurrentMenuItem.transform.localPosition;
-            RightMenuCursor.gameObject.TransBySpriteDimensions(CurrentMenuItem.ItemText.gameObject, new Vector3(0.5f, 0.12f, 0));
-            RightMenuCursor.gameObject.TransBySpriteDimensions(new Vector3(1.25f * RightMenuCursor.transform.localScale.x, 0, 0));
+            if(menuItem.UseSingleCursor) {
+                RightMenuCursor.gameObject.SetActive(false);
+            }
+            else {
+                RightMenuCursor.gameObject.SetActive(true);
+                RightMenuCursor.transform.localPosition = CurrentMenuItem.transform.localPosition;
+                RightMenuCursor.gameObject.TransBySpriteDimensions(CurrentMenuItem.ItemText.gameObject, new Vector3(0.5f, 0.12f, 0));
+                RightMenuCursor.gameObject.TransBySpriteDimensions(new Vector3(1.25f * RightMenuCursor.transform.localScale.x, 0, 0));
+            }
         }
     }
 }

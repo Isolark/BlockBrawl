@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class MainController : MonoBehaviour
 {
     public GameState GS_Current; 
+    public DataManager DataManager;
     public TimedEventManager TimedEventManager;
     public TransformManager TransformManager;
     public TimedEventManager BackupTimedEventManager;
@@ -137,16 +138,6 @@ public class MainController : MonoBehaviour
         Unpause();
     }
 
-    protected virtual void FixedUpdate()
-    {
-        if(FixedUpdateDelegate != null) { FixedUpdateDelegate(); }
-    }
-
-    protected virtual void Update()
-    {
-        if(UpdateDelegate != null) { UpdateDelegate(); }
-    }
-
     private void CreateInitialPlayerPrefs()
     {
         //TODO: Load from SO Instead
@@ -161,5 +152,21 @@ public class MainController : MonoBehaviour
         PlayerPrefs.SetFloat("MusicVolume", MusicPlayer.volume);
         PlayerPrefs.SetFloat("SoundVolume", SoundFXPlayer.volume);
         PlayerPrefs.Save();
+    }
+
+    public T GetData<T>(string soName) where T : ScriptableObject
+    {
+        if(!DataManager.DataList.ContainsKey(soName)) { return null; }
+        return (T)DataManager.DataList[soName];
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        if(FixedUpdateDelegate != null) { FixedUpdateDelegate(); }
+    }
+
+    protected virtual void Update()
+    {
+        if(UpdateDelegate != null) { UpdateDelegate(); }
     }
 }
