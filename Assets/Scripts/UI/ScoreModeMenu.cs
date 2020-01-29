@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -7,6 +6,8 @@ public class ScoreModeMenu : MonoBehaviour
 {
     public bool IsTimeDoubleDigits;
     public TMP_Text GameTimeValue;
+    public TMP_Text GameScoreValue;
+    public TMP_Text GameSpeedLvValue;
 
     // Start is called before the first frame update
     void Start()
@@ -25,5 +26,15 @@ public class ScoreModeMenu : MonoBehaviour
         }
 
         GameTimeValue.text = timeText;
+    }
+
+    public void IncreaseScore(int score)
+    {
+        GameScoreValue.text = (int.Parse(GameScoreValue.text) + score).ToString();;
+    }
+
+    public void SetSpeedLv(int speedLv)
+    {
+        GameSpeedLvValue.text = speedLv.ToString();
     }
 }

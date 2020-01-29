@@ -18,9 +18,15 @@ public class MainMenu : GameMenu
     public TMP_Text SoundVolumeLabel;
     public Slider SoundSlider;
     public TMP_Text SoundVolumeValue;
+    public TMP_Text DifficultyValue;
 
     private bool OptionChangedFlag;
+    private int MaxDifficultyLock;
     private Action CancelAction;
+
+    private int CurrentDifficulty;
+    private readonly int MIN_DIFFICULTY;
+    private readonly int MAX_DIFFICULTY;
 
     public void Preinitialize()
     {
@@ -47,6 +53,8 @@ public class MainMenu : GameMenu
         SoundVolumeValue.text = Mathf.RoundToInt(SoundSlider.value * 100f).ToString();
 
         OptionChangedFlag = false;
+        CurrentDifficulty = 1;
+        MaxDifficultyLock = 10;
 
         //Darken VolumeSubMenu
         ChangeVolumeSubMenuColor(Color.black, 0.3f);
@@ -114,6 +122,14 @@ public class MainMenu : GameMenu
     private void ToOptions()
     {
         SetMenuList(MenuLists.First(x => x.name == "OptionsMenuList"));
+    }
+
+    private void ChangeDifficulty(int value)
+    {
+        var difficultyStr = DifficultyValue.text.Replace("< ", string.Empty).Replace(" >", string.Empty);
+        var currentDifficulty = int.Parse(difficultyStr);
+
+        //if(currentDifficulty )
     }
 
     private void MusicVolumeSlide()

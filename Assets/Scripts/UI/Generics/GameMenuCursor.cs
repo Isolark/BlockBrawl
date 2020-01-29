@@ -1,5 +1,4 @@
-﻿using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameMenuCursor : MonoBehaviour
 {
@@ -32,7 +31,6 @@ public class GameMenuCursor : MonoBehaviour
     }
     public void Deinitialize()
     {
-        Debug.Log("here");
         CursorAnim.SetTrigger("Stop");
         CursorAnim.enabled = false;
         gameObject.SetActive(false);
@@ -42,6 +40,6 @@ public class GameMenuCursor : MonoBehaviour
     {
         gameObject.transform.localPosition = menuItem.transform.localPosition;
         gameObject.TransBySpriteDimensions(menuItem.ItemText.gameObject, new Vector3((IsLeftPosition ? -0.5f : 0.5f), 0.12f, 0));
-        gameObject.transform.localPosition += new Vector3((IsLeftPosition ? -SpriteBounds.x : SpriteBounds.x) * RectBounds.localScale.x, 0, 0);
+        gameObject.transform.localPosition += new Vector3((IsLeftPosition ? -SpriteBounds.x : SpriteBounds.x * 0.85f) * RectBounds.localScale.x, 0, 0);
     }
 }

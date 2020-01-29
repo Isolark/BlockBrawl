@@ -11,7 +11,6 @@ public class GameBoard : MonoBehaviour
     public Vector2 BoardSize;
     public Vector2 CursorStartPosition;
 
-    //public IEnumerable<Animator> PauseAnimList;
     public ILookup<float, Animator> PauseAnimLookup;
     public ILookup<float, SpriteRenderer> PauseSpriteLookup;
 
@@ -28,9 +27,25 @@ public class GameBoard : MonoBehaviour
         BlockContainer.OnUpdate();
     }
 
+    public void IncreaseScore(int blockCount, int chainCount)
+    {
+        var difficultyScoreVal = MainController.MC.GetData<DifficultyLv>("DifficultyLv").BaseScoreValue;
+        var scoreMultipliers = MainController.MC.GetData<BlockMultipliers>("ScoreMultipliers");
+        
+        var comboMultiplier = scoreMultipliers.ComboMults[blockCount-1];
+        var totalScore = Mathf.CeilToInt(blockCount * comboMultiplier * difficultyScoreVal);
+
+        if(chainCount > 1)
+        {
+            var chainMultiplier = scoreMultipliers.ChainMults[chainCount-2];
+            totalScore += Mathf.CeilToInt((chainCount - 1) * chainMultiplier * difficultyScoreVal);
+        } 
+
+        GameController.GameCtrl.ScoreModeMenu.IncreaseScore(totalScore);
+    }
+
     public void Pause()
     {
-        //PauseAnimList = BlockContainer.gameObject.GetComponentsInChildren<Animator>().Where(x => x.isActiveAndEnabled == true);
         var childObjList = new List<Transform>();
         BlockContainer.transform.GetAllChildrenRecursively(ref childObjList);
 
@@ -53,7 +68,6 @@ public class GameBoard : MonoBehaviour
             }
         }
 
-        // var pauseAnimList = childObjList.Where(x => x.comp).GetComponentsInChildren<Animator>().Where(x => x.isActiveAndEnabled == true);
         PauseAnimLookup = pauseAnimList.ToLookup(x => x.speed);
         PauseSpriteLookup = pauseSpriteList.ToLookup(x => x.color.a);
 
@@ -62,17 +76,17 @@ public class GameBoard : MonoBehaviour
             anim.speed = 0;
         }
 
-        //if(PauseSpriteLookup.Any()) { StartCoroutine(FadeSprites(0, -10)); }
+        if(PauseSpriteLookup.Any()) { StartCoroutine(FadeSprites(10, false)); }
     }
 
     public void Unpause()
     {
-        Reset();
-        if(PauseSpriteLookup.Any()) { StartCoroutine(FadeSprites(1, 10)); }
+        ResetAnimations();
+        if(PauseSpriteLookup.Any()) { StartCoroutine(FadeSprites(10, true)); }
         BoardMask.gameObject.SetActive(false);
     }
 
-    public void Reset()
+    public void ResetAnimations()
     {
         foreach(var animSpeedGroup in PauseAnimLookup) 
         {
@@ -85,37 +99,39 @@ public class GameBoard : MonoBehaviour
         }
     }
 
-    private IEnumerator FadeSprites(float finalAlpha, float fadeMultiplier)
+    private IEnumerator FadeSprites(float fadeMultiplier, bool isFadeIn)
     {
         var isComplete = false;
 
-        while((finalAlpha == 1 && PauseSpriteLookup.Any(x => x.First().color.a < 1) || (finalAlpha == 0 && PauseSpriteLookup.Any(x => x.First().color.a > 0))))
+        while(!isComplete)
         {
             foreach(var spriteAlphaGroup in PauseSpriteLookup)
             {
+                var finalAlpha = isFadeIn ? spriteAlphaGroup.Key : 0;
+
                 foreach(var sprite in spriteAlphaGroup)
                 {
                     if(!isComplete)
                     {
-                        var nextAlpha = sprite.color.a + Time.deltaTime * fadeMultiplier;
-                        if((finalAlpha == 1 && nextAlpha >= 1) || (finalAlpha == 0 && nextAlpha <= 0)) 
+                        var nextAlpha = sprite.color.a + Time.deltaTime * fadeMultiplier * (isFadeIn ? 1 : -1);
+                        if((isFadeIn && nextAlpha >= finalAlpha) || (finalAlpha == 0 && nextAlpha <= 0)) 
                         { 
                             isComplete = true; 
                             nextAlpha = finalAlpha;
                         }
-                        sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.g, nextAlpha);
+                        sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.g, nextAlpha * spriteAlphaGroup.Key);
                     }
                     else 
                     { 
-                        sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.g, finalAlpha);
+                        sprite.color = new Color(sprite.color.r, sprite.color.g, sprite.color.g, finalAlpha * spriteAlphaGroup.Key);
                     } 
-                }
-
+                }                
             }
+            
             yield return null;
         }
 
-        BoardMask.gameObject.SetActive(finalAlpha == 0);
+        if(!isFadeIn) { BoardMask.gameObject.SetActive(true); }
     }
 
     public void InputConfirm()
