@@ -5,7 +5,7 @@ using UnityEngine;
 public class BlockMultipliers : ScriptableObject
 {
     public List<float> ComboMults;
-    public float ComboMaxAdd;
+    public float ComboMaxAdd; //The Static amount to add after reaching "ceiling" of list
     public List<float> ChainMults;
-    public float ChainMaxAdd;
+    public float ChainMaxAdd; //The Static amount to add after reaching "ceiling" of list
 }

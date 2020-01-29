@@ -10,6 +10,17 @@ public class DataManager : MonoBehaviour
     void Awake()
     {
         DataList = new Dictionary<string, ScriptableObject>();
+        LoadData("DifficultyLv", "Data/DifficultyLevels/Lv1");
+        LoadData("ScoreMultipliers", "Data/BlockMultipliers/ScoreMultipliers");
+        LoadData("TimeStopMultipliers", "Data/BlockMultipliers/TimeStopMultipliers");
+
+        Debug.Log(DataList["DifficultyLv"]);
+        
+    }
+
+    void Start()
+    {
+        Debug.Log(MainController.MC.GetData<DifficultyLv>("DifficultyLv"));
     }
 
     public void LoadData(string name, string path)

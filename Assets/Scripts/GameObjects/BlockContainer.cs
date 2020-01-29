@@ -11,11 +11,14 @@ public class BlockContainer : MonoBehaviour
     public float IconDestroyDelay; //Delay between icons being destroyed; Reduce for faster Gameplay
     public float ChainLinkDelay; //Delay between starting/adding to a chain VS starting a new chain (should allow for 2 diff rows being diff chains)
     public float BlockFallDelay; //Delay before block falls while suspended in air
+
     public float RaiseSpeed;
     public float BaseRaiseSpeed;
-    public float ManualRaiseSpeed;
+    public float ManualRaiseSpeed; //TODO: Move to GC
     public float RaiseAcceleration;
-    TimedAction RaiseSpeedTimer;
+    private int SpeedLv;
+    TimedAction RaiseSpeedLvTimer;
+
     public float RaiseStopTime;
     public int BlockDestroyCount; //Stops Move(), but not RaiseStopTimer; Timer is created anew if time > what is left of original
 
@@ -23,7 +26,6 @@ public class BlockContainer : MonoBehaviour
     private int ComboCount; //Only Persists until next Move() (by default)
     public int ChainCount; //Once BlockDestroyCount strikes 0, reset this (by default) 
     private int PrevChainCount;
-    //public int FallingChainCounter;
     public int ActiveChainCounter;
 
     public bool IsHoldingTrigger;
@@ -71,16 +73,36 @@ public class BlockContainer : MonoBehaviour
         BoardSize = boardSize;
         Target_Y = transform.localPosition.y + GameController.GameCtrl.BlockDist;
         ComboCount = ChainCount = 1;
-        RaiseSpeed = BaseRaiseSpeed;
+        RaiseSpeed = BaseRaiseSpeed = GameController.GameCtrl.RaiseBaseSpeed;
         RaiseStopTime = 0;
 
-        if(RaiseSpeedTimer != null) {
-            MainController.MC.RemoveTimedAction(RaiseSpeedTimer);
+        var baseAcceleration = GameController.GameCtrl.RaiseBaseAcceleration;
+        RaiseAcceleration = baseAcceleration;
+        SpeedLv = 1;
+
+        if(RaiseSpeedLvTimer != null) {
+            MainController.MC.RemoveTimedAction(RaiseSpeedLvTimer);
         }
-        RaiseSpeedTimer = MainController.MC.AddTimedAction(() => 
-        { 
-            BaseRaiseSpeed += RaiseAcceleration; 
-        }, 30f, true);
+        RaiseSpeedLvTimer = MainController.MC.AddTimedAction(() => 
+        {
+            if(SpeedLv == 100) { return; }
+            SpeedLv++;
+            BaseRaiseSpeed += RaiseAcceleration;
+
+            if(SpeedLv == 50)
+            {
+                BaseRaiseSpeed += baseAcceleration * 5;
+                RaiseAcceleration += GameController.GameCtrl.RaiseDeltaAcceleration;
+            }
+            else if(SpeedLv == 100)
+            {
+                BaseRaiseSpeed += baseAcceleration * 10;
+            }
+            
+            if(!IsManuallyRaising) { RaiseSpeed = BaseRaiseSpeed; }
+            GameController.GameCtrl.ScoreModeMenu.SetSpeedLv(SpeedLv);
+
+        }, GameController.GameCtrl.RaiseSpeedLevelDelay, true);
 
         SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-2, 0, 0, 2});
         ResetChain();
@@ -97,7 +119,6 @@ public class BlockContainer : MonoBehaviour
 
     public void ResetChain()
     {
-        //FallingChainCounter = ActiveChainCounter = 0;
         ActiveChainCounter = 0;
         ChainCount = 1;
         GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
@@ -418,6 +439,8 @@ public class BlockContainer : MonoBehaviour
             GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
             totalRaiseTimeStop += ChainCount * GameController.GameCtrl.RaiseTimeStopChainMultiplier;
         }
+
+        GameController.GameCtrl.PlayerGameBoard.IncreaseScore(blocksToDestroy.Count(), isChain ? ChainCount : 1);
 
         IncrementRaiseStopTime(totalRaiseTimeStop);
     

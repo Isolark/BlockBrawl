@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using static UnityEngine.InputSystem.InputAction;
 
@@ -15,6 +14,10 @@ public class GameController : InputController
     public float GameTime;
     public float BlockFallVelocity;
     public float BlockSwitchSpeed; //Speed at which blocks can be switched
+    public float RaiseBaseSpeed; //Starting speed of block raising
+    public float RaiseBaseAcceleration; //Starting increase of speed every speed level
+    public float RaiseDeltaAcceleration; //Add this to base every 50 levels for current acceleration
+    public float RaiseSpeedLevelDelay; //How long until speed level is raised
     public float RaiseTimeStopComboMultiplier; //RaiseStopTimer Time += (ComboCount * Multiplier)
     public float RaiseTimeStopChainMultiplier; //RaiseStopTimer Time += (ChainCount * Multiplier)
     public float RaiseTimeStopBaseComboAmount;
@@ -152,7 +155,7 @@ public class GameController : InputController
 
     public void Restart()
     {
-        PlayerGameBoard.Reset();
+        PlayerGameBoard.ResetAnimations();
         MainController.MC.GoToScene(SceneManager.GetActiveScene().buildIndex);
     }
 
