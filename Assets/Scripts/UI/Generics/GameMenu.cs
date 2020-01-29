@@ -5,8 +5,8 @@ using UnityEngine;
 public abstract class GameMenu : MonoBehaviour
 {
     public List<GameMenuList> MenuLists;
-    public SpriteRenderer LeftMenuCursor;
-    public SpriteRenderer RightMenuCursor;
+    public GameMenuCursor LeftMenuCursor;
+    public GameMenuCursor RightMenuCursor;
     protected GameMenuList CurrentMenuList;
 
     public virtual void Setup()
@@ -18,13 +18,25 @@ public abstract class GameMenu : MonoBehaviour
     }
     public virtual void Initialize()
     {
-        if(LeftMenuCursor != null && !LeftMenuCursor.gameObject.activeSelf) { LeftMenuCursor.gameObject.SetActive(true); }
-        if(RightMenuCursor != null && !RightMenuCursor.gameObject.activeSelf) { RightMenuCursor.gameObject.SetActive(true); }
+        if(LeftMenuCursor != null) 
+        { 
+            LeftMenuCursor.Initialize();
+        }
+        if(RightMenuCursor != null) 
+        { 
+            RightMenuCursor.Initialize();
+        }
     }
     public virtual void Deinitialize()
     {
-        if(LeftMenuCursor != null && LeftMenuCursor.gameObject.activeSelf) { LeftMenuCursor.gameObject.SetActive(false); }
-        if(RightMenuCursor != null && RightMenuCursor.gameObject.activeSelf) { RightMenuCursor.gameObject.SetActive(false); }
+        if(LeftMenuCursor != null && LeftMenuCursor.gameObject.activeSelf) 
+        { 
+            LeftMenuCursor.Deinitialize();
+        }
+        if(RightMenuCursor != null && RightMenuCursor.gameObject.activeSelf) 
+        { 
+            RightMenuCursor.Deinitialize(); 
+        }
     }
     public virtual void SetMenuList(GameMenuList menuList)
     {
