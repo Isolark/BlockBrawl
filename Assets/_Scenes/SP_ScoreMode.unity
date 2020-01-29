@@ -451,6 +451,7 @@ MonoBehaviour:
   ActionName: SelectRestart
   ListLoc: {x: 0, y: 1}
   IsSelectable: 1
+  UseSingleCursor: 0
   LinkedSlider: {fileID: 0}
 --- !u!1 &36900211
 GameObject:
@@ -857,6 +858,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GS_Current: 1
+  DataManager: {fileID: 0}
   TimedEventManager: {fileID: 1337530716}
   TransformManager: {fileID: 1337530715}
   BackupTimedEventManager: {fileID: 1266342134}
@@ -1066,6 +1068,8 @@ GameObject:
   m_Component:
   - component: {fileID: 399446485}
   - component: {fileID: 399446486}
+  - component: {fileID: 399446488}
+  - component: {fileID: 399446487}
   m_Layer: 5
   m_Name: MenuCursorRight
   m_TagString: Untagged
@@ -1082,7 +1086,7 @@ RectTransform:
   m_GameObject: {fileID: 399446484}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 18, y: 18, z: 1}
+  m_LocalScale: {x: 28, y: 28, z: 1}
   m_Children: []
   m_Father: {fileID: 859955311}
   m_RootOrder: 3
@@ -1143,6 +1147,41 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &399446487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399446484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76112d827c806c740a5cff66feb78b9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CursorSprite: {fileID: 399446486}
+  CursorAnim: {fileID: 399446488}
+  RectBounds: {fileID: 399446485}
+  AnimationSpeed: 0.5
+--- !u!95 &399446488
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399446484}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ecff0cdaadc32694591a0d32325912a8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &401726417
 GameObject:
   m_ObjectHideFlags: 0
@@ -1554,6 +1593,8 @@ GameObject:
   m_Component:
   - component: {fileID: 693081181}
   - component: {fileID: 693081182}
+  - component: {fileID: 693081184}
+  - component: {fileID: 693081183}
   m_Layer: 5
   m_Name: MenuCursorLeft
   m_TagString: Untagged
@@ -1570,7 +1611,7 @@ RectTransform:
   m_GameObject: {fileID: 693081180}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 18, y: 18, z: 1}
+  m_LocalScale: {x: 28, y: 28, z: 1}
   m_Children: []
   m_Father: {fileID: 859955311}
   m_RootOrder: 2
@@ -1631,6 +1672,41 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &693081183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693081180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76112d827c806c740a5cff66feb78b9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CursorSprite: {fileID: 693081182}
+  CursorAnim: {fileID: 693081184}
+  RectBounds: {fileID: 693081181}
+  AnimationSpeed: 0.5
+--- !u!95 &693081184
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693081180}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: ecff0cdaadc32694591a0d32325912a8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &784947589
 GameObject:
   m_ObjectHideFlags: 0
@@ -1852,6 +1928,7 @@ MonoBehaviour:
   ActionName: SelectQuit
   ListLoc: {x: 0, y: 0}
   IsSelectable: 1
+  UseSingleCursor: 0
   LinkedSlider: {fileID: 0}
 --- !u!1 &825398876
 GameObject:
@@ -2030,8 +2107,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MenuLists:
   - {fileID: 2062656445}
-  LeftMenuCursor: {fileID: 693081182}
-  RightMenuCursor: {fileID: 399446486}
+  LeftMenuCursor: {fileID: 693081183}
+  RightMenuCursor: {fileID: 399446487}
   ResumeLabel: {fileID: 1146151818}
   RestartLabel: {fileID: 26912184}
   QuitLabel: {fileID: 803268387}
@@ -2769,6 +2846,7 @@ MonoBehaviour:
   ActionName: SelectResume
   ListLoc: {x: 0, y: 2}
   IsSelectable: 1
+  UseSingleCursor: 0
   LinkedSlider: {fileID: 0}
 --- !u!82 &1180684839 stripped
 AudioSource:

@@ -31,6 +31,12 @@
 //         Paused = false;
 //     }
 
+//     public void Reset()
+//     {
+//         TransformItemList.Clear();
+//         DeletionList.Clear();
+//     }
+
 //     public void Add_LinearTimePos_Transform(GameObject target, Vector2 pFinal, float timeDelta, Action callback = null)
 //     {
 //         TransformItemList.Add(new LinearTimeTransItem(target, pFinal, timeDelta, callback:callback));
