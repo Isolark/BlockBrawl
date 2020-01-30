@@ -15,16 +15,60 @@ public class GameBoard : MonoBehaviour
     public ILookup<float, SpriteRenderer> PauseSpriteLookup;
 
     public int Score;
+    public int SpeedLv;
+    TimedAction RaiseSpeedLvTimer;
+    private int MaxSpeedLv;
+    private float RaiseAcceleration;
 
-    // Start is called before the first frame update
-    void Start()
+    public void Initialize(int maxSpeedLv, float baseRaiseSpeed, float baseRaiseAccel)
     {
+        SpeedLv = 1;
+        MaxSpeedLv = maxSpeedLv;
+        RaiseAcceleration = baseRaiseAccel;
+
         Cursor.LockToBoard(BoardSize, CursorStartPosition);
-        BlockContainer.Initialize(BoardSize);
+        BlockContainer.Initialize(BoardSize, baseRaiseSpeed);
     }
+
+    //Manual trigger to actually start following whatever intro is involved
+    public void BeginGame()
+    {
+        if(RaiseSpeedLvTimer != null) 
+        {
+            MainController.MC.RemoveTimedAction(RaiseSpeedLvTimer);
+        }
+        RaiseSpeedLvTimer = MainController.MC.AddTimedAction(IncreaseSpeedLv, GameController.GameCtrl.RaiseSpeedLevelDelay, true);
+
+        MainController.MC.PlayMusic("ScoreAttack");
+    }
+
     public void OnUpdate()
     {
         BlockContainer.OnUpdate();
+    }
+
+    private void IncreaseSpeedLv()
+    {
+        if(SpeedLv >= MaxSpeedLv) { return; }
+
+        SpeedLv++;
+
+        var currentSpeed = BlockContainer.BaseRaiseSpeed;
+        currentSpeed += RaiseAcceleration;
+
+        if(SpeedLv % 50 == 0)
+        {
+            currentSpeed += RaiseAcceleration * 5;
+            RaiseAcceleration += GameController.GameCtrl.RaiseDeltaAcceleration;
+
+            if(SpeedLv == 100)
+            {
+                //Other things that happen at Speed 100
+            }
+        }
+        
+        BlockContainer.IncreaseSpeed(currentSpeed);
+        GameController.GameCtrl.ScoreModeMenu.SetSpeedLv(SpeedLv);
     }
 
     public void IncreaseScore(int blockCount, int chainCount)

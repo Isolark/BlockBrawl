@@ -448,6 +448,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemText: {fileID: 26912184}
+  ItemDescription: 
   ActionName: SelectRestart
   ListLoc: {x: 0, y: 1}
   IsSelectable: 1
@@ -3287,9 +3288,10 @@ MonoBehaviour:
   BlockFallVelocity: 35
   BlockSwitchSpeed: 0.09
   RaiseBaseSpeed: 0.0008
-  RaiseBaseAcceleration: 0.00036
+  RaiseBaseAcceleration: 0.00018
   RaiseDeltaAcceleration: 0.0001
-  RaiseSpeedLevelDelay: 30
+  RaiseSpeedLevelDelay: 12.5
+  MaxSpeedLevel: 100
   RaiseTimeStopComboMultiplier: 0.2
   RaiseTimeStopChainMultiplier: 0.5
   RaiseTimeStopBaseComboAmount: 0.25
@@ -3774,6 +3776,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemText: {fileID: 803268387}
+  ItemDescription: 
   ActionName: SelectQuit
   ListLoc: {x: 0, y: 0}
   IsSelectable: 1
@@ -5249,6 +5252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemText: {fileID: 1146151818}
+  ItemDescription: 
   ActionName: SelectResume
   ListLoc: {x: 0, y: 2}
   IsSelectable: 1
@@ -6373,7 +6377,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98b96be161026b4419512f8588b228f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DataList: []
+  DataList:
+  - {fileID: 11400000, guid: 999ce137e7a4d904fa7ff6031a49358b, type: 2}
 --- !u!1 &1356244248
 GameObject:
   m_ObjectHideFlags: 0
@@ -9975,6 +9980,7 @@ MonoBehaviour:
   BoardSize: {x: 6, y: 12}
   CursorStartPosition: {x: 2, y: 2}
   Score: 0
+  SpeedLv: 1
 --- !u!1001 &4133837581702021048
 PrefabInstance:
   m_ObjectHideFlags: 0

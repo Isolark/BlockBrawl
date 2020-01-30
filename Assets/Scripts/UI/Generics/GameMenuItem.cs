@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class GameMenuItem : MonoBehaviour
 {
     public TMP_Text ItemText;
+    public string ItemDescription;
     public string ActionName;
     public Vector2 ListLoc;
     public bool IsSelectable;
