@@ -31,8 +31,6 @@ public class BlockContainer : MonoBehaviour
     public bool IsHoldingTrigger;
     public bool IsManuallyRaising;
     public bool CanManuallyRaise;
-    private float BlockDist;
-
     public bool AtTop;
     public float InitialBlock_Y;
     public float Target_Y; //After reaching this Y, have moved up a full "level"
@@ -41,7 +39,9 @@ public class BlockContainer : MonoBehaviour
     private List<Block> PotentialChainBlockList; //Keep track of potential chain blocks (once empty, can reset chain)
     private List<Block> ComboBlockList; //All Blocks belonging to current combo
     private List<Block> ChainedBlockList; //All Blocks belonging to current chain
+
     public Block NullBlock;
+    private float BlockDist;
 
     public BlockContainer(int maxTypes, int startingHeight, float startingSpeed)
     {
@@ -50,12 +50,7 @@ public class BlockContainer : MonoBehaviour
         BaseRaiseSpeed = RaiseSpeed = startingSpeed;
     }
 
-    void Awake()
-    {
-
-    }
-
-    void Start()
+    public void Initialize(Vector2 boardSize, float baseRaiseSpeed)
     {
         BlockList = new Dictionary<Vector2, Block>();
         TmpBlockList = new Dictionary<Vector2, Block>();
@@ -65,51 +60,24 @@ public class BlockContainer : MonoBehaviour
 
         BlockDist = GameController.GameCtrl.BlockDist;
         InitialBlock_Y = -0.5f * BlockDist;
-    }
 
-    public void Initialize(Vector2 boardSize)
-    {
         AtTop = false;
         BoardSize = boardSize;
         Target_Y = transform.localPosition.y + GameController.GameCtrl.BlockDist;
-        ComboCount = ChainCount = 1;
-        RaiseSpeed = BaseRaiseSpeed = GameController.GameCtrl.RaiseBaseSpeed;
+        RaiseSpeed = BaseRaiseSpeed = baseRaiseSpeed;
         RaiseStopTime = 0;
-
-        var baseAcceleration = GameController.GameCtrl.RaiseBaseAcceleration;
-        RaiseAcceleration = baseAcceleration;
-        SpeedLv = 1;
-
-        if(RaiseSpeedLvTimer != null) {
-            MainController.MC.RemoveTimedAction(RaiseSpeedLvTimer);
-        }
-        RaiseSpeedLvTimer = MainController.MC.AddTimedAction(() => 
-        {
-            if(SpeedLv == 100) { return; }
-            SpeedLv++;
-            BaseRaiseSpeed += RaiseAcceleration;
-
-            if(SpeedLv == 50)
-            {
-                BaseRaiseSpeed += baseAcceleration * 5;
-                RaiseAcceleration += GameController.GameCtrl.RaiseDeltaAcceleration;
-            }
-            else if(SpeedLv == 100)
-            {
-                BaseRaiseSpeed += baseAcceleration * 10;
-            }
-            
-            if(!IsManuallyRaising) { RaiseSpeed = BaseRaiseSpeed; }
-            GameController.GameCtrl.ScoreModeMenu.SetSpeedLv(SpeedLv);
-
-        }, GameController.GameCtrl.RaiseSpeedLevelDelay, true);
+        ComboCount = ChainCount = 1;
 
         SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-2, 0, 0, 2});
         ResetChain();
 
         CanManuallyRaise = true;
+    }
 
-        MainController.MC.PlayMusic("ScoreAttack");
+    public void IncreaseSpeed(float nextSpeed)
+    {
+        BaseRaiseSpeed = nextSpeed;
+        if(!IsManuallyRaising) { RaiseSpeed = BaseRaiseSpeed; }
     }
 
     public void IncrementRaiseStopTime(float raiseStopTime)

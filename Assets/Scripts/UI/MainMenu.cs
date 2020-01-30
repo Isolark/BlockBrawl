@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -20,16 +21,37 @@ public class MainMenu : GameMenu
     public TMP_Text SoundVolumeValue;
     public TMP_Text DifficultyValue;
 
+    public CanvasRenderer RightMenuPanel;
+    private TMP_Text DescriptionText;
+
     private bool OptionChangedFlag;
     private int MaxDifficultyLock;
     private Action CancelAction;
 
     private int CurrentDifficulty;
-    private readonly int MIN_DIFFICULTY;
-    private readonly int MAX_DIFFICULTY;
+    private readonly int MIN_DIFFICULTY = 1;
+    private readonly int MAX_DIFFICULTY = 10;
+    private readonly float PANEL_MENUMODE_WIDTH = 420;
+    private readonly float PANEL_BASIC_WIDTH = 480;
 
+    private IDictionary<string, Tuple<Vector2, Vector2>> RightPanelSizeList;
+
+    void Awake()
+    {
+        RightPanelSizeList = new Dictionary<string, Tuple<Vector2, Vector2>>();
+
+        var rPanelDscrptPos = new Vector2(240, -120);
+        var rPanelDscrptSize = new Vector2(420, 220);
+        var rPanelMenuPos = new Vector2(240, -140);
+        var rPanelMenuSize = new Vector2(480, 280);
+
+        RightPanelSizeList.Add("Description", new Tuple<Vector2, Vector2>(rPanelDscrptPos, rPanelDscrptSize));
+        RightPanelSizeList.Add("Menu", new Tuple<Vector2, Vector2>(rPanelMenuPos, rPanelMenuSize));
+    }
     public void Preinitialize()
     {
+        RightMenuPanel.gameObject.SetActive(false);
+
         StartLabel.gameObject.SetActive(true);
         StartLabel.Initialize();
 
@@ -59,13 +81,28 @@ public class MainMenu : GameMenu
         //Darken VolumeSubMenu
         ChangeVolumeSubMenuColor(Color.black, 0.3f);
 
+        SetRightPanelConfig("Description");
+        RightMenuPanel.gameObject.SetActive(true);
+        DescriptionText = RightMenuPanel.GetComponentsInChildren<TMP_Text>().First(x => x.name == "DescriptionText");
+
         SetMenuList(MenuLists[0]);
+    }
+
+    private void SetRightPanelConfig(string configName)
+    {
+        var nextPos = RightPanelSizeList[configName].Item1;
+        var nextSize = RightPanelSizeList[configName].Item2;
+
+        var rPanelRect = RightMenuPanel.GetComponent<RectTransform>();
+        rPanelRect.localPosition = nextPos;
+        rPanelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, nextSize.x);
+        rPanelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, nextSize.y);
     }
 
     override public void SetMenuList(GameMenuList menuList)
     {
         base.SetMenuList(menuList);
-        //MenuTitle.text = CurrentMenuList.Title;
+        DescriptionText.text = CurrentMenuList.CurrentMenuItem.ItemDescription;
     }
 
     public void InputStart()
@@ -78,6 +115,14 @@ public class MainMenu : GameMenu
 
     private void CursorSelect()
     {
+    }
+
+    override public void InputMove(Vector2 value)
+    {
+        if(CurrentMenuList == null) { return; }
+        CurrentMenuList.MoveCursor(value);
+        
+        DescriptionText.text = CurrentMenuList.CurrentMenuItem.ItemDescription;
     }
 
     public void InputCancel()

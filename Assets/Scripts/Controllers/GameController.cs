@@ -14,13 +14,18 @@ public class GameController : InputController
     public float GameTime;
     public float BlockFallVelocity;
     public float BlockSwitchSpeed; //Speed at which blocks can be switched
+    
     public float RaiseBaseSpeed; //Starting speed of block raising
     public float RaiseBaseAcceleration; //Starting increase of speed every speed level
     public float RaiseDeltaAcceleration; //Add this to base every 50 levels for current acceleration
     public float RaiseSpeedLevelDelay; //How long until speed level is raised
+    public int MaxSpeedLevel;
+
     public float RaiseTimeStopComboMultiplier; //RaiseStopTimer Time += (ComboCount * Multiplier)
     public float RaiseTimeStopChainMultiplier; //RaiseStopTimer Time += (ChainCount * Multiplier)
     public float RaiseTimeStopBaseComboAmount;
+
+    private bool IsGameStarted;
 
     public static GameController GameCtrl;
 
@@ -38,14 +43,20 @@ public class GameController : InputController
     // Start is called before the first frame update
     override protected void Start()
     {
+        //if(TimeScale != 1) { Time.timeScale = TimeScale; }
+        base.Start();
         MainController.MC.GS_Current = GameState.Active;
+        
         GameTime = 0;
-        if(TimeScale != 1) { Time.timeScale = TimeScale; }
-
+        
         PauseMenu.Setup();
         PauseMenu.gameObject.SetActive(false);
         
-        base.Start();
+        PlayerGameBoard.Initialize(MaxSpeedLevel, RaiseBaseSpeed, RaiseBaseAcceleration);
+
+        IsGameStarted = true;
+
+        PlayerGameBoard.BeginGame(); //TODO move to after game starts
     }
 
     public void UpdateGameStatMenu(int currentChain)
@@ -61,10 +72,13 @@ public class GameController : InputController
     {
         if(MainController.MC.GS_Current == GameState.Active)
         {
-            GameTime += Time.deltaTime;
-            ScoreModeMenu.SetGameTime(GameTime);
-            
-            PlayerGameBoard.OnUpdate();
+            if(IsGameStarted)
+            {
+                GameTime += Time.deltaTime;
+                ScoreModeMenu.SetGameTime(GameTime);
+                
+                PlayerGameBoard.OnUpdate();
+            }
         }
     }
 
@@ -82,7 +96,7 @@ public class GameController : InputController
         }
         else if(!CalculateMoveDir(ref moveDir)) { return; }
 
-        if(MainController.MC.GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active && IsGameStarted)
         {
             PlayerGameBoard.InputMove(moveDir);
         }
@@ -94,7 +108,7 @@ public class GameController : InputController
     override public void OnStart(CallbackContext context)
     {
         if(!context.performed) { return; }
-        if(MainController.MC.GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active && IsGameStarted)
         {
             Pause();
         }
@@ -107,7 +121,7 @@ public class GameController : InputController
     override public void OnConfirm(CallbackContext context)
     {
         if(!context.performed) { return; }
-        if(MainController.MC.GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active && IsGameStarted)
         {
             PlayerGameBoard.InputConfirm();
         }
@@ -120,7 +134,7 @@ public class GameController : InputController
     override public void OnCancel(CallbackContext context)
     {
         if(!context.performed) { return; }
-        if(MainController.MC.GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active && IsGameStarted)
         {
             //PlayerGameBoard.In();
         }
