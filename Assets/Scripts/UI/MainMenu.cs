@@ -31,8 +31,6 @@ public class MainMenu : GameMenu
     private int CurrentDifficulty;
     private readonly int MIN_DIFFICULTY = 1;
     private readonly int MAX_DIFFICULTY = 10;
-    private readonly float PANEL_MENUMODE_WIDTH = 420;
-    private readonly float PANEL_BASIC_WIDTH = 480;
 
     private IDictionary<string, Tuple<Vector2, Vector2>> RightPanelSizeList;
 
