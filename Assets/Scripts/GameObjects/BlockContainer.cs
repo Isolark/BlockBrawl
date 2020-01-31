@@ -63,7 +63,7 @@ public class BlockContainer : MonoBehaviour
 
         AtTop = false;
         BoardSize = boardSize;
-        Target_Y = transform.localPosition.y + GameController.GameCtrl.BlockDist;
+        Target_Y = transform.localPosition.y + GameScoreAtkCtrl.GameSA_Ctrl.BlockDist;
         RaiseSpeed = BaseRaiseSpeed = baseRaiseSpeed;
         RaiseStopTime = 0;
         ComboCount = ChainCount = 1;
@@ -89,7 +89,7 @@ public class BlockContainer : MonoBehaviour
     {
         ActiveChainCounter = 0;
         ChainCount = 1;
-        GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
+        //GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
     }
 
     public void SpawnRows(int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null)
@@ -404,7 +404,7 @@ public class BlockContainer : MonoBehaviour
         if(isChain)  
         {
             ChainCount += 1;
-            GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
+            //GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
             totalRaiseTimeStop += ChainCount * GameController.GameCtrl.RaiseTimeStopChainMultiplier;
         }
 

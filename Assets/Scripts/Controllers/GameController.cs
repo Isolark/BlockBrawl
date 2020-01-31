@@ -7,7 +7,6 @@ using static UnityEngine.InputSystem.InputAction;
 public class GameController : InputController
 {
     public GameBoard PlayerGameBoard;
-    public ScoreModeMenu ScoreModeMenu;
     public PauseMenu PauseMenu;
     public float BlockDist;
     public float TimeScale = 1f;
@@ -25,11 +24,11 @@ public class GameController : InputController
     public float RaiseTimeStopChainMultiplier; //RaiseStopTimer Time += (ChainCount * Multiplier)
     public float RaiseTimeStopBaseComboAmount;
 
-    private bool IsGameStarted;
+    protected bool IsGameStarted;
 
     public static GameController GameCtrl;
 
-    void Awake()
+    protected virtual void Awake()
     {
         //Singleton pattern
         if (GameCtrl == null) {
@@ -59,23 +58,15 @@ public class GameController : InputController
         PlayerGameBoard.BeginGame(); //TODO move to after game starts
     }
 
-    public void UpdateGameStatMenu(int currentChain)
-    {
-        // GameStatsMenu.SetCurrentChain(currentChain);
-
-        // var maxChain = int.Parse(GameStatsMenu.MaxChainValue.text.Substring(1));
-        // if(currentChain > maxChain) { GameStatsMenu.SetMaxChain(currentChain); }
-    }
-
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
         if(MainController.MC.GS_Current == GameState.Active)
         {
             if(IsGameStarted)
             {
                 GameTime += Time.deltaTime;
-                ScoreModeMenu.SetGameTime(GameTime);
+                //ScoreModeMenu.SetGameTime(GameTime);
                 
                 PlayerGameBoard.OnUpdate();
             }
@@ -136,7 +127,6 @@ public class GameController : InputController
         if(!context.performed) { return; }
         if(MainController.MC.GS_Current == GameState.Active && IsGameStarted)
         {
-            //PlayerGameBoard.In();
         }
         else if(MainController.MC.GS_Current == GameState.MenuOpen)
         {

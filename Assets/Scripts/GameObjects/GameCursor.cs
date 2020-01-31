@@ -10,15 +10,10 @@ public class GameCursor : DirectionInputReceiver
     public float BlockDist;
     public bool AtTop; //While true, allows moving to top row
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        BlockDist = GameController.GameCtrl.BlockDist;
-    }
-
     // Set zero position (assumed set by gameCtrl) & bounds
     public void LockToBoard(Vector2 boardSize, Vector2 startingPosition)
     {
+        BlockDist = GameController.GameCtrl.BlockDist;
         transform.localPosition = ZeroPosition = Vector2.zero;
         transform.localPosition += new Vector3(-BlockDist * 2, 0.5f);
         Bounds = boardSize - new Vector2(1, 0);

@@ -16,9 +16,19 @@ public class GameBoard : MonoBehaviour
 
     public int Score;
     public int SpeedLv;
-    TimedAction RaiseSpeedLvTimer;
+    private TimedAction RaiseSpeedLvTimer;
     private int MaxSpeedLv;
     private float RaiseAcceleration;
+
+    private int MaxHP;
+    private int HP;
+    private int RegenAmount;
+    private TimedAction RegenTimer;
+    private float RegenDelay;
+
+    private int DamageAmount;
+    private TimedAction DamageTimer;
+    private float DamageDelay; //Dependent on SpeedLv
 
     public void Initialize(int maxSpeedLv, float baseRaiseSpeed, float baseRaiseAccel)
     {
@@ -68,7 +78,7 @@ public class GameBoard : MonoBehaviour
         }
         
         BlockContainer.IncreaseSpeed(currentSpeed);
-        GameController.GameCtrl.ScoreModeMenu.SetSpeedLv(SpeedLv);
+        GameScoreAtkCtrl.GameSA_Ctrl.ScoreModeMenu.SetSpeedLv(SpeedLv);
     }
 
     public void IncreaseScore(int blockCount, int chainCount)
@@ -85,7 +95,17 @@ public class GameBoard : MonoBehaviour
             totalScore += Mathf.CeilToInt((chainCount - 1) * chainMultiplier * difficultyScoreVal);
         } 
 
-        GameController.GameCtrl.ScoreModeMenu.IncreaseScore(totalScore);
+        GameScoreAtkCtrl.GameSA_Ctrl.ScoreModeMenu.IncreaseScore(totalScore);
+    }
+
+    public void StartDamage()
+    {
+
+    }
+
+    public void StopDamage()
+    {
+
     }
 
     public void Pause()
