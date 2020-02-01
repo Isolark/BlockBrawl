@@ -15,7 +15,8 @@ public class GameScoreAtkCtrl : GameController
             GameSA_Ctrl = this;
         }
         else if (GameSA_Ctrl != this) {
-            Destroy(gameObject);
+            Destroy(GameSA_Ctrl);
+            GameSA_Ctrl = this;
         }     
     }
 

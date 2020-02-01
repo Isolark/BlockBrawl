@@ -74,6 +74,17 @@ public class MainController : MonoBehaviour
         MusicPlayer.Play();
     }
 
+    public void StopAudio()
+    {
+        MusicPlayer.clip = null;
+        SoundFXPlayer.clip = null;
+    }
+
+    public void StopMusic()
+    {
+        MusicPlayer.clip = null;
+    }
+
     public void Pause()
     {
         MusicPlayer.Pause();
@@ -88,8 +99,8 @@ public class MainController : MonoBehaviour
 
     public void Unpause()
     {
-        MusicPlayer.Play();
-        SoundFXPlayer.Play();
+        if(MusicPlayer.clip != null) { MusicPlayer.Play(); }
+        if(SoundFXPlayer.clip != null) { SoundFXPlayer.Play(); }
         TimedEventManager.Unpause();
         TransformManager.Unpause();
         BackupTimedEventManager.Pause();
@@ -98,20 +109,31 @@ public class MainController : MonoBehaviour
         GS_Current = GameState.Active;
     }
 
-    public void GoToScene(int sceneIndex)
+    public void GoToScene(int sceneIndex, bool stopMusic = true)
     {
+        if(stopMusic) { StopMusic(); }
+        
         MainController.MC.GS_Current = GameState.Loading;
-        StartCoroutine(SceneLoadCoroutine(sceneIndex));
-    }
-
-    public void LoadPrevScene()
-    {
-        GoToScene(PrevSceneIndex);
-    }
-
-    private IEnumerator SceneLoadCoroutine(int sceneIndex)
-    {
         var sceneLoader = SceneManager.LoadSceneAsync(sceneIndex);
+        StartCoroutine(SceneLoadCoroutine(sceneLoader));
+    }
+
+    public void GoToScene(string sceneName, bool stopMusic = true)
+    {
+        if(stopMusic) { StopMusic(); }
+        
+        MainController.MC.GS_Current = GameState.Loading;
+        var sceneLoader = SceneManager.LoadSceneAsync(sceneName);
+        StartCoroutine(SceneLoadCoroutine(sceneLoader));
+    }
+
+    public void LoadPrevScene(bool stopMusic = true)
+    {
+        GoToScene(PrevSceneIndex, stopMusic);
+    }
+
+    private IEnumerator SceneLoadCoroutine(AsyncOperation sceneLoader)
+    {
         sceneLoader.allowSceneActivation = false;
 
         while(sceneLoader.progress < 0.9f)

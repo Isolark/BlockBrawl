@@ -68,7 +68,7 @@ public class BlockContainer : MonoBehaviour
         RaiseStopTime = 0;
         ComboCount = ChainCount = 1;
 
-        SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-2, 0, 0, 2});
+        SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-1, 0, 0, 1});
         ResetChain();
 
         CanManuallyRaise = true;

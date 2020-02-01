@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class GameBoard : MonoBehaviour
 {
     public BlockContainer BlockContainer;
     public GameCursor Cursor;
-    public SpriteMask BoardMask;
     public Vector2 BoardSize;
     public Vector2 CursorStartPosition;
 
@@ -30,18 +30,84 @@ public class GameBoard : MonoBehaviour
     private TimedAction DamageTimer;
     private float DamageDelay; //Dependent on SpeedLv
 
+    private TMP_Text CountdownTimeText;
+    private TMP_Text CountdownReadyText;
+    private int CountdownTime;
+    public float CountdownDropSpeed;
+    private readonly float COUNTDOWN_OFFSET_Y = 8;
+    private readonly float COUNTDOWN_TIME_FINAL_Y = 9.8f;
+    private readonly float COUNTDOWN_READY_FINAL_Y = 8.25f;
+
     public void Initialize(int maxSpeedLv, float baseRaiseSpeed, float baseRaiseAccel)
     {
         SpeedLv = 1;
         MaxSpeedLv = maxSpeedLv;
         RaiseAcceleration = baseRaiseAccel;
 
-        Cursor.LockToBoard(BoardSize, CursorStartPosition);
+        Cursor.gameObject.SetActive(true);
+        Cursor.AtTop = true;
+        Cursor.LockToBoard(BoardSize);
+        Cursor.gameObject.SetActive(false);
         BlockContainer.Initialize(BoardSize, baseRaiseSpeed);
+
+        CountdownTime = 4;
+        StartCountdown();
+    }
+
+    private void StartCountdown()
+    {
+        GetFadeChildren();
+        FadeSprites(float.MaxValue, false);
+
+        var textRectSize = new Vector2(6, 2);
+        var timeText = TextMeshPooler.TMP.GetPooledObject("CountdownBig-TxtConfig", textRectSize, "Foreground", 0, "CountdownText", transform);
+        var readyText = TextMeshPooler.TMP.GetPooledObject("CountdownSmall-TxtConfig", textRectSize, "Foreground", 0, "ReadyText", transform);
+
+        CountdownTimeText = timeText.GetComponent<TMP_Text>();
+        CountdownReadyText = readyText.GetComponent<TMP_Text>();
+
+        CountdownTimeText.alignment = CountdownReadyText.alignment = TextAlignmentOptions.Center;
+        CountdownTimeText.text = string.Empty;
+        CountdownReadyText.text = "Ready";
+
+        timeText.transform.localPosition = new Vector3(transform.position.x, COUNTDOWN_TIME_FINAL_Y, 0);
+        readyText.transform.localPosition = new Vector3(transform.position.x, COUNTDOWN_OFFSET_Y + COUNTDOWN_READY_FINAL_Y, 0);
+
+        MainController.MC.TransformManager.Add_LinearTimePos_Transform(readyText, new Vector2(0, COUNTDOWN_READY_FINAL_Y), CountdownDropSpeed, () => {
+            Unpause();
+            Cursor.gameObject.SetActive(true);
+            var boardMiddleLoc = new Vector2(Mathf.Floor(BoardSize.x/2) - 1, Mathf.Floor(BoardSize.y/2));
+            Cursor.StartAutoMoveLoc(boardMiddleLoc);
+        });
+
+        MainController.MC.AddTimedAction(() => { 
+            RunCountdown(); 
+            GameController.GameCtrl.CanMoveCursor = true; 
+        }, 1);
+    }
+
+    private void RunCountdown()
+    {
+        if(CountdownTime == 1)
+        {
+            TextMeshPooler.TMP.RepoolTextMeshText(CountdownReadyText);
+            TextMeshPooler.TMP.RepoolTextMeshText(CountdownTimeText);
+            CountdownReadyText = CountdownTimeText = null;
+
+            Cursor.AtTop = false;
+            GameController.GameCtrl.StartGame();
+            return;
+        }
+
+        CountdownTime--;
+
+        //TODO: SoundFX each time
+        CountdownTimeText.text = CountdownTime.ToString();
+        MainController.MC.AddTimedAction(RunCountdown, 1);
     }
 
     //Manual trigger to actually start following whatever intro is involved
-    public void BeginGame()
+    public void StartGame()
     {
         if(RaiseSpeedLvTimer != null) 
         {
@@ -110,6 +176,16 @@ public class GameBoard : MonoBehaviour
 
     public void Pause()
     {
+        GetFadeChildren();
+        if(PauseSpriteLookup.Any()) { StartCoroutine(FadeSprites(10, false)); }
+        if(CountdownReadyText != null) {
+            CountdownReadyText.gameObject.SetActive(false);
+            CountdownTimeText.gameObject.SetActive(false);
+        }
+    }
+
+    private void GetFadeChildren()
+    {
         var childObjList = new List<Transform>();
         BlockContainer.transform.GetAllChildrenRecursively(ref childObjList);
 
@@ -139,15 +215,17 @@ public class GameBoard : MonoBehaviour
         {
             anim.speed = 0;
         }
-
-        if(PauseSpriteLookup.Any()) { StartCoroutine(FadeSprites(10, false)); }
     }
 
     public void Unpause()
     {
         ResetAnimations();
         if(PauseSpriteLookup.Any()) { StartCoroutine(FadeSprites(10, true)); }
-        BoardMask.gameObject.SetActive(false);
+        //BoardMask.gameObject.SetActive(false);
+        if(CountdownReadyText != null && !CountdownReadyText.isActiveAndEnabled) {
+            CountdownReadyText.gameObject.SetActive(true);
+            CountdownTimeText.gameObject.SetActive(true);
+        }
     }
 
     public void ResetAnimations()
@@ -194,8 +272,6 @@ public class GameBoard : MonoBehaviour
             
             yield return null;
         }
-
-        if(!isFadeIn) { BoardMask.gameObject.SetActive(true); }
     }
 
     public void InputConfirm()

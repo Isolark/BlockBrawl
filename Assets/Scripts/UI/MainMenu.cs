@@ -25,26 +25,26 @@ public class MainMenu : GameMenu
     private TMP_Text DescriptionText;
 
     private bool OptionChangedFlag;
-    private int MaxDifficultyLock;
     private Action CancelAction;
 
-    private int CurrentDifficulty;
-    private readonly int MIN_DIFFICULTY = 1;
-    private readonly int MAX_DIFFICULTY = 10;
+    // private int CurrentDifficulty;
+    // private readonly int MIN_DIFFICULTY = 1;
+    // private readonly int MAX_DIFFICULTY = 10;
+    //private int MaxDifficultyLock;
 
     private IDictionary<string, Tuple<Vector2, Vector2>> RightPanelSizeList;
 
     void Awake()
     {
-        RightPanelSizeList = new Dictionary<string, Tuple<Vector2, Vector2>>();
+        // RightPanelSizeList = new Dictionary<string, Tuple<Vector2, Vector2>>();
 
-        var rPanelDscrptPos = new Vector2(240, -120);
-        var rPanelDscrptSize = new Vector2(420, 220);
-        var rPanelMenuPos = new Vector2(240, -140);
-        var rPanelMenuSize = new Vector2(480, 280);
+        // var rPanelDscrptPos = new Vector2(240, -120);
+        // var rPanelDscrptSize = new Vector2(420, 220);
+        // var rPanelMenuPos = new Vector2(240, -140);
+        // var rPanelMenuSize = new Vector2(480, 280);
 
-        RightPanelSizeList.Add("Description", new Tuple<Vector2, Vector2>(rPanelDscrptPos, rPanelDscrptSize));
-        RightPanelSizeList.Add("Menu", new Tuple<Vector2, Vector2>(rPanelMenuPos, rPanelMenuSize));
+        // RightPanelSizeList.Add("Description", new Tuple<Vector2, Vector2>(rPanelDscrptPos, rPanelDscrptSize));
+        // RightPanelSizeList.Add("Menu", new Tuple<Vector2, Vector2>(rPanelMenuPos, rPanelMenuSize));
     }
     public void Preinitialize()
     {
@@ -73,29 +73,29 @@ public class MainMenu : GameMenu
         SoundVolumeValue.text = Mathf.RoundToInt(SoundSlider.value * 100f).ToString();
 
         OptionChangedFlag = false;
-        CurrentDifficulty = 1;
-        MaxDifficultyLock = 10;
+        // CurrentDifficulty = 1;
+        // MaxDifficultyLock = 10;
 
         //Darken VolumeSubMenu
         ChangeVolumeSubMenuColor(Color.black, 0.3f);
 
-        SetRightPanelConfig("Description");
+        //SetRightPanelConfig("Description");
         RightMenuPanel.gameObject.SetActive(true);
         DescriptionText = RightMenuPanel.GetComponentsInChildren<TMP_Text>().First(x => x.name == "DescriptionText");
 
         SetMenuList(MenuLists[0]);
     }
 
-    private void SetRightPanelConfig(string configName)
-    {
-        var nextPos = RightPanelSizeList[configName].Item1;
-        var nextSize = RightPanelSizeList[configName].Item2;
+    // private void SetRightPanelConfig(string configName)
+    // {
+    //     var nextPos = RightPanelSizeList[configName].Item1;
+    //     var nextSize = RightPanelSizeList[configName].Item2;
 
-        var rPanelRect = RightMenuPanel.GetComponent<RectTransform>();
-        rPanelRect.localPosition = nextPos;
-        rPanelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, nextSize.x);
-        rPanelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, nextSize.y);
-    }
+    //     var rPanelRect = RightMenuPanel.GetComponent<RectTransform>();
+    //     rPanelRect.localPosition = nextPos;
+    //     rPanelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, nextSize.x);
+    //     rPanelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, nextSize.y);
+    // }
 
     override public void SetMenuList(GameMenuList menuList)
     {
@@ -230,7 +230,7 @@ public class MainMenu : GameMenu
     public void OnSPScoreModeSelection()
     {
         MainController.MC.PrevSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        SceneManager.LoadScene("SP_ScoreMode");
+        MainController.MC.GoToScene("SP_ScoreMode");
     }
 
     public void OnSPBlockBattleModeSelection()
