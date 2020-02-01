@@ -8,6 +8,7 @@ public class GameController : InputController
 {
     public GameBoard PlayerGameBoard;
     public PauseMenu PauseMenu;
+    public Canvas InGameCanvas;
     public float BlockDist;
     public float TimeScale = 1f;
     public float GameTime;
@@ -24,6 +25,7 @@ public class GameController : InputController
     public float RaiseTimeStopChainMultiplier; //RaiseStopTimer Time += (ChainCount * Multiplier)
     public float RaiseTimeStopBaseComboAmount;
 
+    public bool CanMoveCursor;
     protected bool IsGameStarted;
 
     public static GameController GameCtrl;
@@ -35,7 +37,8 @@ public class GameController : InputController
             GameCtrl = this;
         }
         else if (GameCtrl != this) {
-            Destroy(gameObject);
+            Destroy(GameCtrl);
+            GameCtrl = this;
         }     
     }
 
@@ -44,18 +47,23 @@ public class GameController : InputController
     {
         //if(TimeScale != 1) { Time.timeScale = TimeScale; }
         base.Start();
+
         MainController.MC.GS_Current = GameState.Active;
         
         GameTime = 0;
         
         PauseMenu.Setup();
         PauseMenu.gameObject.SetActive(false);
-        
-        PlayerGameBoard.Initialize(MaxSpeedLevel, RaiseBaseSpeed, RaiseBaseAcceleration);
 
+        IsGameStarted = CanMoveCursor = false;
+
+        MainController.MC.AddTimedAction(() => { PlayerGameBoard.Initialize(MaxSpeedLevel, RaiseBaseSpeed, RaiseBaseAcceleration); }, 0.4f);
+    }
+
+    public void StartGame()
+    {
         IsGameStarted = true;
-
-        PlayerGameBoard.BeginGame(); //TODO move to after game starts
+        PlayerGameBoard.StartGame();
     }
 
     // Update is called once per frame
@@ -87,7 +95,7 @@ public class GameController : InputController
         }
         else if(!CalculateMoveDir(ref moveDir)) { return; }
 
-        if(MainController.MC.GS_Current == GameState.Active && IsGameStarted)
+        if(MainController.MC.GS_Current == GameState.Active && (IsGameStarted || CanMoveCursor))
         {
             PlayerGameBoard.InputMove(moveDir);
         }
@@ -99,7 +107,7 @@ public class GameController : InputController
     override public void OnStart(CallbackContext context)
     {
         if(!context.performed) { return; }
-        if(MainController.MC.GS_Current == GameState.Active && IsGameStarted)
+        if(MainController.MC.GS_Current == GameState.Active && (IsGameStarted || CanMoveCursor))
         {
             Pause();
         }
@@ -136,15 +144,18 @@ public class GameController : InputController
 
     public void Pause()
     {
-        //TODO: SFX
-        //Clears "Hold" on input receivers
-        PlayerGameBoard.InputMove(Vector2.zero);
-        PlayerGameBoard.Pause();
+        if(MainController.MC.GS_Current == GameState.Active && (IsGameStarted || CanMoveCursor))
+        {
+            //TODO: SFX
+            //Clears "Hold" on input receivers
+            PlayerGameBoard.InputMove(Vector2.zero);
+            PlayerGameBoard.Pause();
 
-        MainController.MC.Pause();
+            MainController.MC.Pause();
 
-        PauseMenu.gameObject.SetActive(true);
-        PauseMenu.OpenMenu(Unpause);
+            PauseMenu.gameObject.SetActive(true);
+            PauseMenu.OpenMenu(Unpause);
+        }
     }
 
     public void Unpause()

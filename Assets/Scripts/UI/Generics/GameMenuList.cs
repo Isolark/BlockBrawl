@@ -147,22 +147,16 @@ public class GameMenuList : DirectionInputReceiver
         CurrentMenuItem = menuItem;
         LeftMenuCursor.SetMenuPosition(CurrentMenuItem);
 
-        // LeftMenuCursor.transform.localPosition = CurrentMenuItem.transform.localPosition;
-        // LeftMenuCursor.gameObject.TransBySpriteDimensions(CurrentMenuItem.ItemText.gameObject, new Vector3(-0.5f, 0.12f, 0));
-        // LeftMenuCursor.gameObject.TransBySpriteDimensions(new Vector3(-1.35f * LeftMenuCursor.transform.localScale.x, 0, 0));
-
         if(RightMenuCursor != null)
         {
+            var currentColor = RightMenuCursor.CursorImage.color;
+
             if(menuItem.UseSingleCursor) {
-                RightMenuCursor.gameObject.SetActive(false);
+                if(currentColor.a > 0) { RightMenuCursor.CursorImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, 0); }
             }
             else {
-                RightMenuCursor.gameObject.SetActive(true);
+                if(currentColor.a < 1) {  RightMenuCursor.CursorImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, 1); }
                 RightMenuCursor.SetMenuPosition(CurrentMenuItem, false);
-                
-                // RightMenuCursor.transform.localPosition = CurrentMenuItem.transform.localPosition;
-                // RightMenuCursor.gameObject.TransBySpriteDimensions(CurrentMenuItem.ItemText.gameObject, new Vector3(0.5f, 0.12f, 0));
-                // RightMenuCursor.gameObject.TransBySpriteDimensions(new Vector3(1.25f * RightMenuCursor.transform.localScale.x, 0, 0));
             }
         }
     }

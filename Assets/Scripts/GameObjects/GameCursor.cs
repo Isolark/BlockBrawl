@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameCursor : DirectionInputReceiver
@@ -8,24 +9,42 @@ public class GameCursor : DirectionInputReceiver
     public Vector2 BoardLoc;
     public float Padding;
     public float BlockDist;
+    public float AutoMoveDelay;
     public bool AtTop; //While true, allows moving to top row
 
     // Set zero position (assumed set by gameCtrl) & bounds
-    public void LockToBoard(Vector2 boardSize, Vector2 startingPosition)
+    public void LockToBoard(Vector2 boardSize)
     {
         BlockDist = GameController.GameCtrl.BlockDist;
         transform.localPosition = ZeroPosition = Vector2.zero;
         transform.localPosition += new Vector3(-BlockDist * 2, 0.5f);
-        Bounds = boardSize - new Vector2(1, 0);
+        Bounds = boardSize - Vector2.right;
         BoardLoc = Vector2.up;
 
-        OnMove(startingPosition, false);
+        OnMove(Bounds - Vector2.one, false);
     }
 
-    public void OnMove(InputValue value)
+    public void StartAutoMoveLoc(Vector2 finalBoardLoc)
     {
-        var v = value.Get<Vector2>();
-        OnMove(v);
+        if(finalBoardLoc == BoardLoc) { return; }
+
+        Vector2 nextMove;
+
+        if(BoardLoc.y > finalBoardLoc.y) { nextMove = Vector2.down; }
+        else if(BoardLoc.y < finalBoardLoc.y) { nextMove = Vector2.up; }
+        else if(BoardLoc.x > finalBoardLoc.x) { nextMove = Vector2.left; }
+        else if(BoardLoc.x < finalBoardLoc.x) { nextMove = Vector2.right; }
+        else { return; }
+
+        MainController.MC.AddTimedAction(() => { 
+            MoveCursor(nextMove); 
+            StartAutoMoveLoc(finalBoardLoc);
+        }, AutoMoveDelay);
+    }
+
+    public void StepAutoMoveLoc(Vector2 nextBoardLoc)
+    {
+
     }
 
     public void MoveBoardLoc(Vector2 value)

@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class GameMenuCursor : MonoBehaviour
 {
-    public SpriteRenderer CursorSprite;
+    public Image CursorImage;
     public Animator CursorAnim;
     public RectTransform RectBounds;
     public float AnimationSpeed;
@@ -18,7 +19,7 @@ public class GameMenuCursor : MonoBehaviour
     {
         gameObject.SetActive(true);
 
-        if(SpriteBounds == Vector2.zero) { SpriteBounds = CursorSprite.bounds.size; }
+        if(SpriteBounds == Vector2.zero) { SpriteBounds = CursorImage.rectTransform.sizeDelta; }
         if(CursorAnim == null) { return; }
 
         CursorAnim.enabled = true;

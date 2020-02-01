@@ -11,14 +11,17 @@ public class GameBlockBattleCtrl : GameController
     public static GameBlockBattleCtrl GameBB_Ctrl;
     //public 
 
-    void Awake()
+    override protected void Awake()
     {
+        base.Awake();
+
         //Singleton pattern
         if (GameBB_Ctrl == null) {
             GameBB_Ctrl = this;
         }
         else if (GameBB_Ctrl != this) {
-            Destroy(gameObject);
+            Destroy(GameBB_Ctrl);
+            GameBB_Ctrl = this;
         }     
     }
 
