@@ -8,6 +8,7 @@ public class GameBoard : MonoBehaviour
 {
     public BlockContainer BlockContainer;
     public GameCursor Cursor;
+    public HPBar HPBar;
     public Vector2 BoardSize;
     public Vector2 CursorStartPosition;
 
@@ -19,12 +20,6 @@ public class GameBoard : MonoBehaviour
     private TimedAction RaiseSpeedLvTimer;
     private int MaxSpeedLv;
     private float RaiseAcceleration;
-
-    private int MaxHP;
-    private int HP;
-    private int RegenAmount;
-    private TimedAction RegenTimer;
-    private float RegenDelay;
 
     private int DamageAmount;
     private TimedAction DamageTimer;
