@@ -562,7 +562,7 @@ GameObject:
   - component: {fileID: 6622220329166033155}
   - component: {fileID: 5259016609558499502}
   m_Layer: 0
-  m_Name: DataManager
+  m_Name: SceneDataManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -595,7 +595,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MainCtrl: {fileID: 0}
-  DataList: []
 --- !u!1 &8758734975610107174
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,7 +2,7 @@
 using UnityEngine;
 
 //Holds Data (SOs) that lives between Scenes (e.g. Level Data, User Data, etc...)
-public class DataManager : MonoBehaviour 
+public class SceneDataManager : MonoBehaviour 
 {
     public MainController MainCtrl;
     public Dictionary<string, ScriptableObject> DataList;

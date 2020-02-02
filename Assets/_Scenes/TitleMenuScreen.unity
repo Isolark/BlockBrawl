@@ -6021,6 +6021,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1019977193}
+  - component: {fileID: 1019977194}
   - component: {fileID: 1019977192}
   m_Layer: 0
   m_Name: MainController
@@ -6042,7 +6043,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GS_Current: 0
-  DataManager: {fileID: 5174974221857392515}
+  ScnDataManager: {fileID: 5174974221857392515}
   TimedEventManager: {fileID: 1017041817}
   TransformManager: {fileID: 491725319}
   BackupTimedEventManager: {fileID: 5174974221857392514}
@@ -6068,6 +6069,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1019977194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019977191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a631cd14f8d1845b0c58fa40bbae3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlyrConfigData:
+    MusicVolume: 0
+    SoundVolume: 0
 --- !u!1 &1024891668
 GameObject:
   m_ObjectHideFlags: 0
