@@ -13,16 +13,23 @@ public class MainMenu : GameMenu
     public FlashingText StartLabel;
     public TMP_Text MenuTitle;
 
+
     public TMP_Text MusicVolumeLabel;
-    public Slider MusicSlider;
-    public TMP_Text MusicVolumeValue;
     public TMP_Text SoundVolumeLabel;
-    public Slider SoundSlider;
-    public TMP_Text SoundVolumeValue;
+
+
     public TMP_Text DifficultyValue;
 
     public CanvasRenderer RightMenuPanel;
+    public CanvasRenderer BackPanel;
+    public CanvasRenderer BottomPanel;
+
     private TMP_Text DescriptionText;
+
+    private Slider MusicSlider;
+    private TMP_Text MusicVolumeValue;
+    private Slider SoundSlider;
+    private TMP_Text SoundVolumeValue;
 
     private bool OptionChangedFlag;
     private Action CancelAction;
@@ -46,9 +53,20 @@ public class MainMenu : GameMenu
         // RightPanelSizeList.Add("Description", new Tuple<Vector2, Vector2>(rPanelDscrptPos, rPanelDscrptSize));
         // RightPanelSizeList.Add("Menu", new Tuple<Vector2, Vector2>(rPanelMenuPos, rPanelMenuSize));
     }
+
+    void Start()
+    {
+        MusicSlider = MusicVolumeLabel.transform.Find("MusicVolume-Slider").GetComponent<Slider>();
+        MusicVolumeValue = MusicVolumeLabel.transform.Find("MusicVolume-Value").GetComponent<TMP_Text>();
+        SoundSlider = SoundVolumeLabel.transform.Find("SoundVolume-Slider").GetComponent<Slider>();
+        SoundVolumeValue = SoundVolumeLabel.transform.Find("SoundVolume-Value").GetComponent<TMP_Text>();
+
+        DescriptionText = BottomPanel.transform.Find("DescriptionText").GetComponent<TMP_Text>();
+    }
     public void Preinitialize()
     {
         RightMenuPanel.gameObject.SetActive(false);
+        BottomPanel.gameObject.SetActive(false);
 
         StartLabel.gameObject.SetActive(true);
         StartLabel.Initialize();
@@ -80,8 +98,8 @@ public class MainMenu : GameMenu
         ChangeVolumeSubMenuColor(Color.black, 0.3f);
 
         //SetRightPanelConfig("Description");
-        RightMenuPanel.gameObject.SetActive(true);
-        DescriptionText = RightMenuPanel.GetComponentsInChildren<TMP_Text>().First(x => x.name == "DescriptionText");
+        // RightMenuPanel.gameObject.SetActive(true);
+        // DescriptionText = RightMenuPanel.GetComponentsInChildren<TMP_Text>().First(x => x.name == "DescriptionText");
 
         SetMenuList(MenuLists[0]);
     }
@@ -120,7 +138,7 @@ public class MainMenu : GameMenu
         if(CurrentMenuList == null) { return; }
         CurrentMenuList.MoveCursor(value);
         
-        DescriptionText.text = CurrentMenuList.CurrentMenuItem.ItemDescription;
+        DescriptionText.SetText(CurrentMenuList.CurrentMenuItem.ItemDescription);
     }
 
     public void InputCancel()
@@ -154,11 +172,21 @@ public class MainMenu : GameMenu
             MainController.MC.SaveOptions();
             OptionChangedFlag = false;
         }
+
+        BottomPanel.gameObject.SetActive(false);
+
+        BackPanel.GetComponent<CanvasGroup>().CrossFadeAlpha(this, 0, 0.1f);
+        MainController.MC.TransformManager.Add_LinearTimePos_Transform(BackPanel.gameObject, BackPanel.transform.localPosition + new Vector3(0, -15, 0), 0.1f);
         SetMenuList(MenuLists.First(x => x.name == "MainMenuList"));
     }
 
     private void ToSinglePlayerMode()
     {
+        DescriptionText.text = string.Empty;
+        MainController.MC.AddTimedAction(() => { BottomPanel.gameObject.SetActive(true); }, 0.3f);
+
+        BackPanel.GetComponent<CanvasGroup>().CrossFadeAlpha(this, 1, 0.1f);
+        MainController.MC.TransformManager.Add_LinearTimePos_Transform(BackPanel.gameObject, BackPanel.transform.localPosition + new Vector3(0, 15, 0), 0.1f);
         SetMenuList(MenuLists.First(x => x.name == "1PlayerMenuList"));
     }
 
