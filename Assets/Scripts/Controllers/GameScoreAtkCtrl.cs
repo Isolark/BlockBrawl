@@ -21,24 +21,11 @@ public class GameScoreAtkCtrl : GameController
     }
 
     // Start is called before the first frame update
-    // override protected void Start()
-    // {
-    //     //GameBoard
-
-    //     //if(TimeScale != 1) { Time.timeScale = TimeScale; }
-    //     base.Start();
-
-    //     MainController.MC.GS_Current = GameState.Active;
-        
-    //     GameTime = 0;
-        
-    //     PauseMenu.Setup();
-    //     PauseMenu.gameObject.SetActive(false);
-
-    //     IsGameStarted = CanMoveCursor = false;
-
-    //     MainController.MC.AddTimedAction(() => { PlayerGameBoard.Initialize(MaxSpeedLevel, RaiseBaseSpeed, RaiseBaseAcceleration); }, 0.4f);
-    // }
+    override protected void Start()
+    {
+        base.Start();
+        ScoreModeMenu.SetSpeedLv(5);
+    }
 
     // Update is called once per frame
     override protected void Update()

@@ -11,17 +11,11 @@ public class GameMenuList : DirectionInputReceiver
     public bool CanHoldX, CanHoldY; //We enabled, can "Hold" direction inputs
     public bool WillResetPosition;
 
-    private int MinLocX, MaxLocX, MinLocY, MaxLocY;
-    private GameMenuCursor LeftMenuCursor;
-    private GameMenuCursor RightMenuCursor;
-    
-    
-    // void Start()
-    // {
+    protected int MinLocX, MaxLocX, MinLocY, MaxLocY;
+    protected GameMenuCursor LeftMenuCursor;
+    protected GameMenuCursor RightMenuCursor;
 
-    // }
-
-    public void Setup()
+    public virtual void Setup()
     {
         MenuItemList = new Dictionary<Vector2, GameMenuItem>();
 
@@ -38,7 +32,7 @@ public class GameMenuList : DirectionInputReceiver
         gameObject.SetActive(false);
     }
 
-    public void Initialize(GameMenuCursor leftMenuCursor, GameMenuCursor rightMenuCursor)
+    public virtual void Initialize(GameMenuCursor leftMenuCursor, GameMenuCursor rightMenuCursor)
     {
         RightMenuCursor = rightMenuCursor;
         RightMenuCursor.Reinitialize(MenuItemList.First().Value.transform.parent);
@@ -46,7 +40,7 @@ public class GameMenuList : DirectionInputReceiver
         Initialize(leftMenuCursor);
     }
 
-    public void Initialize(GameMenuCursor menuCursor)
+    public virtual void Initialize(GameMenuCursor menuCursor)
     {
         LeftMenuCursor = menuCursor;
         LeftMenuCursor.Reinitialize(MenuItemList.First().Value.transform.parent);
@@ -57,7 +51,7 @@ public class GameMenuList : DirectionInputReceiver
         SetCurrentMenuItem(CurrentMenuItem);
     }
 
-    public void Deactivate()
+    public virtual void Deactivate()
     {
         ResetHold();
         gameObject.SetActive(false); 
@@ -71,7 +65,7 @@ public class GameMenuList : DirectionInputReceiver
         ConfirmSelection();
     }
 
-    public void MoveCursor(Vector2 value)
+    public virtual void MoveCursor(Vector2 value)
     {
         ResetHold();
 
@@ -122,7 +116,7 @@ public class GameMenuList : DirectionInputReceiver
         }
     }
 
-    public void CancelSelection()
+    public virtual void CancelSelection()
     {
         if(!string.IsNullOrWhiteSpace(CancelMessage)) 
         {
@@ -130,7 +124,7 @@ public class GameMenuList : DirectionInputReceiver
         }
     }
 
-    public void ConfirmSelection()
+    public virtual void ConfirmSelection()
     {
         if(!CurrentMenuItem.IsSelectable)
         {
@@ -142,7 +136,7 @@ public class GameMenuList : DirectionInputReceiver
         SendMessageUpwards(CurrentMenuItem.ActionName, SendMessageOptions.DontRequireReceiver);
     }
 
-    public void SetCurrentMenuItem(GameMenuItem menuItem)
+    public virtual void SetCurrentMenuItem(GameMenuItem menuItem)
     {
         CurrentMenuItem = menuItem;
         LeftMenuCursor.SetMenuPosition(CurrentMenuItem);
