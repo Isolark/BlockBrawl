@@ -2,10 +2,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameMenuItem : MonoBehaviour
+public class MenuSlot : MonoBehaviour
 {
     public TMP_Text ItemText;
-    public string ItemDescription;
     public string ActionName;
     public Vector2 ListLoc;
     public bool IsSelectable;
@@ -13,4 +12,12 @@ public class GameMenuItem : MonoBehaviour
     public Slider LinkedSlider;
 
     public Vector3 InitialPos;
+
+    public virtual void SetItem()
+    {
+    }
+
+    public virtual void UnsetItem()
+    {
+    }
 }

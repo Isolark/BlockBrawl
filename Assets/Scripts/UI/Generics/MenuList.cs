@@ -1,25 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class GameMenuList : DirectionInputReceiver
+public class MenuList : DirectionInputReceiver
 {
-    public Dictionary<Vector2, GameMenuItem> MenuItemList;
-    public GameMenuItem CurrentMenuItem;
+    public Dictionary<Vector2, MenuSlot> MenuItemList;
+    public MenuSlot CurrentMenuItem;
     public string Title;
     public string CancelMessage;
     public bool CanHoldX, CanHoldY; //We enabled, can "Hold" direction inputs
     public bool WillResetPosition;
 
     protected int MinLocX, MaxLocX, MinLocY, MaxLocY;
-    protected GameMenuCursor LeftMenuCursor;
-    protected GameMenuCursor RightMenuCursor;
+    protected MenuCursor LeftMenuCursor;
+    protected MenuCursor RightMenuCursor;
 
     public virtual void Setup()
     {
-        MenuItemList = new Dictionary<Vector2, GameMenuItem>();
+        MenuItemList = new Dictionary<Vector2, MenuSlot>();
 
-        foreach(var menuItem in GetComponentsInChildren<GameMenuItem>())
+        foreach(var menuItem in GetComponentsInChildren<MenuSlot>())
         {
             MenuItemList.Add(menuItem.ListLoc, menuItem);
 
@@ -32,15 +33,15 @@ public class GameMenuList : DirectionInputReceiver
         gameObject.SetActive(false);
     }
 
-    public virtual void Initialize(GameMenuCursor leftMenuCursor, GameMenuCursor rightMenuCursor)
+    public virtual void Initialize(MenuCursor leftMenuCursor, MenuCursor rightMenuCursor, Action callback = null)
     {
         RightMenuCursor = rightMenuCursor;
         RightMenuCursor.Reinitialize(MenuItemList.First().Value.transform.parent);
 
-        Initialize(leftMenuCursor);
+        Initialize(leftMenuCursor, callback);
     }
 
-    public virtual void Initialize(GameMenuCursor menuCursor)
+    public virtual void Initialize(MenuCursor menuCursor, Action callback = null)
     {
         LeftMenuCursor = menuCursor;
         LeftMenuCursor.Reinitialize(MenuItemList.First().Value.transform.parent);
@@ -49,6 +50,8 @@ public class GameMenuList : DirectionInputReceiver
 
         ResetHold();
         SetCurrentMenuItem(CurrentMenuItem);
+
+        if(callback != null) { callback(); }
     }
 
     public virtual void Deactivate()
@@ -104,7 +107,7 @@ public class GameMenuList : DirectionInputReceiver
             }
             
 
-            GameMenuItem nextMenuItem;
+            MenuSlot nextMenuItem;
             if(!MenuItemList.TryGetValue(nextListLoc, out nextMenuItem) || !nextMenuItem.IsSelectable) 
             { 
                 nextListLoc += value;
@@ -136,9 +139,13 @@ public class GameMenuList : DirectionInputReceiver
         SendMessageUpwards(CurrentMenuItem.ActionName, SendMessageOptions.DontRequireReceiver);
     }
 
-    public virtual void SetCurrentMenuItem(GameMenuItem menuItem)
+    public virtual void SetCurrentMenuItem(MenuSlot menuItem)
     {
+        if(CurrentMenuItem != null) { CurrentMenuItem.UnsetItem(); }
+        
         CurrentMenuItem = menuItem;
+        CurrentMenuItem.SetItem();
+
         LeftMenuCursor.SetMenuPosition(CurrentMenuItem);
 
         if(RightMenuCursor != null)

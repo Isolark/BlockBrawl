@@ -78,10 +78,12 @@ public class GameBoard : MonoBehaviour
         readyText.transform.localPosition = new Vector3(transform.position.x, COUNTDOWN_OFFSET_Y + COUNTDOWN_READY_FINAL_Y, 0);
 
         MainController.MC.TransformManager.Add_LinearTimePos_Transform(readyText, new Vector2(0, COUNTDOWN_READY_FINAL_Y), CountdownDropSpeed, () => {
-            Unpause();
-            Cursor.gameObject.SetActive(true);
-            var boardMiddleLoc = new Vector2(Mathf.Floor(BoardSize.x/2) - 1, Mathf.Floor(BoardSize.y/2));
-            Cursor.StartAutoMoveLoc(boardMiddleLoc);
+            MainController.MC.AddTimedAction(() => {
+                Unpause();
+                Cursor.gameObject.SetActive(true);
+                var boardMiddleLoc = new Vector2(Mathf.Floor(BoardSize.x/2) - 1, Mathf.Floor(BoardSize.y/2));
+                Cursor.StartAutoMoveLoc(boardMiddleLoc);
+            }, 0.2f);
         });
 
         MainController.MC.AddTimedAction(() => { 

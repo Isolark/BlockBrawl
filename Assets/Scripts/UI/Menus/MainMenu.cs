@@ -31,6 +31,10 @@ public class MainMenu : GameMenu
     private Slider SoundSlider;
     private TMP_Text SoundVolumeValue;
 
+    public float CloudSlideSpeed;
+    private GameObject BGTitleElements;
+    private List<ParallaxBackground> ParallaxClouds;
+
     private bool OptionChangedFlag;
     private Action CancelAction;
 
@@ -62,6 +66,9 @@ public class MainMenu : GameMenu
         SoundVolumeValue = SoundVolumeLabel.transform.Find("SoundVolume-Value").GetComponent<TMP_Text>();
 
         DescriptionText = BottomPanel.transform.Find("DescriptionText").GetComponent<TMP_Text>();
+
+        BGTitleElements = GameObject.Find("TitleElements");
+        ParallaxClouds = GameObject.Find("Background").GetComponentsInChildren<ParallaxBackground>().ToList();
     }
     public void Preinitialize()
     {
@@ -115,10 +122,9 @@ public class MainMenu : GameMenu
     //     rPanelRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, nextSize.y);
     // }
 
-    override public void SetMenuList(GameMenuList menuList)
+    override public void SetMenuList(MenuList menuList, Action callback = null)
     {
-        base.SetMenuList(menuList);
-        DescriptionText.text = CurrentMenuList.CurrentMenuItem.ItemDescription;
+        base.SetMenuList(menuList, callback);
     }
 
     public void InputStart()
@@ -135,15 +141,13 @@ public class MainMenu : GameMenu
 
     override public void InputMove(Vector2 value)
     {
-        if(CurrentMenuList == null) { return; }
+        if(CurrentMenuList == null || CurrentState == MainMenuState.InTransition) { return; }
         CurrentMenuList.MoveCursor(value);
-        
-        DescriptionText.SetText(CurrentMenuList.CurrentMenuItem.ItemDescription);
     }
 
     public void InputCancel()
     {
-        if(CurrentState == MainMenuState.PreMainMenu) { return; }
+        if(CurrentState == MainMenuState.PreMainMenu || CurrentState == MainMenuState.InTransition) { return; }
 
         if(CancelAction != null) {
             CancelAction();
@@ -155,7 +159,7 @@ public class MainMenu : GameMenu
 
     public void InputConfirm()
     {
-        if(CurrentState == MainMenuState.PreMainMenu) { return; }
+        if(CurrentState == MainMenuState.PreMainMenu || CurrentState == MainMenuState.InTransition) { return; }
 
         CurrentMenuList.ConfirmSelection();
     }
@@ -173,8 +177,6 @@ public class MainMenu : GameMenu
             OptionChangedFlag = false;
         }
 
-        BottomPanel.gameObject.SetActive(false);
-
         BackPanel.GetComponent<CanvasGroup>().CrossFadeAlpha(this, 0, 0.1f);
         MainController.MC.TransformManager.Add_LinearTimePos_Transform(BackPanel.gameObject, BackPanel.transform.localPosition + new Vector3(0, -15, 0), 0.1f);
         SetMenuList(MenuLists.First(x => x.name == "MainMenuList"));
@@ -182,17 +184,85 @@ public class MainMenu : GameMenu
 
     private void ToSinglePlayerMode()
     {
-        DescriptionText.text = string.Empty;
-        MainController.MC.AddTimedAction(() => { BottomPanel.gameObject.SetActive(true); }, 0.3f);
-
         BackPanel.GetComponent<CanvasGroup>().CrossFadeAlpha(this, 1, 0.1f);
         MainController.MC.TransformManager.Add_LinearTimePos_Transform(BackPanel.gameObject, BackPanel.transform.localPosition + new Vector3(0, 15, 0), 0.1f);
-        SetMenuList(MenuLists.First(x => x.name == "1PlayerMenuList"));
+        SetMenuList(MenuLists.First(x => x.name == "1PlayerMenuList"), () => { ToggleRightPanel(true); });
     }
 
     private void ToOptions()
     {
         SetMenuList(MenuLists.First(x => x.name == "OptionsMenuList"));
+    }
+
+    private void SlideToSinglePlayerMode()
+    {
+        DeactivateCurrentMenuList();
+        SlideSingleBG(true, ToSinglePlayerMode);
+    }
+
+    private void SlideToMain()
+    {
+        ToggleRightPanel(false);
+        DeactivateCurrentMenuList();
+        SlideSingleBG(false, ToMain);
+    }
+
+    private void SlideSingleBG(bool slideIn, Action callback)
+    {
+        CurrentState = MainMenuState.InTransition;
+
+        IncSlide(slideIn);
+
+        MainController.MC.TransformManager.Add_LinearTimePos_Transform(BGTitleElements, new Vector2(30 * (slideIn ? -1 : 0), 0), 0.35f, 
+            () => { 
+                IncSlide(!slideIn);
+                callback();
+                CurrentState = MainMenuState.OnMainMenu;
+            }); 
+    }
+
+    private void IncSlide(bool slideIn)
+    {
+        var sign = slideIn ? -1 : 1;
+        foreach(var pCloud in ParallaxClouds)
+        {
+            var originalVSignX = Mathf.Sign(pCloud.Velocity.x);
+            pCloud.Velocity += new Vector3((sign * CloudSlideSpeed), pCloud.Velocity.y, pCloud.Velocity.z);
+
+            if(Mathf.Sign(pCloud.Velocity.x) != originalVSignX)
+            {
+                pCloud.FinalPos = pCloud.InitialPos - (pCloud.FinalPos - pCloud.InitialPos);
+            }
+        }
+    }
+
+    private void DeactivateCurrentMenuList()
+    {
+        if(CurrentMenuList != null) { 
+            if(CurrentMenuList.CurrentMenuItem != null) 
+            {
+                CurrentMenuList.CurrentMenuItem.UnsetItem();
+                CurrentMenuList.CurrentMenuItem = null;
+            }
+            CurrentMenuList.Deactivate(); 
+            CurrentMenuList = null; 
+            LeftMenuCursor.CursorImage.CrossFadeAlpha(0, 0.1f, false);
+            if(RightMenuCursor.CursorImage.color.a > 0) { RightMenuCursor.CursorImage.CrossFadeAlpha(0, 0.1f, false); }
+        }
+    }
+
+    private void ToggleRightPanel(bool show)
+    {
+        RightMenuPanel.gameObject.SetActive(show);
+        RightMenuPanel.GetComponent<CanvasGroup>().alpha = show ? 0: 1;
+        RightMenuPanel.GetComponent<CanvasGroup>().CrossFadeAlpha(this, show ? 1 : 0, 0.05f);
+        ToggleDescription(show);
+    }
+
+    private void ToggleDescription(bool show)
+    {
+        DescriptionText.text = string.Empty;
+        BottomPanel.gameObject.SetActive(show);
     }
 
     private void ChangeDifficulty(int value)

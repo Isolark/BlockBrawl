@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class GameMenuCursor : MonoBehaviour
+public class MenuCursor : MonoBehaviour
 {
     public Image CursorImage;
     public Animator CursorAnim;
@@ -37,7 +37,7 @@ public class GameMenuCursor : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void SetMenuPosition(GameMenuItem menuItem, bool IsLeftPosition = true)
+    public void SetMenuPosition(MenuSlot menuItem, bool IsLeftPosition = true)
     {
         gameObject.transform.localPosition = menuItem.transform.localPosition;
         gameObject.TransBySpriteDimensions(menuItem.ItemText.gameObject, new Vector3((IsLeftPosition ? -0.5f : 0.5f), 0.12f, 0));
