@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 
-public class GameFadeMenuList : GameMenuList
+public class FadeMenuList : MenuList
 {
     public CanvasGroup AlphaCanvas;
 
@@ -42,33 +42,36 @@ public class GameFadeMenuList : GameMenuList
         InTransition = false;
     }
 
-    override public void Initialize(GameMenuCursor leftMenuCursor, GameMenuCursor rightMenuCursor)
+    override public void Initialize(MenuCursor leftMenuCursor, MenuCursor rightMenuCursor, Action callback = null)
     {
+        InTransition = true;
+
         base.Initialize(leftMenuCursor, rightMenuCursor); 
 
-        leftMenuCursor.CursorImage.CrossFadeAlpha(0, CursorFadeDuration, false);
-        rightMenuCursor.CursorImage.CrossFadeAlpha(0, CursorFadeDuration, false);
+        leftMenuCursor.CursorImage.CrossFadeAlpha(0, 0, false);
+        rightMenuCursor.CursorImage.CrossFadeAlpha(0, 0, false);
 
         Transition(() => { 
+            if(callback != null) { callback(); }
             leftMenuCursor.CursorImage.CrossFadeAlpha(1, CursorFadeDuration, false);
             rightMenuCursor.CursorImage.CrossFadeAlpha(1, CursorFadeDuration, false);
             SetDefaultMenuItem();
         }, true);
     }
 
-    override public void Initialize(GameMenuCursor menuCursor)
+    override public void Initialize(MenuCursor menuCursor, Action callback = null)
     {
         if(InTransition) {
             LeftMenuCursor = menuCursor;
             LeftMenuCursor.Reinitialize(MenuItemList.First().Value.transform.parent);
-            
             return;
         }
 
         base.Initialize(menuCursor); 
-        menuCursor.CursorImage.CrossFadeAlpha(0, CursorFadeDuration, false);
+        menuCursor.CursorImage.CrossFadeAlpha(0, 0, false);
 
         Transition(() => { 
+            if(callback != null) { callback(); }
             menuCursor.CursorImage.CrossFadeAlpha(1, CursorFadeDuration, false);
             SetDefaultMenuItem();
         }, true);
