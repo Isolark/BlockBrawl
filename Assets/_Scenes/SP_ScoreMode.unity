@@ -374,7 +374,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemText: {fileID: 26912184}
-  ItemDescription: 
   ActionName: SelectRestart
   ListLoc: {x: 0, y: 1}
   IsSelectable: 1
@@ -598,7 +597,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemText: {fileID: 58791150}
-  ItemDescription: 
   ActionName: SelectRestart
   ListLoc: {x: 0, y: 1}
   IsSelectable: 1
@@ -2485,7 +2483,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemText: {fileID: 429916388}
-  ItemDescription: 
   ActionName: SelectQuit
   ListLoc: {x: 0, y: 0}
   IsSelectable: 1
@@ -3567,7 +3564,7 @@ MonoBehaviour:
   TimeScale: 1
   GameTime: 0
   BlockFallVelocity: 35
-  BlockSwitchSpeed: 0.09
+  BlockSwitchSpeed: 0.08
   RaiseBaseSpeed: 0.0008
   RaiseBaseAcceleration: 0.00018
   RaiseDeltaAcceleration: 0.0001
@@ -4491,7 +4488,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemText: {fileID: 803268387}
-  ItemDescription: 
   ActionName: SelectQuit
   ListLoc: {x: 0, y: 0}
   IsSelectable: 1
@@ -4783,7 +4779,7 @@ MonoBehaviour:
   StartingHeight: 5
   IconDestroyDelay: 0.15
   ChainLinkDelay: 0.2
-  BlockFallDelay: 0.12
+  BlockFallDelay: 0.15
   RaiseSpeed: 0
   BaseRaiseSpeed: 0
   ManualRaiseSpeed: 0.08
@@ -5040,7 +5036,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4993baf7c8f7f046bee13824b18cd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Velocity: {x: -0.008, y: 0, z: 0}
+  Velocity: {x: -0.4, y: 0, z: 0}
   PrimaryLayer: {fileID: 1524634430}
   SecondaryLayer: {fileID: 1296317992}
   BaseLayerIndex: 4
@@ -6648,7 +6644,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemText: {fileID: 1146151818}
-  ItemDescription: 
   ActionName: SelectResume
   ListLoc: {x: 0, y: 2}
   IsSelectable: 1
@@ -6953,7 +6948,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -453822587
   m_SortingLayer: -1
-  m_SortingOrder: 0
+  m_SortingOrder: -8
   m_Sprite: {fileID: 21300000, guid: 31da3d1863cf140a886118c88eb801d8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -9959,7 +9954,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4993baf7c8f7f046bee13824b18cd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Velocity: {x: -0.0025, y: 0, z: 0}
+  Velocity: {x: -0.03, y: 0, z: 0}
   PrimaryLayer: {fileID: 1791164777}
   SecondaryLayer: {fileID: 1058727950}
   BaseLayerIndex: 0
@@ -10640,7 +10635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4993baf7c8f7f046bee13824b18cd78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Velocity: {x: -0.01, y: 0, z: 0}
+  Velocity: {x: -0.6, y: 0, z: 0}
   PrimaryLayer: {fileID: 703168256}
   SecondaryLayer: {fileID: 1511442860}
   BaseLayerIndex: 8
@@ -11422,7 +11417,7 @@ MonoBehaviour:
   PauseBlockList: []
   Score: 0
   SpeedLv: 1
-  CountdownDropSpeed: 0.525
+  CountdownDropSpeed: 0.2
 --- !u!1001 &4133837581702021048
 PrefabInstance:
   m_ObjectHideFlags: 0
