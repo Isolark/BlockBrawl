@@ -8,12 +8,14 @@ public class GameBoard : MonoBehaviour
 {
     public BlockContainer BlockContainer;
     public GameCursor Cursor;
-    public HPBar HPBar;
+    public TimeStopper TimeStopper;
+
     public Vector2 BoardSize;
     public Vector2 CursorStartPosition;
 
     public ILookup<float, Animator> PauseAnimLookup;
     public ILookup<float, SpriteRenderer> PauseSpriteLookup;
+    public List<Block> PauseBlockList;
 
     public int Score;
     public int SpeedLv;
@@ -33,16 +35,23 @@ public class GameBoard : MonoBehaviour
     private readonly float COUNTDOWN_TIME_FINAL_Y = 9.8f;
     private readonly float COUNTDOWN_READY_FINAL_Y = 8.25f;
 
-    public void Initialize(int maxSpeedLv, float baseRaiseSpeed, float baseRaiseAccel)
+    public void Initialize(int initialSpeedLv, int maxSpeedLv, float baseRaiseSpeed, float baseRaiseAccel)
     {
-        SpeedLv = 1;
+        SpeedLv = 0;
         MaxSpeedLv = maxSpeedLv;
         RaiseAcceleration = baseRaiseAccel;
 
+        while(SpeedLv < initialSpeedLv)
+        {
+            IncreaseSpeedLv(false);
+        }
+
         Cursor.gameObject.SetActive(true);
-        Cursor.AtTop = true;
+        BlockContainer.AtTop = true;
         Cursor.LockToBoard(BoardSize);
         Cursor.gameObject.SetActive(false);
+
+        TimeStopper.Initialize();
         BlockContainer.Initialize(BoardSize, baseRaiseSpeed);
 
         CountdownTime = 4;
@@ -69,10 +78,12 @@ public class GameBoard : MonoBehaviour
         readyText.transform.localPosition = new Vector3(transform.position.x, COUNTDOWN_OFFSET_Y + COUNTDOWN_READY_FINAL_Y, 0);
 
         MainController.MC.TransformManager.Add_LinearTimePos_Transform(readyText, new Vector2(0, COUNTDOWN_READY_FINAL_Y), CountdownDropSpeed, () => {
-            Unpause();
-            Cursor.gameObject.SetActive(true);
-            var boardMiddleLoc = new Vector2(Mathf.Floor(BoardSize.x/2) - 1, Mathf.Floor(BoardSize.y/2));
-            Cursor.StartAutoMoveLoc(boardMiddleLoc);
+            MainController.MC.AddTimedAction(() => {
+                Unpause();
+                Cursor.gameObject.SetActive(true);
+                var boardMiddleLoc = new Vector2(Mathf.Floor(BoardSize.x/2) - 1, Mathf.Floor(BoardSize.y/2));
+                Cursor.StartAutoMoveLoc(boardMiddleLoc);
+            }, 0.2f);
         });
 
         MainController.MC.AddTimedAction(() => { 
@@ -89,15 +100,17 @@ public class GameBoard : MonoBehaviour
             TextMeshPooler.TMP.RepoolTextMeshText(CountdownTimeText);
             CountdownReadyText = CountdownTimeText = null;
 
-            Cursor.AtTop = false;
+            MainController.MC.PlaySound("CountdownGo");
+
+            BlockContainer.AtTop = false;
             GameController.GameCtrl.StartGame();
             return;
         }
 
         CountdownTime--;
 
-        //TODO: SoundFX each time
         CountdownTimeText.text = CountdownTime.ToString();
+        MainController.MC.PlaySound("Countdown123");
         MainController.MC.AddTimedAction(RunCountdown, 1);
     }
 
@@ -108,9 +121,22 @@ public class GameBoard : MonoBehaviour
         {
             MainController.MC.RemoveTimedAction(RaiseSpeedLvTimer);
         }
-        RaiseSpeedLvTimer = MainController.MC.AddTimedAction(IncreaseSpeedLv, GameController.GameCtrl.RaiseSpeedLevelDelay, true);
+        RaiseSpeedLvTimer = MainController.MC.AddTimedAction(() => { IncreaseSpeedLv(); }, GameController.GameCtrl.RaiseSpeedLevelDelay, true);
 
         MainController.MC.PlayMusic("ScoreAttack");
+    }
+
+    //Callback used by TimeStopper (Lose Cond) or Victory (Win Cond)
+    public void EndGame(bool isWin)
+    {
+        Pause(true);
+        
+        foreach(var block in PauseBlockList)
+        {
+            if(block.BlockSprite != null) { block.BlockSprite.sprite = SpriteLibrary.SL.GetSpriteByName("Block"); }
+        }
+        //TODO: Do something with blocks that remain showing
+        //PauseBlockList
     }
 
     public void OnUpdate()
@@ -118,7 +144,7 @@ public class GameBoard : MonoBehaviour
         BlockContainer.OnUpdate();
     }
 
-    private void IncreaseSpeedLv()
+    private void IncreaseSpeedLv(bool updateDisplay = true)
     {
         if(SpeedLv >= MaxSpeedLv) { return; }
 
@@ -129,7 +155,7 @@ public class GameBoard : MonoBehaviour
 
         if(SpeedLv % 50 == 0)
         {
-            currentSpeed += RaiseAcceleration * 5;
+            currentSpeed += RaiseAcceleration * 8;
             RaiseAcceleration += GameController.GameCtrl.RaiseDeltaAcceleration;
 
             if(SpeedLv == 100)
@@ -139,7 +165,8 @@ public class GameBoard : MonoBehaviour
         }
         
         BlockContainer.IncreaseSpeed(currentSpeed);
-        GameScoreAtkCtrl.GameSA_Ctrl.ScoreModeMenu.SetSpeedLv(SpeedLv);
+
+        if(updateDisplay) { GameScoreAtkCtrl.GameSA_Ctrl.ScoreModeMenu.SetSpeedLv(SpeedLv); } 
     }
 
     public void IncreaseScore(int blockCount, int chainCount)
@@ -147,12 +174,32 @@ public class GameBoard : MonoBehaviour
         var difficultyScoreVal = MainController.MC.GetData<DifficultyLv>("DifficultyLv").BaseScoreValue;
         var scoreMultipliers = MainController.MC.GetData<BlockMultipliers>("ScoreMultipliers");
         
-        var comboMultiplier = scoreMultipliers.ComboMults[blockCount-1];
+        //Add Combo Score
+        float comboMultiplier = 0;
+        var maxCombo = scoreMultipliers.ComboMults.Count;
+
+        if(blockCount > maxCombo)
+        {
+            comboMultiplier += scoreMultipliers.ComboMaxAdd * (blockCount - maxCombo);
+            blockCount = maxCombo;
+        }
+        comboMultiplier += scoreMultipliers.ComboMults[blockCount-1];
+
         var totalScore = Mathf.CeilToInt(blockCount * comboMultiplier * difficultyScoreVal);
 
+        //Add Chain Score
         if(chainCount > 1)
         {
-            var chainMultiplier = scoreMultipliers.ChainMults[chainCount-2];
+            float chainMultiplier = 0;
+            var maxChain = scoreMultipliers.ChainMults.Count + 2;
+
+            if(chainCount > maxChain)
+            {
+                chainMultiplier += scoreMultipliers.ChainMaxAdd * (chainCount - maxChain);
+                chainCount = maxChain;
+            }
+
+            chainMultiplier += scoreMultipliers.ChainMults[chainCount-2];
             totalScore += Mathf.CeilToInt((chainCount - 1) * chainMultiplier * difficultyScoreVal);
         } 
 
@@ -169,17 +216,18 @@ public class GameBoard : MonoBehaviour
 
     }
 
-    public void Pause()
+    public void Pause(bool separateBlocks = false)
     {
-        GetFadeChildren();
+        GetFadeChildren(separateBlocks);
         if(PauseSpriteLookup.Any()) { StartCoroutine(FadeSprites(10, false)); }
-        if(CountdownReadyText != null) {
+        if(CountdownReadyText != null) 
+        {
             CountdownReadyText.gameObject.SetActive(false);
             CountdownTimeText.gameObject.SetActive(false);
         }
     }
 
-    private void GetFadeChildren()
+    private void GetFadeChildren(bool separateBlocks = false)
     {
         var childObjList = new List<Transform>();
         BlockContainer.transform.GetAllChildrenRecursively(ref childObjList);
@@ -190,6 +238,19 @@ public class GameBoard : MonoBehaviour
         foreach(var childObj in childObjList)
         {
             if(!childObj.gameObject.activeSelf) { continue; }
+
+            var blockAdded = false;
+
+            if(separateBlocks)
+            {
+                Block block;
+                if(childObj.TryGetComponent<Block>(out block))
+                {
+                    PauseBlockList.Add(block);
+                    blockAdded = true;
+                }
+            }
+            if(blockAdded) { continue; }
 
             SpriteRenderer sprRenderer;
             if(childObj.TryGetComponent<SpriteRenderer>(out sprRenderer))
@@ -216,7 +277,6 @@ public class GameBoard : MonoBehaviour
     {
         ResetAnimations();
         if(PauseSpriteLookup.Any()) { StartCoroutine(FadeSprites(10, true)); }
-        //BoardMask.gameObject.SetActive(false);
         if(CountdownReadyText != null && !CountdownReadyText.isActiveAndEnabled) {
             CountdownReadyText.gameObject.SetActive(true);
             CountdownTimeText.gameObject.SetActive(true);

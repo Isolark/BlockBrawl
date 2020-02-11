@@ -4,5 +4,6 @@ public enum MainMenuState
     OnMainMenu = 1,
     InSinglePlayerMenu = 2,
     InMultiPlayerMenu = 3,
-    InOptionsMenu = 4
+    InOptionsMenu = 4,
+    InTransition = 99
 }

@@ -137,6 +137,12 @@ TextureImporter:
   - first:
       213: -7408848946105794445
     second: HealthCircleGray
+  - first:
+      213: -6272381583424623480
+    second: HealthGauge
+  - first:
+      213: -1550084577910054824
+    second: HealthRed
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -236,8 +242,8 @@ TextureImporter:
       name: Block-Blue
       rect:
         serializedVersion: 2
-        x: 768
-        y: 200
+        x: 860
+        y: 752
         width: 130
         height: 130
       alignment: 0
@@ -257,8 +263,8 @@ TextureImporter:
       name: Block-Green
       rect:
         serializedVersion: 2
-        x: 768
-        y: 68
+        x: 860
+        y: 620
         width: 130
         height: 130
       alignment: 0
@@ -278,8 +284,8 @@ TextureImporter:
       name: Block-Purple
       rect:
         serializedVersion: 2
-        x: 131
-        y: 893
+        x: 860
+        y: 488
         width: 130
         height: 130
       alignment: 0
@@ -299,8 +305,8 @@ TextureImporter:
       name: Block-Red
       rect:
         serializedVersion: 2
-        x: 263
-        y: 893
+        x: 860
+        y: 356
         width: 130
         height: 130
       alignment: 0
@@ -320,8 +326,8 @@ TextureImporter:
       name: Block-White
       rect:
         serializedVersion: 2
-        x: 395
-        y: 893
+        x: 860
+        y: 224
         width: 130
         height: 130
       alignment: 0
@@ -341,8 +347,8 @@ TextureImporter:
       name: Block-Yellow
       rect:
         serializedVersion: 2
-        x: 527
-        y: 893
+        x: 860
+        y: 92
         width: 130
         height: 130
       alignment: 0
@@ -362,8 +368,8 @@ TextureImporter:
       name: Block
       rect:
         serializedVersion: 2
-        x: 131
-        y: 761
+        x: 683
+        y: 893
         width: 130
         height: 130
       alignment: 0
@@ -383,8 +389,8 @@ TextureImporter:
       name: BunJester
       rect:
         serializedVersion: 2
-        x: 768
-        y: 823
+        x: 131
+        y: 22
         width: 200
         height: 200
       alignment: 0
@@ -404,8 +410,8 @@ TextureImporter:
       name: Cursor-Corner
       rect:
         serializedVersion: 2
-        x: 952
-        y: 682
+        x: 765
+        y: 418
         width: 55
         height: 55
       alignment: 0
@@ -425,8 +431,8 @@ TextureImporter:
       name: Cursor-Top
       rect:
         serializedVersion: 2
-        x: 861
-        y: 11
+        x: 765
+        y: 561
         width: 82
         height: 55
       alignment: 0
@@ -446,8 +452,8 @@ TextureImporter:
       name: Effect-Bun
       rect:
         serializedVersion: 2
-        x: 768
-        y: 332
+        x: 860
+        y: 884
         width: 137
         height: 139
       alignment: 9
@@ -467,8 +473,8 @@ TextureImporter:
       name: Garbage-Bot
       rect:
         serializedVersion: 2
-        x: 527
-        y: 736
+        x: 131
+        y: 1000
         width: 130
         height: 23
       alignment: 9
@@ -488,7 +494,7 @@ TextureImporter:
       name: Garbage-BotCorner
       rect:
         serializedVersion: 2
-        x: 263
+        x: 683
         y: 761
         width: 130
         height: 130
@@ -509,8 +515,8 @@ TextureImporter:
       name: Garbage-SingleLeft
       rect:
         serializedVersion: 2
-        x: 395
-        y: 761
+        x: 633
+        y: 629
         width: 130
         height: 130
       alignment: 0
@@ -530,8 +536,8 @@ TextureImporter:
       name: Garbage-SingleMid
       rect:
         serializedVersion: 2
-        x: 527
-        y: 761
+        x: 633
+        y: 497
         width: 130
         height: 130
       alignment: 0
@@ -551,8 +557,8 @@ TextureImporter:
       name: Garbage-SingleRight
       rect:
         serializedVersion: 2
-        x: 131
-        y: 629
+        x: 633
+        y: 365
         width: 130
         height: 130
       alignment: 0
@@ -572,8 +578,8 @@ TextureImporter:
       name: Garbage-SplitCorner
       rect:
         serializedVersion: 2
-        x: 263
-        y: 629
+        x: 633
+        y: 233
         width: 130
         height: 130
       alignment: 0
@@ -593,8 +599,8 @@ TextureImporter:
       name: Garbage-Top
       rect:
         serializedVersion: 2
-        x: 527
-        y: 711
+        x: 263
+        y: 1000
         width: 130
         height: 23
       alignment: 9
@@ -614,8 +620,8 @@ TextureImporter:
       name: Garbage-TopCorner
       rect:
         serializedVersion: 2
-        x: 395
-        y: 629
+        x: 633
+        y: 101
         width: 130
         height: 130
       alignment: 0
@@ -635,10 +641,10 @@ TextureImporter:
       name: Health
       rect:
         serializedVersion: 2
-        x: 900
-        y: 227
-        width: 98
-        height: 70
+        x: 1
+        y: 7
+        width: 90
+        height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -677,8 +683,8 @@ TextureImporter:
       name: HealthCircle
       rect:
         serializedVersion: 2
-        x: 768
-        y: 473
+        x: 517
+        y: 859
         width: 164
         height: 164
       alignment: 0
@@ -698,8 +704,8 @@ TextureImporter:
       name: HealthCircleBar
       rect:
         serializedVersion: 2
-        x: 768
-        y: 639
+        x: 333
+        y: 40
         width: 182
         height: 182
       alignment: 0
@@ -716,11 +722,53 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
+      name: HealthGauge
+      rect:
+        serializedVersion: 2
+        x: 517
+        y: 32
+        width: 114
+        height: 825
+      alignment: 9
+      pivot: {x: 0.5, y: 0.50060606}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88ce540be2604f8a0800000000000000
+      internalID: -6272381583424623480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: HealthRed
+      rect:
+        serializedVersion: 2
+        x: 749
+        y: 29
+        width: 98
+        height: 70
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8502cd10a4efc7ae0800000000000000
+      internalID: -1550084577910054824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
       name: Middle-Blue
       rect:
         serializedVersion: 2
-        x: 900
-        y: 144
+        x: 131
+        y: 917
         width: 95
         height: 81
       alignment: 9
@@ -740,8 +788,8 @@ TextureImporter:
       name: Middle-Green
       rect:
         serializedVersion: 2
-        x: 934
-        y: 463
+        x: 765
+        y: 618
         width: 84
         height: 84
       alignment: 9
@@ -761,8 +809,8 @@ TextureImporter:
       name: Middle-Pink
       rect:
         serializedVersion: 2
-        x: 952
-        y: 739
+        x: 949
+        y: 8
         width: 66
         height: 82
       alignment: 9
@@ -782,8 +830,8 @@ TextureImporter:
       name: Middle-Purple
       rect:
         serializedVersion: 2
-        x: 659
-        y: 851
+        x: 765
+        y: 475
         width: 79
         height: 84
       alignment: 9
@@ -803,8 +851,8 @@ TextureImporter:
       name: Middle-Red
       rect:
         serializedVersion: 2
-        x: 768
-        y: 11
+        x: 765
+        y: 704
         width: 91
         height: 55
       alignment: 9
@@ -824,8 +872,8 @@ TextureImporter:
       name: Middle-Yellow
       rect:
         serializedVersion: 2
-        x: 659
-        y: 937
+        x: 228
+        y: 912
         width: 94
         height: 86
       alignment: 9
@@ -845,7 +893,7 @@ TextureImporter:
       name: PlayArea-Base-Shine
       rect:
         serializedVersion: 2
-        x: 1
+        x: 93
         y: 9
         width: 765
         height: 8
@@ -866,7 +914,7 @@ TextureImporter:
       name: PlayArea-BorderCorner
       rect:
         serializedVersion: 2
-        x: 970
+        x: 999
         y: 1005
         width: 18
         height: 18
@@ -888,7 +936,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1
-        y: 6
+        y: 4
         width: 18
         height: 1
       alignment: 0
@@ -908,8 +956,8 @@ TextureImporter:
       name: PopBlue
       rect:
         serializedVersion: 2
-        x: 907
-        y: 381
+        x: 633
+        y: 19
         width: 114
         height: 80
       alignment: 0
@@ -929,8 +977,8 @@ TextureImporter:
       name: PopRed
       rect:
         serializedVersion: 2
-        x: 907
-        y: 299
+        x: 395
+        y: 943
         width: 114
         height: 80
       alignment: 0
@@ -950,8 +998,8 @@ TextureImporter:
       name: Star
       rect:
         serializedVersion: 2
-        x: 934
-        y: 549
+        x: 860
+        y: 2
         width: 87
         height: 88
       alignment: 9

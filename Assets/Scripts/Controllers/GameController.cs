@@ -8,7 +8,7 @@ public class GameController : InputController
 {
     public GameBoard PlayerGameBoard;
     public PauseMenu PauseMenu;
-    public Canvas InGameCanvas;
+    public GameOverMenu GameOverMenu;
     public float BlockDist;
     public float TimeScale = 1f;
     public float GameTime;
@@ -53,17 +53,47 @@ public class GameController : InputController
         GameTime = 0;
         
         PauseMenu.Setup();
+        GameOverMenu.Setup();
         PauseMenu.gameObject.SetActive(false);
+        GameOverMenu.gameObject.SetActive(false);
 
         IsGameStarted = CanMoveCursor = false;
 
-        MainController.MC.AddTimedAction(() => { PlayerGameBoard.Initialize(MaxSpeedLevel, RaiseBaseSpeed, RaiseBaseAcceleration); }, 0.4f);
+        MainController.MC.AddTimedAction(() => { PlayerGameBoard.Initialize(5, MaxSpeedLevel, RaiseBaseSpeed, RaiseBaseAcceleration); }, 0.4f);
     }
 
     public void StartGame()
     {
         IsGameStarted = true;
         PlayerGameBoard.StartGame();
+    }
+
+    public virtual void LoseGame()
+    {
+        PlayerGameBoard.EndGame(false);
+
+        MainController.MC.Pause();
+
+        GameOverMenu.gameObject.SetActive(true);
+        GameOverMenu.OpenMenu();
+    }
+
+    public virtual void WinGame()
+    {
+        PlayerGameBoard.EndGame(true);
+    }
+
+    public virtual void OpenGameOverMenu()
+    {
+        MainController.MC.Pause();
+
+        GameOverMenu.gameObject.SetActive(true);
+        GameOverMenu.OpenMenu();
+    }
+
+    public virtual void OpenVictoryMenu()
+    {
+
     }
 
     // Update is called once per frame
@@ -101,7 +131,8 @@ public class GameController : InputController
         }
         else if(MainController.MC.GS_Current == GameState.MenuOpen)
         {
-            PauseMenu.InputMove(moveDir);
+            if(PauseMenu.gameObject.activeSelf) { PauseMenu.InputMove(moveDir); }
+            else { GameOverMenu.InputMove(moveDir); }
         }
     }
     override public void OnStart(CallbackContext context)
@@ -113,7 +144,7 @@ public class GameController : InputController
         }
         else
         {
-            PauseMenu.InputStart();
+            if(PauseMenu.gameObject.activeSelf) { PauseMenu.InputStart(); }
         }
     }
 
@@ -126,7 +157,8 @@ public class GameController : InputController
         }
         else if(MainController.MC.GS_Current == GameState.MenuOpen)
         {
-            PauseMenu.InputConfirm();
+            if(PauseMenu.gameObject.activeSelf) { PauseMenu.InputConfirm(); }
+            else { GameOverMenu.InputConfirm(); }
         }
     }
 
@@ -138,7 +170,7 @@ public class GameController : InputController
         }
         else if(MainController.MC.GS_Current == GameState.MenuOpen)
         {
-            PauseMenu.InputCancel();
+            if(PauseMenu.gameObject.activeSelf) { PauseMenu.InputCancel(); }
         }
     }
 

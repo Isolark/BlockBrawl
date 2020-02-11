@@ -4,13 +4,13 @@ using UnityEngine.InputSystem;
 
 public class GameCursor : DirectionInputReceiver
 {
+    public BlockContainer BlockContainer;
     public Vector2 ZeroPosition;
     public Vector2 Bounds;
     public Vector2 BoardLoc;
     public float Padding;
     public float BlockDist;
     public float AutoMoveDelay;
-    public bool AtTop; //While true, allows moving to top row
 
     // Set zero position (assumed set by gameCtrl) & bounds
     public void LockToBoard(Vector2 boardSize)
@@ -66,7 +66,7 @@ public class GameCursor : DirectionInputReceiver
     private void MoveCursor(Vector2 value)
     {
         var nextPosition = BoardLoc + value;
-        var bound_Y = !AtTop ? Bounds.y : Bounds.y + 1;
+        var bound_Y = !BlockContainer.AtTop ? Bounds.y : Bounds.y + 1;
 
         if(nextPosition.x >= 0 && nextPosition.x < Bounds.x 
         && nextPosition.y > 0 && nextPosition.y < bound_Y)

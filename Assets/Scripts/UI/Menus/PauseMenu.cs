@@ -24,6 +24,11 @@ public class PauseMenu : GameMenu
 
     override public void Initialize()
     {
+        LeftMenuCursor.transform.SetParent(transform);
+        RightMenuCursor.transform.SetParent(transform);
+        LeftMenuCursor.transform.localScale = Vector3.one;
+        RightMenuCursor.transform.localScale = Vector3.one;
+
         base.Initialize(); 
         SetMenuList(MenuLists[0]);
     }

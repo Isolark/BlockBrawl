@@ -51,7 +51,7 @@ public class ParallaxBackground : MonoBehaviour
 
     void Update()
     {
-        var nextPosition = transform.localPosition + Velocity;
+        var nextPosition = transform.localPosition + Velocity * Time.deltaTime;
 
         if((Mathf.Sign(Velocity.x) > 0 && nextPosition.x > FinalPos.x) || (Mathf.Sign(Velocity.x) < 0 && nextPosition.x < FinalPos.x)) {
             nextPosition = new Vector3(InitialPos.x, nextPosition.y, 0);

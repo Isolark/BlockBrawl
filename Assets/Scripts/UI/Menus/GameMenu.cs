@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public abstract class GameMenu : MonoBehaviour
 {
-    public List<GameMenuList> MenuLists;
-    public GameMenuCursor LeftMenuCursor;
-    public GameMenuCursor RightMenuCursor;
-    protected GameMenuList CurrentMenuList;
+    public List<MenuList> MenuLists;
+    public MenuCursor LeftMenuCursor;
+    public MenuCursor RightMenuCursor;
+    protected MenuList CurrentMenuList;
 
     public virtual void Setup()
     {
@@ -38,14 +39,14 @@ public abstract class GameMenu : MonoBehaviour
             RightMenuCursor.Deinitialize(); 
         }
     }
-    public virtual void SetMenuList(GameMenuList menuList)
+    public virtual void SetMenuList(MenuList menuList, Action callback = null)
     {
         if(CurrentMenuList != null) { CurrentMenuList.Deactivate(); }
         CurrentMenuList = menuList;
         CurrentMenuList.gameObject.SetActive(true);
 
-        if(RightMenuCursor != null) { CurrentMenuList.Initialize(LeftMenuCursor, RightMenuCursor); }
-        else { CurrentMenuList.Initialize(LeftMenuCursor); } 
+        if(RightMenuCursor != null) { CurrentMenuList.Initialize(LeftMenuCursor, RightMenuCursor, callback); }
+        else { CurrentMenuList.Initialize(LeftMenuCursor, callback); } 
     }
     public virtual void InputMove(Vector2 value)
     {
