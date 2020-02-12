@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03e0f5de4f78ff14aaadac0fd9f24a82, type: 3}
+  m_Name: Lv09
+  m_EditorClassIdentifier: 
+  BBLevel: 9
+  OpponentName: Prince
+  OpponentDescription: The heir to the throne and overseer of the Hilltop Coliseum.
+    May seem laid-back and apathetic, but as block royalty, has been expertly trained
+    to handle all situations with poise and finesse.
+  DifficultyLv: 1
+  BackgroundSpritePath: Prince
