@@ -37,6 +37,7 @@ public class MainController : MonoBehaviour
 
     void Start()
     {
+        ProfanityFilter.Initialize();
         GameDataManager.GM.Initialize();
 
         BackupTimedEventManager.Pause();

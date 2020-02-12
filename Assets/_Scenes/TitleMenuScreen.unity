@@ -1630,8 +1630,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 400, y: 0}
-  m_SizeDelta: {x: 1800, y: 200}
+  m_AnchoredPosition: {x: 1000, y: 0}
+  m_SizeDelta: {x: 3000, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &260749958
 MonoBehaviour:
@@ -2265,7 +2265,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &356023831
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2284,7 +2284,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 60, y: -75}
+  m_AnchoredPosition: {x: 60, y: -60}
   m_SizeDelta: {x: 1800, y: 200}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &356023832
@@ -4026,6 +4026,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RightMenuCursor
       objectReference: {fileID: 0}
+    - target: {fileID: 8241097434602277779, guid: 0fb23ea7734ed34448a3bd25f731552b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8241097434602277788, guid: 0fb23ea7734ed34448a3bd25f731552b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4824,13 +4829,13 @@ MonoBehaviour:
   CanHoldY: 0
   WillResetPosition: 1
   AlphaCanvas: {fileID: 735195331}
-  FadeInVector: {x: 1825, y: 0, z: 0}
+  FadeInVector: {x: 2100, y: 0, z: 0}
   FadeInAlpha: 1
   FadeInDuration: 0.15
   FadeInStagger: 0.075
-  FadeOutVector: {x: 0, y: -1100, z: 0}
-  FadeOutAlpha: 0.25
-  FadeOutDuration: 0.15
+  FadeOutVector: {x: 0, y: -200, z: 0}
+  FadeOutAlpha: 0
+  FadeOutDuration: 0.05
   FadeOutStagger: 0
   CursorFadeDuration: 0.1
 --- !u!222 &735195330
@@ -6481,13 +6486,13 @@ MonoBehaviour:
   CanHoldY: 0
   WillResetPosition: 1
   AlphaCanvas: {fileID: 953897321}
-  FadeInVector: {x: 2000, y: 0, z: 0}
+  FadeInVector: {x: 2100, y: 0, z: 0}
   FadeInAlpha: 1
   FadeInDuration: 0.15
   FadeInStagger: 0.075
-  FadeOutVector: {x: 0, y: -1100, z: 0}
-  FadeOutAlpha: 0.25
-  FadeOutDuration: 0.15
+  FadeOutVector: {x: 0, y: -200, z: 0}
+  FadeOutAlpha: 0
+  FadeOutDuration: 0.05
   FadeOutStagger: 0
   CursorFadeDuration: 0.1
 --- !u!1 &960882845
@@ -6744,6 +6749,11 @@ MonoBehaviour:
   PlyrConfigData:
     MusicVolume: 0
     SoundVolume: 0
+  PlyrGameData:
+    PlayerName: 
+    PlayerEmail: 
+    BlockBrawlMaxLv: 0
+    HighScores: []
 --- !u!1 &1024891668
 GameObject:
   m_ObjectHideFlags: 0
@@ -8039,13 +8049,13 @@ MonoBehaviour:
   CanHoldY: 0
   WillResetPosition: 1
   AlphaCanvas: {fileID: 1243438496}
-  FadeInVector: {x: 1825, y: 0, z: 0}
+  FadeInVector: {x: 2100, y: 0, z: 0}
   FadeInAlpha: 1
   FadeInDuration: 0.15
   FadeInStagger: 0.075
-  FadeOutVector: {x: 0, y: -1100, z: 0}
-  FadeOutAlpha: 0.25
-  FadeOutDuration: 0.15
+  FadeOutVector: {x: 0, y: -200, z: 0}
+  FadeOutAlpha: 0
+  FadeOutDuration: 0.05
   FadeOutStagger: 0
   CursorFadeDuration: 0.1
 --- !u!1 &1246070658
