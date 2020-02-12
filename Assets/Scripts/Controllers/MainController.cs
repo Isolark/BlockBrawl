@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class MainController : MonoBehaviour
 {
     public GameState GS_Current; 
-    public DataManager DataManager;
+    public SceneDataManager ScnDataManager;
     public TimedEventManager TimedEventManager;
     public TransformManager TransformManager;
     public TimedEventManager BackupTimedEventManager;
@@ -37,16 +37,14 @@ public class MainController : MonoBehaviour
 
     void Start()
     {
-        if(!PlayerPrefs.HasKey("Version"))
-        {
-            CreateInitialPlayerPrefs();
-        }
+        ProfanityFilter.Initialize();
+        GameDataManager.GM.Initialize();
 
         BackupTimedEventManager.Pause();
         BackupTransformManager.Pause();
 
-        MusicPlayer.volume = PlayerPrefs.GetFloat("MusicVolume");
-        SoundFXPlayer.volume = BackupSoundFXPlayer.volume = PlayerPrefs.GetFloat("SoundVolume");
+        MusicPlayer.volume = GameDataManager.GM.PlyrConfigData.MusicVolume;
+        SoundFXPlayer.volume = GameDataManager.GM.PlyrConfigData.SoundVolume;
     }
 
     public TimedAction AddTimedAction(Action action, float activationTime, bool isContinuous = false)
@@ -74,6 +72,17 @@ public class MainController : MonoBehaviour
         MusicPlayer.Play();
     }
 
+    public void StopAudio()
+    {
+        MusicPlayer.clip = null;
+        SoundFXPlayer.clip = null;
+    }
+
+    public void StopMusic()
+    {
+        MusicPlayer.clip = null;
+    }
+
     public void Pause()
     {
         MusicPlayer.Pause();
@@ -88,8 +97,8 @@ public class MainController : MonoBehaviour
 
     public void Unpause()
     {
-        MusicPlayer.Play();
-        SoundFXPlayer.Play();
+        if(MusicPlayer.clip != null) { MusicPlayer.Play(); }
+        if(SoundFXPlayer.clip != null) { SoundFXPlayer.Play(); }
         TimedEventManager.Unpause();
         TransformManager.Unpause();
         BackupTimedEventManager.Pause();
@@ -98,20 +107,31 @@ public class MainController : MonoBehaviour
         GS_Current = GameState.Active;
     }
 
-    public void GoToScene(int sceneIndex)
+    public void GoToScene(int sceneIndex, bool stopMusic = true)
     {
+        if(stopMusic) { StopMusic(); }
+        
         MainController.MC.GS_Current = GameState.Loading;
-        StartCoroutine(SceneLoadCoroutine(sceneIndex));
-    }
-
-    public void LoadPrevScene()
-    {
-        GoToScene(PrevSceneIndex);
-    }
-
-    private IEnumerator SceneLoadCoroutine(int sceneIndex)
-    {
         var sceneLoader = SceneManager.LoadSceneAsync(sceneIndex);
+        StartCoroutine(SceneLoadCoroutine(sceneLoader));
+    }
+
+    public void GoToScene(string sceneName, bool stopMusic = true)
+    {
+        if(stopMusic) { StopMusic(); }
+        
+        MainController.MC.GS_Current = GameState.Loading;
+        var sceneLoader = SceneManager.LoadSceneAsync(sceneName);
+        StartCoroutine(SceneLoadCoroutine(sceneLoader));
+    }
+
+    public void LoadPrevScene(bool stopMusic = true)
+    {
+        GoToScene(PrevSceneIndex, stopMusic);
+    }
+
+    private IEnumerator SceneLoadCoroutine(AsyncOperation sceneLoader)
+    {
         sceneLoader.allowSceneActivation = false;
 
         while(sceneLoader.progress < 0.9f)
@@ -138,26 +158,35 @@ public class MainController : MonoBehaviour
         Unpause();
     }
 
-    private void CreateInitialPlayerPrefs()
-    {
-        //TODO: Load from SO Instead
-        PlayerPrefs.SetString("Version", Version);
-        PlayerPrefs.SetFloat("MusicVolume", 0.8f);
-        PlayerPrefs.SetFloat("SoundVolume", 1);
-        PlayerPrefs.Save();
-    }
+    // private void CreateInitialPlayerPrefs()
+    // {
+    //     //TODO: Load from SO Instead
+    //     PlayerPrefs.SetString("Version", Version);
+    //     PlayerPrefs.SetFloat("MusicVolume", 0.8f);
+    //     PlayerPrefs.SetFloat("SoundVolume", 1);
+    //     PlayerPrefs.Save();
+    // }
+
+    // public void SaveOptions()
+    // {
+    //     PlayerPrefs.SetFloat("MusicVolume", MusicPlayer.volume);
+    //     PlayerPrefs.SetFloat("SoundVolume", SoundFXPlayer.volume);
+    //     PlayerPrefs.Save();
+    // }
 
     public void SaveOptions()
     {
-        PlayerPrefs.SetFloat("MusicVolume", MusicPlayer.volume);
-        PlayerPrefs.SetFloat("SoundVolume", SoundFXPlayer.volume);
-        PlayerPrefs.Save();
+        var plyrAVSettings = GameDataManager.GM.PlyrConfigData;
+        plyrAVSettings.MusicVolume = MusicPlayer.volume;
+        plyrAVSettings.SoundVolume = SoundFXPlayer.volume;
+
+        GameDataManager.GM.SavePlyrCfgData();
     }
 
     public T GetData<T>(string soName) where T : ScriptableObject
     {
-        if(!DataManager.DataList.ContainsKey(soName)) { return null; }
-        return (T)DataManager.DataList[soName];
+        if(!ScnDataManager.DataList.ContainsKey(soName)) { return null; }
+        return (T)ScnDataManager.DataList[soName];
     }
 
     protected virtual void FixedUpdate()

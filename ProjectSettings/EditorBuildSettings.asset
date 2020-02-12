@@ -10,7 +10,7 @@ EditorBuildSettings:
     guid: 1825158b409288b42940baaf48c70739
   - enabled: 1
     path: Assets/_Scenes/SP_ScoreMode.unity
-    guid: 39719010e5b2f2d47be81d1c0b07ea4d
+    guid: fc51fc6bab5c72548a889f94cf39bc80
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: ef8dbd78c0e00554c968b2202af8c9c8,
       type: 2}

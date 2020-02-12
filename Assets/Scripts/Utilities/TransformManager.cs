@@ -7,6 +7,7 @@ public class TransformManager : MonoBehaviour
     public MainController MainCtrl;
 
     private IList<TransformItem> TransformItemList;
+    private IList<TransformItem> StagingList;
     private IList<TransformItem> DeletionList;
 
     private bool Paused;
@@ -15,18 +16,21 @@ public class TransformManager : MonoBehaviour
     void Awake()
     {
         TransformItemList = new List<TransformItem>();
+        StagingList = new List<TransformItem>();
         DeletionList = new List<TransformItem>();
-        Unpause();
+        Unpause(true);
     }
 
     public void Pause()
     {
+        if(Paused) { return; }
         MainCtrl.FixedUpdateDelegate -= OnUpdate;
         Paused = true;
     }
 
-    public void Unpause()
+    public void Unpause(bool isOverride = false)
     {
+        if(!Paused && !isOverride) { return; }
         MainCtrl.FixedUpdateDelegate += OnUpdate;
         Paused = false;
     }
@@ -34,17 +38,18 @@ public class TransformManager : MonoBehaviour
     public void Reset()
     {
         TransformItemList.Clear();
+        StagingList.Clear();
         DeletionList.Clear();
     }
 
     public void Add_LinearTimePos_Transform(GameObject target, Vector2 pFinal, float timeDelta, Action callback = null)
     {
-        TransformItemList.Add(new LinearTimeTransItem(target, pFinal, timeDelta, callback:callback));
+        StagingList.Add(new LinearTimeTransItem(target, pFinal, timeDelta, callback:callback));
     }
 
     public void Add_ManualFinalPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, Action callback = null)
     {
-        TransformItemList.Add(new ManualTransItem(target, pFinal, pVelocity, pAcceleration, callback:callback));
+        StagingList.Add(new ManualTransItem(target, pFinal, pVelocity, pAcceleration, callback:callback));
     }
 
     public void Add_ManualDeltaPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pMaxVelocity, Vector2 pAcceleration, 
@@ -55,19 +60,25 @@ public class TransformManager : MonoBehaviour
             transItem.SetLinkedObjs(linkedObjs); 
         }
 
-        TransformItemList.Add(transItem);
+        StagingList.Add(transItem);
     }
 
     public void Add_AccelToPos_Transform(GameObject target, Vector2 pFinal, Vector2 pVelocity, Vector2 pAcceleration, float pMarginFinal, Action callback = null)
     {
         var transItem = new AccelToPosTransItem(target, pFinal, pVelocity, pAcceleration, pMarginFinal, callback);
-        TransformItemList.Add(transItem);
+        StagingList.Add(transItem);
     }
 
     private void OnUpdate()
     {
         if(Paused) return;
 
+        if(StagingList.Count > 0) {
+            foreach(var item in StagingList) {
+                TransformItemList.Add(item);
+            }
+            StagingList.Clear();
+        }
         foreach(var item in TransformItemList)
         {
             if(item.OnMove()) {
@@ -257,11 +268,13 @@ public class LinearTimeTransItem : TransformItem
     // T_Current is added to by time.Delta until reaches T_Final
     protected float T_Final;
     protected float T_Current;
+    protected Vector2 P_Initial;
 
     public LinearTimeTransItem(GameObject target, Vector2 pFinal, float tFinal, Action callback = null) : base(target, pFinal, callback)
     {
         T_Final = tFinal;
-        T_Current = 0;
+        T_Current = 0f;
+        P_Initial = target.transform.localPosition;
     }
 
     override public bool OnMove()
@@ -269,6 +282,7 @@ public class LinearTimeTransItem : TransformItem
         T_Current += Time.deltaTime;
 
         if(T_Current >= T_Final) {
+            T_Current = T_Final;
             Target.transform.localPosition = P_Final;
             if(Callback != null) {
                 Callback();
@@ -278,7 +292,7 @@ public class LinearTimeTransItem : TransformItem
 
         var t = T_Current / T_Final;
         
-        var pNext = Vector2.Lerp(Target.transform.localPosition, P_Final, t);
+        var pNext = Vector2.Lerp(P_Initial, P_Final, t);
         Target.transform.localPosition = pNext;
 
         return false;

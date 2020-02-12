@@ -6,6 +6,7 @@ public class BlockContainer : MonoBehaviour
 {
     public GameCursor Cursor;
     public Vector2 BoardSize;
+    private GameBoard PlayerGameBoard;
     public int MaxTypes;
     public int StartingHeight;
     public float IconDestroyDelay; //Delay between icons being destroyed; Reduce for faster Gameplay
@@ -18,8 +19,7 @@ public class BlockContainer : MonoBehaviour
     public float RaiseAcceleration;
     private int SpeedLv;
     TimedAction RaiseSpeedLvTimer;
-
-    public float RaiseStopTime;
+    //public float RaiseStopTime;
     public int BlockDestroyCount; //Stops Move(), but not RaiseStopTimer; Timer is created anew if time > what is left of original
 
     private Vector2 PopupDisplayLoc; //Set in priority of UP, LEFT, RIGHT, DOWN
@@ -31,8 +31,6 @@ public class BlockContainer : MonoBehaviour
     public bool IsHoldingTrigger;
     public bool IsManuallyRaising;
     public bool CanManuallyRaise;
-    private float BlockDist;
-
     public bool AtTop;
     public float InitialBlock_Y;
     public float Target_Y; //After reaching this Y, have moved up a full "level"
@@ -41,7 +39,9 @@ public class BlockContainer : MonoBehaviour
     private List<Block> PotentialChainBlockList; //Keep track of potential chain blocks (once empty, can reset chain)
     private List<Block> ComboBlockList; //All Blocks belonging to current combo
     private List<Block> ChainedBlockList; //All Blocks belonging to current chain
+
     public Block NullBlock;
+    private float BlockDist;
 
     public BlockContainer(int maxTypes, int startingHeight, float startingSpeed)
     {
@@ -50,12 +50,7 @@ public class BlockContainer : MonoBehaviour
         BaseRaiseSpeed = RaiseSpeed = startingSpeed;
     }
 
-    void Awake()
-    {
-
-    }
-
-    void Start()
+    public void Initialize(Vector2 boardSize, float baseRaiseSpeed)
     {
         BlockList = new Dictionary<Vector2, Block>();
         TmpBlockList = new Dictionary<Vector2, Block>();
@@ -63,65 +58,36 @@ public class BlockContainer : MonoBehaviour
         ComboBlockList = new List<Block>();
         ChainedBlockList = new List<Block>();
 
+        PlayerGameBoard = GameController.GameCtrl.PlayerGameBoard;
+
         BlockDist = GameController.GameCtrl.BlockDist;
         InitialBlock_Y = -0.5f * BlockDist;
-    }
 
-    public void Initialize(Vector2 boardSize)
-    {
         AtTop = false;
         BoardSize = boardSize;
-        Target_Y = transform.localPosition.y + GameController.GameCtrl.BlockDist;
-        ComboCount = ChainCount = 1;
-        RaiseSpeed = BaseRaiseSpeed = GameController.GameCtrl.RaiseBaseSpeed;
-        RaiseStopTime = 0;
+        Target_Y = transform.localPosition.y + GameScoreAtkCtrl.GameSA_Ctrl.BlockDist;
+        RaiseSpeed = BaseRaiseSpeed = baseRaiseSpeed;
+        //RaiseStopTime = 0;
+        ComboCount = 0;
+        ChainCount = 1;
 
-        var baseAcceleration = GameController.GameCtrl.RaiseBaseAcceleration;
-        RaiseAcceleration = baseAcceleration;
-        SpeedLv = 1;
-
-        if(RaiseSpeedLvTimer != null) {
-            MainController.MC.RemoveTimedAction(RaiseSpeedLvTimer);
-        }
-        RaiseSpeedLvTimer = MainController.MC.AddTimedAction(() => 
-        {
-            if(SpeedLv == 100) { return; }
-            SpeedLv++;
-            BaseRaiseSpeed += RaiseAcceleration;
-
-            if(SpeedLv == 50)
-            {
-                BaseRaiseSpeed += baseAcceleration * 5;
-                RaiseAcceleration += GameController.GameCtrl.RaiseDeltaAcceleration;
-            }
-            else if(SpeedLv == 100)
-            {
-                BaseRaiseSpeed += baseAcceleration * 10;
-            }
-            
-            if(!IsManuallyRaising) { RaiseSpeed = BaseRaiseSpeed; }
-            GameController.GameCtrl.ScoreModeMenu.SetSpeedLv(SpeedLv);
-
-        }, GameController.GameCtrl.RaiseSpeedLevelDelay, true);
-
-        SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-2, 0, 0, 2});
+        SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-1, 0, 0, 1});
         ResetChain();
 
         CanManuallyRaise = true;
-
-        MainController.MC.PlayMusic("ScoreAttack");
     }
 
-    public void IncrementRaiseStopTime(float raiseStopTime)
+    public void IncreaseSpeed(float nextSpeed)
     {
-        if(raiseStopTime > RaiseStopTime) { RaiseStopTime = raiseStopTime; }
+        BaseRaiseSpeed = nextSpeed;
+        if(!IsManuallyRaising) { RaiseSpeed = BaseRaiseSpeed; }
     }
 
     public void ResetChain()
     {
         ActiveChainCounter = 0;
         ChainCount = 1;
-        GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
+        //GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
     }
 
     public void SpawnRows(int numOfRows = 1, int numOfCols = 6, int startingRow = 0, IList<int> rowModVals = null)
@@ -192,26 +158,50 @@ public class BlockContainer : MonoBehaviour
             ResetChain();
         }
 
+        //Check Top Row
+        bool isTopRow = false;
+
+        for(var x = 0; x < BoardSize.x; x++)
+        {
+            if(BlockList.ContainsKey(new Vector2(x, BoardSize.y))) { 
+                isTopRow = true; 
+                break;
+            }
+        }
+
+        //Adjust 'AtTop' and TimeBar Visibility
+        if(isTopRow && !AtTop) 
+        {
+            AtTop = true;
+            PlayerGameBoard.TimeStopper.ShowBar();
+        } 
+        else if(!isTopRow && AtTop) 
+        {
+            AtTop = false;
+            PlayerGameBoard.TimeStopper.HideBar();
+        }
+
         //Check if no destructions still, if so, reduce timestop
         if(BlockDestroyCount > 0 || PotentialChainBlockList.Count > 0) { return; }
 
-        //If nothing currently being destroyed, can trigger raise (even in timestop)
-        if(CanManuallyRaise && IsHoldingTrigger && !BlockList.Values.Any(x => x.IsFallLocked || x.IsFalling || x.IsMoving)) { 
+        //Trigger Check
+        if(!AtTop && CanManuallyRaise && IsHoldingTrigger && !BlockList.Values.Any(x => x.IsFallLocked || x.IsFalling || x.IsMoving)) { 
             IsManuallyRaising = true;
             CanManuallyRaise = false;
             RaiseSpeed = ManualRaiseSpeed;
+
+            PlayerGameBoard.TimeStopper.ResetTime();
         }
 
-        if(RaiseStopTime > 0) 
-        {
-            if(IsManuallyRaising) { RaiseStopTime = 0; } 
-            else { RaiseStopTime -= Time.deltaTime; }
-            
-            if(RaiseStopTime > 0) { return; }
-            else { RaiseStopTime = 0; }
+        //Timestop Check/Decrement
+        if(PlayerGameBoard.TimeStopper.IsTimeStopped && PlayerGameBoard.TimeStopper.UpdateTime(Time.deltaTime)) { return; }
+
+        if(isTopRow && AtTop) {
+            GameController.GameCtrl.LoseGame(); 
+            return;
         }
 
-        if(AtTop || transform.localPosition.y >= Target_Y) { return; }
+        //if(AtTop || transform.localPosition.y >= Target_Y) { return; }
 
         OnMoveBoard();
     }
@@ -240,7 +230,11 @@ public class BlockContainer : MonoBehaviour
                 
                 block.Value.MoveBoardLoc(Vector2.up, true);
                 
-                if(!AtTop && nextKey.y >= BoardSize.y) { AtTop = Cursor.AtTop = true; }
+                //Have reached the top with normal blocks
+                if(!AtTop && nextKey.y >= BoardSize.y) 
+                { 
+                    if(!PlayerGameBoard.TimeStopper.IsTimeStopped) { PlayerGameBoard.TimeStopper.AddTime(3, 1); }
+                }
 
                 if(block.Value.BoardLoc.y == 1) 
                 {
@@ -436,13 +430,12 @@ public class BlockContainer : MonoBehaviour
         if(isChain)  
         {
             ChainCount += 1;
-            GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
+            //GameController.GameCtrl.UpdateGameStatMenu(ChainCount);
             totalRaiseTimeStop += ChainCount * GameController.GameCtrl.RaiseTimeStopChainMultiplier;
         }
 
-        GameController.GameCtrl.PlayerGameBoard.IncreaseScore(blocksToDestroy.Count(), isChain ? ChainCount : 1);
-
-        IncrementRaiseStopTime(totalRaiseTimeStop);
+        PlayerGameBoard.IncreaseScore(comboCount, isChain ? ChainCount : 1);
+        PlayerGameBoard.TimeStopper.AddTime(comboCount, isChain ? ChainCount : 0);
     
         var firstBlockFlag = destroyBlockList.Count > 3 || isChain;
 
@@ -718,7 +711,7 @@ public class BlockContainer : MonoBehaviour
         } else if(!performed && IsHoldingTrigger) {
             IsHoldingTrigger = false;
 
-            if(IsManuallyRaising && RaiseStopTime > 0) {
+            if(IsManuallyRaising && PlayerGameBoard.TimeStopper.IsTimeStopped) {
                 IsManuallyRaising = false;
                 CanManuallyRaise = true;
                 RaiseSpeed = BaseRaiseSpeed;

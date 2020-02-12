@@ -17,17 +17,19 @@ public class TimedEventManager : MonoBehaviour
         ActionList = new List<TimedAction>();
         StagingList = new List<TimedAction>();
         DeletionList = new List<TimedAction>();
-        Unpause();
+        Unpause(true);
     }
 
     public void Pause()
     {
+        if(Paused) { return; }
         MainCtrl.FixedUpdateDelegate -= OnUpdate;
         Paused = true;
     }
 
-    public void Unpause()
+    public void Unpause(bool isOverride = false)
     {
+        if(!Paused && !isOverride) { return; }
         MainCtrl.FixedUpdateDelegate += OnUpdate;
         Paused = false;
     }

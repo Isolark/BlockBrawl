@@ -32,7 +32,7 @@ public class ComboPop
         var popContainerSprite = SpriteFXPooler.SP.GetPooledObject("PopSprite", "SpriteLayer", 1, false, parent: PopContainerFX.transform).GetComponent<SpriteFX>();
         popContainerSprite.SetSprite((isChain ? "PopBlue" : "PopRed"));
 
-        var popContainerText = TextMeshPooler.TMP.GetPooledObject("ComboPop-TxtConfig", "SpriteLayer", 2, "PopText", parent: PopContainerFX.transform).GetComponent<TMP_Text>();
+        var popContainerText = TextMeshPooler.TMP.GetPooledObject("ComboPop-TxtConfig", new Vector2(2, 2), "SpriteLayer", 2, "PopText", parent: PopContainerFX.transform).GetComponent<TMP_Text>();
         popContainerText.alignment = TextAlignmentOptions.Center;
         popContainerText.text = isChain ? "x" + Value.ToString() : Value.ToString();
 

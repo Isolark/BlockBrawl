@@ -7,64 +7,107 @@ using static UnityEngine.InputSystem.InputAction;
 public class GameController : InputController
 {
     public GameBoard PlayerGameBoard;
-    public ScoreModeMenu ScoreModeMenu;
     public PauseMenu PauseMenu;
+    public GameOverMenu GameOverMenu;
     public float BlockDist;
     public float TimeScale = 1f;
     public float GameTime;
     public float BlockFallVelocity;
     public float BlockSwitchSpeed; //Speed at which blocks can be switched
+    
     public float RaiseBaseSpeed; //Starting speed of block raising
     public float RaiseBaseAcceleration; //Starting increase of speed every speed level
     public float RaiseDeltaAcceleration; //Add this to base every 50 levels for current acceleration
     public float RaiseSpeedLevelDelay; //How long until speed level is raised
+    public int MaxSpeedLevel;
+
     public float RaiseTimeStopComboMultiplier; //RaiseStopTimer Time += (ComboCount * Multiplier)
     public float RaiseTimeStopChainMultiplier; //RaiseStopTimer Time += (ChainCount * Multiplier)
     public float RaiseTimeStopBaseComboAmount;
 
+    public bool CanMoveCursor;
+    protected bool IsGameStarted;
+
     public static GameController GameCtrl;
 
-    void Awake()
+    protected virtual void Awake()
     {
         //Singleton pattern
         if (GameCtrl == null) {
             GameCtrl = this;
         }
         else if (GameCtrl != this) {
-            Destroy(gameObject);
+            Destroy(GameCtrl);
+            GameCtrl = this;
         }     
     }
 
     // Start is called before the first frame update
     override protected void Start()
     {
-        MainController.MC.GS_Current = GameState.Active;
-        GameTime = 0;
-        if(TimeScale != 1) { Time.timeScale = TimeScale; }
-
-        PauseMenu.Setup();
-        PauseMenu.gameObject.SetActive(false);
-        
+        //if(TimeScale != 1) { Time.timeScale = TimeScale; }
         base.Start();
+
+        MainController.MC.GS_Current = GameState.Active;
+        
+        GameTime = 0;
+        
+        PauseMenu.Setup();
+        GameOverMenu.Setup();
+        PauseMenu.gameObject.SetActive(false);
+        GameOverMenu.gameObject.SetActive(false);
+
+        IsGameStarted = CanMoveCursor = false;
+
+        MainController.MC.AddTimedAction(() => { PlayerGameBoard.Initialize(5, MaxSpeedLevel, RaiseBaseSpeed, RaiseBaseAcceleration); }, 0.4f);
     }
 
-    public void UpdateGameStatMenu(int currentChain)
+    public void StartGame()
     {
-        // GameStatsMenu.SetCurrentChain(currentChain);
+        IsGameStarted = true;
+        PlayerGameBoard.StartGame();
+    }
 
-        // var maxChain = int.Parse(GameStatsMenu.MaxChainValue.text.Substring(1));
-        // if(currentChain > maxChain) { GameStatsMenu.SetMaxChain(currentChain); }
+    public virtual void LoseGame()
+    {
+        PlayerGameBoard.EndGame(false);
+
+        MainController.MC.Pause();
+
+        GameOverMenu.gameObject.SetActive(true);
+        GameOverMenu.OpenMenu();
+    }
+
+    public virtual void WinGame()
+    {
+        PlayerGameBoard.EndGame(true);
+    }
+
+    public virtual void OpenGameOverMenu()
+    {
+        MainController.MC.Pause();
+
+        GameOverMenu.gameObject.SetActive(true);
+        GameOverMenu.OpenMenu();
+    }
+
+    public virtual void OpenVictoryMenu()
+    {
+
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
         if(MainController.MC.GS_Current == GameState.Active)
         {
-            GameTime += Time.deltaTime;
-            ScoreModeMenu.SetGameTime(GameTime);
-            
-            PlayerGameBoard.OnUpdate();
+            if(IsGameStarted)
+            {
+                GameTime += Time.deltaTime;
+                //ScoreModeMenu.SetGameTime(GameTime);
+                
+                PlayerGameBoard.OnUpdate();
+            }
         }
     }
 
@@ -82,65 +125,69 @@ public class GameController : InputController
         }
         else if(!CalculateMoveDir(ref moveDir)) { return; }
 
-        if(MainController.MC.GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active && (IsGameStarted || CanMoveCursor))
         {
             PlayerGameBoard.InputMove(moveDir);
         }
         else if(MainController.MC.GS_Current == GameState.MenuOpen)
         {
-            PauseMenu.InputMove(moveDir);
+            if(PauseMenu.gameObject.activeSelf) { PauseMenu.InputMove(moveDir); }
+            else { GameOverMenu.InputMove(moveDir); }
         }
     }
     override public void OnStart(CallbackContext context)
     {
         if(!context.performed) { return; }
-        if(MainController.MC.GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active && (IsGameStarted || CanMoveCursor))
         {
             Pause();
         }
         else
         {
-            PauseMenu.InputStart();
+            if(PauseMenu.gameObject.activeSelf) { PauseMenu.InputStart(); }
         }
     }
 
     override public void OnConfirm(CallbackContext context)
     {
         if(!context.performed) { return; }
-        if(MainController.MC.GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active && IsGameStarted)
         {
             PlayerGameBoard.InputConfirm();
         }
         else if(MainController.MC.GS_Current == GameState.MenuOpen)
         {
-            PauseMenu.InputConfirm();
+            if(PauseMenu.gameObject.activeSelf) { PauseMenu.InputConfirm(); }
+            else { GameOverMenu.InputConfirm(); }
         }
     }
 
     override public void OnCancel(CallbackContext context)
     {
         if(!context.performed) { return; }
-        if(MainController.MC.GS_Current == GameState.Active)
+        if(MainController.MC.GS_Current == GameState.Active && IsGameStarted)
         {
-            //PlayerGameBoard.In();
         }
         else if(MainController.MC.GS_Current == GameState.MenuOpen)
         {
-            PauseMenu.InputCancel();
+            if(PauseMenu.gameObject.activeSelf) { PauseMenu.InputCancel(); }
         }
     }
 
     public void Pause()
     {
-        //TODO: SFX
-        //Clears "Hold" on input receivers
-        PlayerGameBoard.InputMove(Vector2.zero);
-        PlayerGameBoard.Pause();
+        if(MainController.MC.GS_Current == GameState.Active && (IsGameStarted || CanMoveCursor))
+        {
+            //TODO: SFX
+            //Clears "Hold" on input receivers
+            PlayerGameBoard.InputMove(Vector2.zero);
+            PlayerGameBoard.Pause();
 
-        MainController.MC.Pause();
+            MainController.MC.Pause();
 
-        PauseMenu.gameObject.SetActive(true);
-        PauseMenu.OpenMenu(Unpause);
+            PauseMenu.gameObject.SetActive(true);
+            PauseMenu.OpenMenu(Unpause);
+        }
     }
 
     public void Unpause()
