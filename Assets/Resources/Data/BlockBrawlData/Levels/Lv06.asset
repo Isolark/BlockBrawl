@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 6
   OpponentName: Wizard
-  OpponentDescription: A wise and powerful block holding many ancient secrets about
-    the land. His spells make for slow, but powerful attacks.
-  DifficultyLv: 1
+  OpponentDescription: Wise and powerful spellcaster and scholar who holds many ancient
+    secrets about the land of Lucidia. What he lacks in speed he more than makes
+    up for with devastating magically charged attacks.
+  DifficultyLv: 6
   BackgroundSpritePath: Wizard
