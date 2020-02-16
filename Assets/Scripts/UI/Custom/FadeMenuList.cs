@@ -103,12 +103,20 @@ public class FadeMenuList : MenuList
         var fadeDuration = isFadeIn ? FadeInDuration : FadeOutDuration;
         var fadeStagger = isFadeIn ? FadeInStagger : FadeOutStagger;
 
-        for(var i = 0; i < MenuItemList.Values.Count; i++)
-        {
-            var menuItem = MenuItemList.Values.ElementAt(i);
+        var sortedMenuItemList = MenuItemList.AsEnumerable();
 
+        if(fadeVector.y < 0) {
+            sortedMenuItemList = MenuItemList.OrderBy(i => i.Value.transform.localPosition.y);
+        } else {
+             sortedMenuItemList = MenuItemList.OrderByDescending(i => i.Value.transform.localPosition.y);
+        }
+
+        var index = 0;
+
+        foreach(var menuItem in sortedMenuItemList.Select(x => x.Value))
+        {
             Action finalCallback = null;
-            if(i == MenuItemList.Values.Count - 1) { finalCallback = callback; }
+            if(index == MenuItemList.Values.Count - 1) { finalCallback = callback; }
 
             var nextPos = menuItem.transform.localPosition + fadeVector;
 
@@ -121,6 +129,7 @@ public class FadeMenuList : MenuList
                     MainController.MC.TransformManager.Add_LinearTimePos_Transform(menuItem.gameObject, nextPos, fadeDuration, finalCallback);}, stagger);
             }
             stagger += fadeStagger;
+            index++;
         }
 
         if((isFadeIn && AlphaCanvas.alpha != 1) || (!isFadeIn && AlphaCanvas.alpha > FadeOutAlpha)) { 

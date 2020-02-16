@@ -15,6 +15,7 @@ public class TimeBar : MonoBehaviour
     public float BarDeltaRate;
     public float TargetTime;
     public float CurrentTime;
+    public float DisplaySpeed;
 
     public bool IsDisplayed;
 
@@ -117,9 +118,9 @@ public class TimeBar : MonoBehaviour
             nextBarPos += barDeltaVector;
         }
 
-        MainController.MC.TransformManager.Add_LinearTimePos_Transform(TimeGaugeSpr.gameObject, nextGaugePos, 1);
-        MainController.MC.TransformManager.Add_LinearTimePos_Transform(FirstTimeBarImg.gameObject, nextBarPos, 1);
-        MainController.MC.TransformManager.Add_LinearTimePos_Transform(SecondTimeBarImg.gameObject, nextBarPos, 1);
+        MainController.MC.TransformManager.Add_LinearTimePos_Transform(TimeGaugeSpr.gameObject, nextGaugePos, DisplaySpeed);
+        MainController.MC.TransformManager.Add_LinearTimePos_Transform(FirstTimeBarImg.gameObject, nextBarPos, DisplaySpeed);
+        MainController.MC.TransformManager.Add_LinearTimePos_Transform(SecondTimeBarImg.gameObject, nextBarPos, DisplaySpeed);
 
         IsDisplayed = isShow;
     }

@@ -104,6 +104,8 @@ public class MainMenu : GameMenu
         //Darken VolumeSubMenu
         ChangeVolumeSubMenuColor(Color.black, 0.3f);
 
+        BackPanel.transform.Find("BackNameText").GetComponent<TMP_Text>().text = $"{GameDataManager.GM.PlyrGameData.PlayerName} ({GameDataManager.GM.PlyrGameData.PlayerID})";
+
         //SetRightPanelConfig("Description");
         // RightMenuPanel.gameObject.SetActive(true);
         // DescriptionText = RightMenuPanel.GetComponentsInChildren<TMP_Text>().First(x => x.name == "DescriptionText");
@@ -177,15 +179,12 @@ public class MainMenu : GameMenu
             OptionChangedFlag = false;
         }
 
-        BackPanel.GetComponent<CanvasGroup>().CrossFadeAlpha(this, 0, 0.1f);
-        MainController.MC.TransformManager.Add_LinearTimePos_Transform(BackPanel.gameObject, BackPanel.transform.localPosition + new Vector3(0, -15, 0), 0.1f);
         SetMenuList(MenuLists.First(x => x.name == "MainMenuList"));
     }
 
     private void ToSinglePlayerMode()
     {
-        BackPanel.GetComponent<CanvasGroup>().CrossFadeAlpha(this, 1, 0.1f);
-        MainController.MC.TransformManager.Add_LinearTimePos_Transform(BackPanel.gameObject, BackPanel.transform.localPosition + new Vector3(0, 15, 0), 0.1f);
+        BackPanel.GetComponent<CanvasGroup>().SlideCrossFadeAlpha(this, 1, BackPanel.transform.localPosition + new Vector3(0, 15, 0), 0.1f);
         SetMenuList(MenuLists.First(x => x.name == "1PlayerMenuList"), () => { ToggleRightPanel(true); });
     }
 
@@ -204,6 +203,7 @@ public class MainMenu : GameMenu
     {
         ToggleRightPanel(false);
         DeactivateCurrentMenuList();
+        BackPanel.GetComponent<CanvasGroup>().SlideCrossFadeAlpha(this, 0, BackPanel.transform.localPosition + new Vector3(0, -15, 0), 0.1f);
         SlideSingleBG(false, ToMain);
     }
 

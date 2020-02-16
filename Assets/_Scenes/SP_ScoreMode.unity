@@ -9169,7 +9169,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1765508880
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11738,6 +11738,11 @@ PrefabInstance:
         type: 3}
       propertyPath: BarDeltaRate
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5759603284659623402, guid: cbefef080e602294f94400d4da29fd55,
+        type: 3}
+      propertyPath: DisplaySpeed
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 5759603284659623406, guid: cbefef080e602294f94400d4da29fd55,
         type: 3}
