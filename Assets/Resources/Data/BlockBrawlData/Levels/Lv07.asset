@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 7
   OpponentName: Priest
-  OpponentDescription: A pure-hearted healer who aids blocks and dreamers alike with
-    any ailments. Ironically is also a very tough opponent who cannot be brought
-    down easily.
-  DifficultyLv: 1
+  OpponentDescription: Pure-hearted healer who aids blocks and dreamers alike with
+    any ailments. His restorative powers act as a strong defense that is not easily
+    overcome.
+  DifficultyLv: 6
   BackgroundSpritePath: Priest

@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 4
   OpponentName: Foxy Boxy
-  OpponentDescription: A stylish block sprite with a confidence to match, she is
-    not one to be underestimated. Though he may not look it, her "weapon" tends to
-    pack quite a punch
-  DifficultyLv: 1
+  OpponentDescription: Stylish beast tamer who uses her strong instincts and confident
+    aura to bring control and elegance to the wilderness. Her trusty sidekick "Sir
+    Stomps" may seem docile, but rumor has it his paws hold all the power of a mighty
+    dragon's claw striking the earth.
+  DifficultyLv: 4
   BackgroundSpritePath: FoxyBoxy

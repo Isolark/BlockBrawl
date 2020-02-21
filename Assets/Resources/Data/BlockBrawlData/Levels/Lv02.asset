@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 2
   OpponentName: Blocksmith
-  OpponentDescription: 'A talented weapons & armor maker more recently trying his
-    hand at puzzling. '
-  DifficultyLv: 1
+  OpponentDescription: Well-respected master of the forge who takes great pride in
+    the weapon, armor, and equipment he creates. Frequently attends tournaments and
+    works with warriors, making him no stranger to the basics of combat.
+  DifficultyLv: 2
   BackgroundSpritePath: Blocksmith

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 9
   OpponentName: Prince
-  OpponentDescription: The heir to the throne and overseer of the Hilltop Coliseum.
+  OpponentDescription: Heir to a prestigous throne and lord of the Hilltop Coliseum.
     May seem laid-back and apathetic, but as block royalty, has been expertly trained
-    to handle all situations with poise and finesse.
-  DifficultyLv: 1
+    to handle all combat situations with poise and finesse.
+  DifficultyLv: 8
   BackgroundSpritePath: Prince

@@ -38,6 +38,8 @@ public class MainMenu : GameMenu
     private bool OptionChangedFlag;
     private Action CancelAction;
 
+    private List<BlockBrawlLv> BlockBrawlOppList;
+
     // private int CurrentDifficulty;
     // private readonly int MIN_DIFFICULTY = 1;
     // private readonly int MAX_DIFFICULTY = 10;
@@ -104,6 +106,7 @@ public class MainMenu : GameMenu
         //Darken VolumeSubMenu
         ChangeVolumeSubMenuColor(Color.black, 0.3f);
 
+        //Load in 
         BackPanel.transform.Find("BackNameText").GetComponent<TMP_Text>().text = $"{GameDataManager.GM.PlyrGameData.PlayerName} ({GameDataManager.GM.PlyrGameData.PlayerID})";
 
         //SetRightPanelConfig("Description");

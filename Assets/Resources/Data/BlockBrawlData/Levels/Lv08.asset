@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 8
   OpponentName: Pawn
-  OpponentDescription: The lowest-ranked member of the Royal Guard, this stalwart
-    and refined block he has stopped many up-and-coming challengers in their tracks.
-    His very presence shapes the battlefield to a more complex form.
-  DifficultyLv: 1
+  OpponentDescription: Lowest ranked member of the Royal Guard, this stalwart and
+    refined warrior has stopped many up-and-coming challengers in their tracks. Like
+    others of his caliber, his very presence shapes the battlefield itself into a
+    more complex form.
+  DifficultyLv: 7
   BackgroundSpritePath: Pawn

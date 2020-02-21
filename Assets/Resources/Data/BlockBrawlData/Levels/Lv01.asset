@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 1
   OpponentName: Shepherd
-  OpponentDescription: A master block cattle herder whose skills haven't translated
-    well into herding combos and chains just yet.
+  OpponentDescription: Kind and humble block sprite in charge of an award-winning
+    herd of block cattle. Provides lodging to travelers and is always willing to
+    help sharpen their puzzle skills with a sparring match.
   DifficultyLv: 1
   BackgroundSpritePath: Shepherd
