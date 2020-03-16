@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 3
   OpponentName: Thief
-  OpponentDescription: A block with speed and dexterity, who attacks through a series
-    of quick, light strikes.
-  DifficultyLv: 1
+  OpponentDescription: Cunning and sneaky criminal who isn't afraid to mix things
+    up if a job goes awry. Though his defense and power are weak, his great dexterity
+    allows him to deliver many strikes in quick succession.
+  DifficultyLv: 3
   BackgroundSpritePath: Thief

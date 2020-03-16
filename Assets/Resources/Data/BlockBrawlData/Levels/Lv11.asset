@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 11
   OpponentName: Ace
-  OpponentDescription: A champion whose skills have made him a 6-sided legend and
-    terror. Defeating him may not be possible for any dreamer, no matter how great
-    their mind and reflexes.
-  DifficultyLv: 1
+  OpponentDescription: Champion whose peerless skills have made him a 6-sided legend
+    and terror. Defeating him may not be possible for any dreamer, no matter how
+    great their mind and reflexes.
+  DifficultyLv: 10
   BackgroundSpritePath: Ace

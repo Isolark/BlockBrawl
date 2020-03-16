@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 5
   OpponentName: Spearman
-  OpponentDescription: 'An experienced and talented block who is well-balanced in
-    terms of offense and defense. '
-  DifficultyLv: 1
+  OpponentDescription: 'Regular participant at the Hilltop Coliseum who enjoys nothing
+    more than a one-on-one match. Not the fastest on the draw, he instead relies
+    on preparing combination attacks to overwhelm opponents. '
+  DifficultyLv: 5
   BackgroundSpritePath: Spearman

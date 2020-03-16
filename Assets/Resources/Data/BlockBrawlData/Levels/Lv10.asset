@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BBLevel: 10
   OpponentName: King
-  OpponentDescription: The benevolent ruler of the Quadra Kingdom whose presence
-    maintains order, justice, and peace throughout the land. His magnificent skill,
-    defense, and power come in second only to his renouned stache.
-  DifficultyLv: 1
+  OpponentDescription: Benevolent ruler of the Quadra Kingdom whose influence maintains
+    order, justice, and peace throughout the land. His magnificent skill, defense,
+    and power come in second only to his renouned stache.
+  DifficultyLv: 9
   BackgroundSpritePath: King

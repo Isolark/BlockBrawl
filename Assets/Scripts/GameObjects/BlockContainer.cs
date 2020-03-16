@@ -23,7 +23,7 @@ public class BlockContainer : MonoBehaviour
     public int BlockDestroyCount; //Stops Move(), but not RaiseStopTimer; Timer is created anew if time > what is left of original
 
     private Vector2 PopupDisplayLoc; //Set in priority of UP, LEFT, RIGHT, DOWN
-    private int ComboCount; //Only Persists until next Move() (by default)
+    //private int ComboCount; //Only Persists until next Move() (by default)
     public int ChainCount; //Once BlockDestroyCount strikes 0, reset this (by default) 
     private int PrevChainCount;
     public int ActiveChainCounter;
@@ -68,7 +68,7 @@ public class BlockContainer : MonoBehaviour
         Target_Y = transform.localPosition.y + GameScoreAtkCtrl.GameSA_Ctrl.BlockDist;
         RaiseSpeed = BaseRaiseSpeed = baseRaiseSpeed;
         //RaiseStopTime = 0;
-        ComboCount = 0;
+        //ComboCount = 0;
         ChainCount = 1;
 
         SpawnRows(StartingHeight + 1, rowModVals: new List<int>(){-1, 0, 0, 1});
