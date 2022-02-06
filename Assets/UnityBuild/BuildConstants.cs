@@ -30,11 +30,11 @@ public static class BuildConstants
         Universal,
     }
 
-    public static readonly System.DateTime buildDate = new System.DateTime(637127139234569941);
-    public const string version = "1.0.1817.3862";
+    public static readonly System.DateTime buildDate = new System.DateTime(637797249588014377);
+    public const string version = "1.0.2593.1504";
     public const ReleaseType releaseType = ReleaseType.Release;
-    public const Platform platform = Platform.OSX;
-    public const Architecture architecture = Architecture.OSX;
-    public const Distribution distribution = Distribution.Universal;
+    public const Platform platform = Platform.WebGL;
+    public const Architecture architecture = Architecture.WebGL;
+    public const Distribution distribution = Distribution.None;
 }
 

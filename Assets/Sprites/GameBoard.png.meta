@@ -144,7 +144,7 @@ TextureImporter:
       213: -1550084577910054824
     second: HealthRed
   externalObjects: {}
-  serializedVersion: 10
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -164,6 +164,8 @@ TextureImporter:
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -173,8 +175,8 @@ TextureImporter:
   textureSettings:
     serializedVersion: 2
     filterMode: 0
-    aniso: -1
-    mipBias: -100
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
     wrapW: 1
@@ -195,9 +197,13 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -1025,6 +1031,44 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      HealthBar: -684341498602138215
+      Star: 5499845169743373932
+      Middle-Red: 21300024
+      PlayArea-BorderSide: -7605583508473455723
+      Health: 3070148713985423590
+      PlayArea-BorderCorner: -6215804404083189565
+      Block-Yellow: 21300008
+      BunJester: 2425173451739350852
+      Middle-Pink: 21300020
+      Block-Purple: 21300004
+      Middle-Green: 21300018
+      HealthGauge: -6272381583424623480
+      Cursor-Top: 5139304775521806484
+      Middle-Blue: 21300016
+      PlayArea-Base-Shine: 8252156507744318537
+      Block-Green: 21300002
+      Garbage-SplitCorner: 7219535014226973098
+      HealthCircleBar: 5969265218892552144
+      Garbage-SingleMid: 2274421060344923026
+      HealthRed: -1550084577910054824
+      Block-Blue: 21300000
+      Block-Red: 21300006
+      Garbage-BotCorner: -290331574657881090
+      HealthCircle: 7784723573759563229
+      Block-White: 922120200342688714
+      Garbage-TopCorner: 957546993642139916
+      Middle-Purple: 21300022
+      Garbage-SingleRight: 7485351056138308272
+      Garbage-SingleLeft: -2281881741624235679
+      PopBlue: 4484215694143290767
+      PopRed: 8069966181005358983
+      Cursor-Corner: -8900117008291763483
+      Middle-Yellow: 21300026
+      Effect-Bun: 4654530645730336874
+      Block: 21300010
+      Garbage-Bot: 8658270957293356872
+      Garbage-Top: 773001533918083732
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

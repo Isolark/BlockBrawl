@@ -62,8 +62,8 @@ public class GameDataManager : MonoBehaviour{
     {
         PlyrConfigData = new PlayerConfigData()
         {
-            MusicVolume = 0.60f,
-            SoundVolume = 0.80f
+            MusicVolume = 0.2f,
+            SoundVolume = 0.3f
         };
     }
 

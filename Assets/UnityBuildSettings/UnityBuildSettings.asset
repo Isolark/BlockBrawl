@@ -21,15 +21,12 @@ MonoBehaviour:
     clauses:
     - type: 1
       comparison: 0
-      test: PC
-    - type: 1
-      comparison: 0
-      test: OSX
+      test: WebGL
   pathToButlerExe: C:\Unity\Tools\butler.exe
-  nameOfItchUser: Sosuko
+  nameOfItchUser: Isolark
   nameOfItchGame: tetra-nights
   useGeneratedBuildVersion: 1
-  showUploadProgress: 0
+  showUploadProgress: 1
   itchChannelOverride: 
 --- !u!114 &11400000
 MonoBehaviour:
@@ -46,10 +43,10 @@ MonoBehaviour:
   _basicSettings:
     baseBuildFolder: bin
     buildPath: $YEAR-$MONTH-$DAY/$BUILD/$RELEASE_TYPE/$PLATFORM/$ARCHITECTURE/$DISTRIBUTION
-    openFolderPostBuild: 0
+    openFolderPostBuild: 1
   _productParameters:
-    buildCounter: 7
-    lastGeneratedVersion: 1.0.1831.1965
+    buildCounter: 11
+    lastGeneratedVersion: 1.0.2593.1650
     version: 1.0.$DAYSSINCE("January 1, 2015").$SECONDS
     autoGenerate: 1
   _releaseTypeList:
@@ -188,32 +185,3 @@ MonoBehaviour:
   _postBuildActions:
     buildActions:
     - {fileID: -8658269682862055276}
-    - {fileID: 4157086160292196403}
---- !u!114 &4157086160292196403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97d88f7d353534a4fbdeb11196057db7, type: 3}
-  m_Name: UploadItch
-  m_EditorClassIdentifier: 
-  actionType: 1
-  actionName: UploadItch
-  note: 
-  actionEnabled: 1
-  filter:
-    condition: 2
-    clauses:
-    - type: 1
-      comparison: 0
-      test: WEBGL
-  pathToButlerExe: C:\Unity\Tools\butler.exe
-  nameOfItchUser: Sosuko
-  nameOfItchGame: tetra-nights
-  useGeneratedBuildVersion: 1
-  showUploadProgress: 0
-  itchChannelOverride: html
